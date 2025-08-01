@@ -7,8 +7,8 @@ const _adminModeKey = 'isAdminMode';
 // 어드민 모드 상태를 관리하는 Provider
 final adminModeProvider = StateNotifierProvider<AdminModeNotifier, bool>((ref) {
   final localStorage = ref.watch(localStorageServiceProvider);
-  // Hive에서 저장된 값을 읽어와 초기 상태를 설정합니다.
-  final bool initialValue = localStorage.read<bool>(_adminModeKey, defaultValue: false) ?? false;
+  // Hive에서 저장된 값을 읽어와 초기 상태를 설정합니다. 기본값은 false입니다.
+  final bool initialValue = localStorage.read<bool>(_adminModeKey) ?? false;
   return AdminModeNotifier(initialValue, localStorage);
 });
 

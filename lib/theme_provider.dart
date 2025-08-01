@@ -11,9 +11,9 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
   @override
   ThemeMode build() {
     final localStorage = ref.watch(localStorageServiceProvider);
-    // Hive에서 저장된 테마 모드 값을 읽어옵니다.
-    final themeName = localStorage.read<String>(_themeModeKey, defaultValue: ThemeMode.system.name);
-    // String을 ThemeMode enum으로 변환하여 반환합니다.
+    // Hive에서 저장된 테마 모드 값을 읽어옵니다. 기본값은 ThemeMode.system의 이름입니다.
+    final themeName = localStorage.read<String>(_themeModeKey) ?? ThemeMode.system.name;
+    // String을 ThemeMode enum으로 변환하여 반환합니다. 유효하지 않은 값이면 ThemeMode.system으로 폴백합니다.
     return ThemeMode.values.firstWhere((e) => e.name == themeName, orElse: () => ThemeMode.system);
   }
 

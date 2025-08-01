@@ -46,7 +46,6 @@ class MenuScreen extends ConsumerWidget {
                     }
                   }
                 : null,
-            subtitle: isAdminMenu ? const Text('어드민 전용') : null,
           );
         },
       ),
