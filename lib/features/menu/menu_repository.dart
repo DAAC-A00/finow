@@ -18,6 +18,8 @@ class MenuRepository {
     Menu(name: '프로필', path: '/profile', icon: Icons.person),
     Menu(name: '설정', path: '/settings', icon: Icons.settings),
     Menu(name: '도움말', path: '/help', icon: Icons.help),
+    // 어드민 전용 메뉴
+    Menu(name: '어드민', path: '/admin', icon: Icons.admin_panel_settings, isAdmin: true),
   ];
 
   List<Menu> getMenus() => _menus;
