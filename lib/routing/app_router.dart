@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:finow/features/menu/menu_repository.dart';
 import 'package:finow/features/menu/menu_screen.dart';
+import 'package:finow/routing/app_transitions.dart';
 import 'package:finow/screens/main_screen.dart';
 import 'package:finow/screens/placeholder_screen.dart';
 
@@ -21,28 +22,40 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       // BottomNavigationBar가 있는 메인 화면 레이아웃
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
-        builder: (context, state, child) {
-          return MainScreen(child: child);
+        pageBuilder: (context, state, child) {
+          // ShellRoute 자체에는 애니메이션이 필요 없으므로 NoTransitionPage 사용
+          return NoTransitionPage(
+            child: MainScreen(child: child),
+          );
         },
         // MainScreen 위에 표시될 화면들
         routes: [
           ...menus.where((m) => m.showInBottomNav).map((menu) {
             return GoRoute(
               path: menu.path,
-              builder: (context, state) {
-                if (menu.path == '/menu') {
-                  return const MenuScreen();
-                }
-                return PlaceholderScreen(title: menu.name);
+              pageBuilder: (context, state) {
+                final screen = (menu.path == '/menu')
+                    ? const MenuScreen()
+                    : PlaceholderScreen(title: menu.name);
+                return buildPageWithCustomTransition(
+                  context: context,
+                  state: state,
+                  child: screen,
+                );
               },
             );
           }),
           // BottomNav에 없는 화면들도 여기에 정의
           ...menus.where((m) => !m.showInBottomNav).map((menu) {
-             return GoRoute(
+            return GoRoute(
               path: menu.path,
-              // 이 화면들은 별도의 Navigator에 표시될 수 있도록 parentNavigatorKey 설정 가능
-              builder: (context, state) => PlaceholderScreen(title: menu.name),
+              pageBuilder: (context, state) {
+                return buildPageWithCustomTransition(
+                  context: context,
+                  state: state,
+                  child: PlaceholderScreen(title: menu.name),
+                );
+              },
             );
           })
         ],

@@ -27,7 +27,11 @@ class MainScreen extends ConsumerWidget {
         }).toList(),
         currentIndex: currentIndex,
         onTap: (index) {
-          context.go(bottomNavMenus[index].path);
+          // 애니메이션 방향 결정을 위해 현재/타겟 인덱스를 extra로 전달
+          context.go(
+            bottomNavMenus[index].path,
+            extra: {'fromIndex': currentIndex, 'toIndex': index},
+          );
         },
         // 활성/비활성 탭 스타일 지정
         type: BottomNavigationBarType.fixed, 
