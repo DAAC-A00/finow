@@ -35,7 +35,17 @@ class MenuScreen extends ConsumerWidget {
           return ListTile(
             leading: Icon(menu.icon, color: isEnabled ? null : Colors.grey),
             title: Text(menu.name, style: TextStyle(color: isEnabled ? null : Colors.grey)),
-            onTap: isEnabled ? () => context.push(menu.path) : null, // context.go() 대신 context.push() 사용
+            onTap: isEnabled
+                ? () {
+                    if (menu.showInBottomNav) {
+                      // Bottom Navigation에 노출되는 메뉴는 go()를 사용하여 뒤로가기 버튼 없음
+                      context.go(menu.path);
+                    } else {
+                      // 그 외 메뉴는 push()를 사용하여 뒤로가기 버튼 표시
+                      context.push(menu.path);
+                    }
+                  }
+                : null,
             subtitle: isAdminMenu ? const Text('어드민 전용') : null,
           );
         },
