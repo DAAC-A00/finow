@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:finow/features/menu/menu_model.dart';
 import 'package:finow/features/menu/menu_repository.dart';
 import 'package:finow/features/menu/menu_screen.dart';
 import 'package:finow/routing/app_transitions.dart';
@@ -9,57 +10,60 @@ import 'package:finow/screens/main_screen.dart';
 import 'package:finow/screens/placeholder_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
-final GlobalKey<NavigatorState> _shellNavigatorKey = GlobalKey<NavigatorState>();
 
 final goRouterProvider = Provider<GoRouter>((ref) {
   final menuRepository = ref.watch(menuRepositoryProvider);
   final menus = menuRepository.getMenus();
 
+  // BottomNav가 보이는 화면 (ShellRoute 내부용)
+  final List<RouteBase> shellRoutes = menus
+      .where((menu) => menu.showInBottomNav)
+      .map((menu) => _buildRoute(menu, isTopLevel: false))
+      .toList();
+
+  // BottomNav를 가리는 독립적인 화면 (최상위용)
+  final List<RouteBase> topLevelRoutes = menus
+      .where((menu) => !menu.showInBottomNav)
+      .map((menu) => _buildRoute(menu, isTopLevel: true))
+      .toList();
+
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
     initialLocation: '/home',
     routes: [
-      // BottomNavigationBar가 있는 메인 화면 레이아웃
+      // BottomNavigationBar를 포함하는 ShellRoute
       ShellRoute(
-        navigatorKey: _shellNavigatorKey,
+        navigatorKey: GlobalKey<NavigatorState>(debugLabel: 'shell'),
         pageBuilder: (context, state, child) {
-          // ShellRoute 자체에는 애니메이션이 필요 없으므로 NoTransitionPage 사용
           return NoTransitionPage(
             child: MainScreen(child: child),
           );
         },
-        // MainScreen 위에 표시될 화면들
-        routes: [
-          ...menus.where((m) => m.showInBottomNav).map((menu) {
-            return GoRoute(
-              path: menu.path,
-              pageBuilder: (context, state) {
-                final screen = (menu.path == '/menu')
-                    ? const MenuScreen()
-                    : PlaceholderScreen(title: menu.name);
-                return buildPageWithCustomTransition(
-                  context: context,
-                  state: state,
-                  child: screen,
-                );
-              },
-            );
-          }),
-          // BottomNav에 없는 화면들도 여기에 정의
-          ...menus.where((m) => !m.showInBottomNav).map((menu) {
-            return GoRoute(
-              path: menu.path,
-              pageBuilder: (context, state) {
-                return buildPageWithCustomTransition(
-                  context: context,
-                  state: state,
-                  child: PlaceholderScreen(title: menu.name),
-                );
-              },
-            );
-          })
-        ],
+        routes: shellRoutes,
       ),
+      // ShellRoute 밖에 최상위 라우트를 정의하여 BottomNav를 가리도록 함
+      ...topLevelRoutes,
     ],
   );
 });
+
+// 라우트 생성을 위한 헬퍼 함수
+GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
+  return GoRoute(
+    path: menu.path,
+    pageBuilder: (context, state) {
+      Widget screen;
+      if (menu.path == '/menu') {
+        screen = const MenuScreen();
+      } else {
+        screen = PlaceholderScreen(title: menu.name, showBackButton: isTopLevel);
+      }
+
+      return buildPageWithCustomTransition(
+        context: context,
+        state: state,
+        child: screen,
+      );
+    },
+  );
+}
