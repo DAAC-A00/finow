@@ -1,4 +1,5 @@
 
+import 'package:finow/features/settings/settings_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -53,10 +54,16 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
     path: menu.path,
     pageBuilder: (context, state) {
       Widget screen;
-      if (menu.path == '/menu') {
-        screen = const MenuScreen();
-      } else {
-        screen = PlaceholderScreen(title: menu.name, showBackButton: isTopLevel);
+      // 메뉴 경로에 따라 적절한 화면을 매핑
+      switch (menu.path) {
+        case '/menu':
+          screen = const MenuScreen();
+          break;
+        case '/settings':
+          screen = const SettingsScreen();
+          break;
+        default:
+          screen = PlaceholderScreen(title: menu.name, showBackButton: isTopLevel);
       }
 
       return buildPageWithCustomTransition(
@@ -67,3 +74,4 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
     },
   );
 }
+
