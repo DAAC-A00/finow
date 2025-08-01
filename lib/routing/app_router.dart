@@ -70,11 +70,20 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
           screen = PlaceholderScreen(title: menu.name, showBackButton: isTopLevel);
       }
 
-      return buildPageWithCustomTransition(
-        context: context,
-        state: state,
-        child: screen,
-      );
+      // isTopLevel이 true일 경우 MaterialPage를 사용하여 fullScreenDialog 효과 적용
+      if (isTopLevel) {
+        return MaterialPage(
+          key: state.pageKey,
+          child: screen,
+          fullscreenDialog: true,
+        );
+      } else {
+        return buildPageWithCustomTransition(
+          context: context,
+          state: state,
+          child: screen,
+        );
+      }
     },
   );
 }

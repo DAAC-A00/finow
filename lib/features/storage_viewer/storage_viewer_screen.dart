@@ -10,9 +10,13 @@ class StorageViewerScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final storageData = ref.watch(localStorageServiceProvider).getAll();
 
+    // 디버그 출력: canPop() 값 확인
+    print('StorageViewerScreen: Navigator.of(context).canPop() = ${Navigator.of(context).canPop()}');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('로컬 스토리지 뷰어'),
+        leading: Navigator.of(context).canPop() ? const BackButton() : null,
       ),
       body: storageData.isEmpty
           ? const Center(child: Text('저장된 데이터가 없습니다.'))

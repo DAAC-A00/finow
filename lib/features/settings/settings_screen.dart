@@ -12,9 +12,13 @@ class SettingsScreen extends ConsumerWidget {
     final currentThemeMode = ref.watch(themeModeNotifierProvider);
     final isAdminMode = ref.watch(adminModeProvider);
 
+    // 디버그 출력: canPop() 값 확인
+    print('SettingsScreen: Navigator.of(context).canPop() = ${Navigator.of(context).canPop()}');
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('설정'),
+        leading: Navigator.of(context).canPop() ? const BackButton() : null,
       ),
       body: ListView(
         children: [
@@ -56,7 +60,6 @@ class SettingsScreen extends ConsumerWidget {
             title: const Text('어드민 모드'),
             value: isAdminMode,
             onChanged: (bool value) {
-              // 변경된 값을 AdminModeNotifier를 통해 업데이트합니다.
               ref.read(adminModeProvider.notifier).setAdminMode(value);
             },
           ),

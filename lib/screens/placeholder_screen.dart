@@ -17,9 +17,7 @@ class PlaceholderScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
-        // showBackButton 값에 따라 뒤로가기 버튼 자동 표시 여부 결정
-        // ShellRoute 내부 화면에서는 false, 최상위 화면에서는 true가 됨
-        automaticallyImplyLeading: showBackButton,
+        leading: showBackButton && Navigator.of(context).canPop() ? const BackButton() : null,
       ),
       body: Center(
         child: Text(
