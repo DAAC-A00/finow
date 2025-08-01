@@ -1,6 +1,25 @@
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:finow/features/storage_viewer/local_storage_service.dart';
 
-// 어드민 모드 활성화 상태를 관리하는 Provider
-// StateProvider는 외부에서 값을 수정할 수 있는 간단한 상태를 관리할 때 유용합니다.
-final adminModeProvider = StateProvider<bool>((ref) => false); // 기본값은 비활성화
+const _adminModeKey = 'isAdminMode';
+
+// 어드민 모드 상태를 관리하는 Provider
+final adminModeProvider = StateNotifierProvider<AdminModeNotifier, bool>((ref) {
+  final localStorage = ref.watch(localStorageServiceProvider);
+  // Hive에서 저장된 값을 읽어와 초기 상태를 설정합니다.
+  final bool initialValue = localStorage.read<bool>(_adminModeKey, defaultValue: false) ?? false;
+  return AdminModeNotifier(initialValue, localStorage);
+});
+
+class AdminModeNotifier extends StateNotifier<bool> {
+  final LocalStorageService _localStorage;
+
+  AdminModeNotifier(bool state, this._localStorage) : super(state);
+
+  // 어드민 모드 상태를 변경하고 Hive에 저장합니다.
+  void setAdminMode(bool isAdmin) {
+    _localStorage.write(_adminModeKey, isAdmin);
+    state = isAdmin;
+  }
+}

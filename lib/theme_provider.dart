@@ -1,20 +1,26 @@
 
+import 'package:finow/features/storage_viewer/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// ThemeModeNotifierProvider는 ThemeModeNotifier를 제공하는 Provider입니다.
-// 사용자가 선택한 테마 모드(System, Light, Dark)를 관리합니다.
 final themeModeNotifierProvider = NotifierProvider<ThemeModeNotifier, ThemeMode>(ThemeModeNotifier.new);
 
 class ThemeModeNotifier extends Notifier<ThemeMode> {
+  static const _themeModeKey = 'themeMode';
+
   @override
   ThemeMode build() {
-    // 앱의 초기 테마 모드를 시스템 설정에 따르도록 설정합니다.
-    return ThemeMode.system;
+    final localStorage = ref.watch(localStorageServiceProvider);
+    // Hive에서 저장된 테마 모드 값을 읽어옵니다.
+    final themeName = localStorage.read<String>(_themeModeKey, defaultValue: ThemeMode.system.name);
+    // String을 ThemeMode enum으로 변환하여 반환합니다.
+    return ThemeMode.values.firstWhere((e) => e.name == themeName, orElse: () => ThemeMode.system);
   }
 
-  // 사용자가 선택한 테마로 변경하는 메서드
   void setThemeMode(ThemeMode mode) {
+    final localStorage = ref.read(localStorageServiceProvider);
+    // 새로운 테마 모드를 Hive에 저장합니다.
+    localStorage.write(_themeModeKey, mode.name);
     state = mode;
   }
 }

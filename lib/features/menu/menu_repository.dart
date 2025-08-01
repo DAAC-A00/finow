@@ -20,6 +20,7 @@ class MenuRepository {
     Menu(name: '도움말', path: '/help', icon: Icons.help),
     // 어드민 전용 메뉴
     Menu(name: '어드민', path: '/admin', icon: Icons.admin_panel_settings, isAdmin: true),
+    Menu(name: '로컬 스토리지', path: '/storage', icon: Icons.storage, isAdmin: true),
   ];
 
   List<Menu> getMenus() => _menus;

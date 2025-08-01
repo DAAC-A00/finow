@@ -2,8 +2,14 @@ import 'package:finow/routing/app_router.dart';
 import 'package:finow/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  // 앱 시작 전 Hive 초기화
+  await Hive.initFlutter();
+  // 설정을 저장할 Box 열기
+  await Hive.openBox('settings');
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

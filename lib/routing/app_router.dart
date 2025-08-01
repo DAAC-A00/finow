@@ -1,5 +1,6 @@
 
 import 'package:finow/features/settings/settings_screen.dart';
+import 'package:finow/features/storage_viewer/storage_viewer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -61,6 +62,9 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
           break;
         case '/settings':
           screen = const SettingsScreen();
+          break;
+        case '/storage':
+          screen = const StorageViewerScreen();
           break;
         default:
           screen = PlaceholderScreen(title: menu.name, showBackButton: isTopLevel);
