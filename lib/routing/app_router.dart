@@ -1,4 +1,5 @@
 
+import 'package:finow/features/exchange_rate/exchange_rate_screen.dart';
 import 'package:finow/features/settings/settings_screen.dart';
 import 'package:finow/features/storage_viewer/storage_viewer_screen.dart';
 import 'package:flutter/material.dart';
@@ -59,6 +60,9 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
       switch (menu.path) {
         case '/menu':
           screen = const MenuScreen();
+          break;
+        case '/exchange':
+          screen = const ExchangeRateScreen();
           break;
         case '/settings':
           screen = const SettingsScreen();

@@ -1,19 +1,21 @@
 
 import 'package:flutter/material.dart';
 
-// 메뉴 항목 데이터 모델
+// 메뉴 항목을 정의하는 데이터 클래스
 class Menu {
   final String name;
   final String path;
   final IconData icon;
-  final bool showInBottomNav; // Bottom Navigation에 표시할지 여부
-  final bool isAdmin; // 어드민 전용 메뉴 여부
+  final bool showInBottomNav;
 
   const Menu({
     required this.name,
     required this.path,
     required this.icon,
     this.showInBottomNav = false,
-    this.isAdmin = false, // 기본값은 false
   });
+
+  // 이름이 'Storage'인 메뉴를 어드민 전용으로 간주 (기존 로직 복원)
+  bool get isAdmin => name == 'Storage';
 }
+

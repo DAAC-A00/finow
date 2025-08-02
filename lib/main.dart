@@ -1,3 +1,4 @@
+import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/routing/app_router.dart';
 import 'package:finow/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,10 @@ import 'package:hive_flutter/hive_flutter.dart';
 void main() async {
   // 앱 시작 전 Hive 초기화
   await Hive.initFlutter();
+
+  // Hive 어댑터 등록
+  Hive.registerAdapter(ExchangeRateAdapter());
+
   // 설정을 저장할 Box 열기
   await Hive.openBox('settings');
 

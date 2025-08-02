@@ -21,7 +21,7 @@ class MenuScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('전체 메뉴'),
+        title: const Text('All Menus'),
       ),
       body: ListView.builder(
         itemCount: visibleMenus.length,

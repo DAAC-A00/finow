@@ -10,17 +10,13 @@ final menuRepositoryProvider = Provider<MenuRepository>((ref) {
 
 class MenuRepository {
   final List<Menu> _menus = const [
-    Menu(name: '홈', path: '/home', icon: Icons.home, showInBottomNav: true),
-    Menu(name: '검색', path: '/search', icon: Icons.search, showInBottomNav: true),
-    Menu(name: '알림', path: '/notifications', icon: Icons.notifications, showInBottomNav: true),
-    Menu(name: '전체메뉴', path: '/menu', icon: Icons.menu, showInBottomNav: true),
-    // 아래 메뉴들은 전체메뉴 화면에서만 보임
-    Menu(name: '프로필', path: '/profile', icon: Icons.person),
-    Menu(name: '설정', path: '/settings', icon: Icons.settings),
-    Menu(name: '도움말', path: '/help', icon: Icons.help),
-    // 어드민 전용 메뉴
-    Menu(name: '어드민', path: '/admin', icon: Icons.admin_panel_settings, isAdmin: true),
-    Menu(name: '로컬 스토리지', path: '/storage', icon: Icons.storage, isAdmin: true),
+    Menu(name: 'Home', path: '/home', icon: Icons.home, showInBottomNav: true),
+    Menu(name: 'Exchange Rate', path: '/exchange', icon: Icons.attach_money, showInBottomNav: true),
+    Menu(name: 'Favorites', path: '/favorites', icon: Icons.favorite, showInBottomNav: true),
+    Menu(name: 'Menu', path: '/menu', icon: Icons.menu, showInBottomNav: true), // 전체 메뉴 -> Menu
+    Menu(name: 'Profile', path: '/profile', icon: Icons.person, showInBottomNav: false),
+    Menu(name: 'Settings', path: '/settings', icon: Icons.settings, showInBottomNav: false),
+    Menu(name: 'Storage', path: '/storage', icon: Icons.storage, showInBottomNav: false), // 어드민 메뉴
   ];
 
   List<Menu> getMenus() => _menus;
