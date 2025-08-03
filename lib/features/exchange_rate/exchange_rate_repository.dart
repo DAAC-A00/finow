@@ -15,20 +15,22 @@ class ExchangeRateRepository {
 
   ExchangeRateRepository(this._dio);
 
-  Future<ExchangeRate> getLatestRates(String baseCurrency) async {
+  Future<List<ExchangeRate>> getLatestRates(String baseCurrency) async {
     try {
       final response = await _dio.get('$_baseUrl/$_apiKey/latest/$baseCurrency');
       if (response.statusCode == 200 && response.data['result'] == 'success') {
-        // API 응답의 conversion_rates 필드가 Map<String, dynamic> 형태이므로,
-        // Map<String, double>으로 변환해준다.
         final ratesData = response.data['conversion_rates'] as Map<String, dynamic>;
-        final convertedRates = ratesData.map((key, value) => MapEntry(key, value.toDouble()));
+        final lastUpdatedUnix = response.data['time_last_update_unix'] as int;
+        final baseCode = response.data['base_code'] as String;
 
-        // 변환된 맵을 포함하여 새로운 Map 생성
-        final updatedData = Map<String, dynamic>.from(response.data);
-        updatedData['conversion_rates'] = convertedRates;
-
-        return ExchangeRate.fromJson(updatedData);
+        return ratesData.entries.map((entry) {
+          return ExchangeRate(
+            lastUpdatedUnix: lastUpdatedUnix,
+            baseCode: baseCode,
+            quoteCode: entry.key,
+            rate: entry.value.toDouble(),
+          );
+        }).toList();
       } else {
         throw Exception('Failed to load exchange rates');
       }

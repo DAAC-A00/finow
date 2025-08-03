@@ -15,13 +15,22 @@ class ExchangeRate extends HiveObject {
   final String baseCode;
 
   @HiveField(2)
-  @JsonKey(name: 'conversion_rates')
-  final Map<String, double> rates;
+  @JsonKey(name: 'quote_code')
+  final String quoteCode;
+
+  @HiveField(3)
+  final int quantity;
+
+  @HiveField(4)
+  @JsonKey(name: 'rate')
+  final double rate;
 
   ExchangeRate({
     required this.lastUpdatedUnix,
     required this.baseCode,
-    required this.rates,
+    required this.quoteCode,
+    this.quantity = 1,
+    required this.rate,
   });
 
   factory ExchangeRate.fromJson(Map<String, dynamic> json) =>

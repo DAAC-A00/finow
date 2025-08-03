@@ -1,17 +1,15 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
-import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart'; // intl 패키지 임포트
+import 'package:intl/intl.dart';
 
 class ExchangeRateScreen extends ConsumerWidget {
   const ExchangeRateScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // 새로운 AsyncNotifierProvider를 watch
-    final asyncRate = ref.watch(exchangeRateProvider);
+    final asyncRates = ref.watch(exchangeRateProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -19,12 +17,11 @@ class ExchangeRateScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            // 새로고침 버튼을 누르면 Notifier의 refresh 메서드 호출
             onPressed: () => ref.read(exchangeRateProvider.notifier).refresh(),
           ),
         ],
       ),
-      body: asyncRate.when(
+      body: asyncRates.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(
           child: Padding(
@@ -32,18 +29,19 @@ class ExchangeRateScreen extends ConsumerWidget {
             child: Text('Failed to load data.\nError: $err', textAlign: TextAlign.center),
           ),
         ),
-        data: (rate) => _buildRateList(context, rate),
+        data: (rates) => _buildRateList(context, rates),
       ),
     );
   }
 
-  Widget _buildRateList(BuildContext context, ExchangeRate rate) {
-    final rates = rate.rates;
-    final sortedKeys = rates.keys.toList()..sort();
+  Widget _buildRateList(BuildContext context, List<ExchangeRate> rates) {
+    if (rates.isEmpty) {
+      return const Center(child: Text('No data available'));
+    }
 
-    // UNIX 타임스탬프를 DateTime으로 변환
-    final dateTime = DateTime.fromMillisecondsSinceEpoch(rate.lastUpdatedUnix * 1000);
-    // 날짜 포맷터
+    final baseCode = rates.first.baseCode;
+    final lastUpdatedUnix = rates.first.lastUpdatedUnix;
+    final dateTime = DateTime.fromMillisecondsSinceEpoch(lastUpdatedUnix * 1000);
     final formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
     final formattedDateTime = formatter.format(dateTime);
 
@@ -52,18 +50,18 @@ class ExchangeRateScreen extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
-            'Base: ${rate.baseCode} / Last Updated: $formattedDateTime',
+            'Base: $baseCode / Last Updated: $formattedDateTime',
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),
         Expanded(
           child: ListView.builder(
-            itemCount: sortedKeys.length,
+            itemCount: rates.length,
             itemBuilder: (context, index) {
-              final key = sortedKeys[index];
+              final rate = rates[index];
               return ListTile(
-                title: Text(key),
-                trailing: Text(rates[key].toString()),
+                title: Text('${rate.baseCode}/${rate.quoteCode}'),
+                trailing: Text(rate.rate.toString()),
               );
             },
           ),

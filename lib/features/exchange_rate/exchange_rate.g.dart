@@ -19,20 +19,26 @@ class ExchangeRateAdapter extends TypeAdapter<ExchangeRate> {
     return ExchangeRate(
       lastUpdatedUnix: fields[0] as int,
       baseCode: fields[1] as String,
-      rates: (fields[2] as Map).cast<String, double>(),
+      quoteCode: fields[2] as String,
+      quantity: fields[3] as int,
+      rate: fields[4] as double,
     );
   }
 
   @override
   void write(BinaryWriter writer, ExchangeRate obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.lastUpdatedUnix)
       ..writeByte(1)
       ..write(obj.baseCode)
       ..writeByte(2)
-      ..write(obj.rates);
+      ..write(obj.quoteCode)
+      ..writeByte(3)
+      ..write(obj.quantity)
+      ..writeByte(4)
+      ..write(obj.rate);
   }
 
   @override
@@ -53,14 +59,16 @@ class ExchangeRateAdapter extends TypeAdapter<ExchangeRate> {
 ExchangeRate _$ExchangeRateFromJson(Map<String, dynamic> json) => ExchangeRate(
       lastUpdatedUnix: (json['time_last_update_unix'] as num).toInt(),
       baseCode: json['base_code'] as String,
-      rates: (json['conversion_rates'] as Map<String, dynamic>).map(
-        (k, e) => MapEntry(k, (e as num).toDouble()),
-      ),
+      quoteCode: json['quote_code'] as String,
+      quantity: (json['quantity'] as num?)?.toInt() ?? 1,
+      rate: (json['rate'] as num).toDouble(),
     );
 
 Map<String, dynamic> _$ExchangeRateToJson(ExchangeRate instance) =>
     <String, dynamic>{
       'time_last_update_unix': instance.lastUpdatedUnix,
       'base_code': instance.baseCode,
-      'conversion_rates': instance.rates,
+      'quote_code': instance.quoteCode,
+      'quantity': instance.quantity,
+      'rate': instance.rate,
     };
