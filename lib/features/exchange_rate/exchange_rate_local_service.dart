@@ -4,24 +4,21 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final exchangeRateLocalServiceProvider =
     Provider<ExchangeRateLocalService>((ref) {
-  return ExchangeRateLocalService();
+  // 이미 main.dart에서 열어둔 Box 인스턴스를 가져온다.
+  return ExchangeRateLocalService(Hive.box<ExchangeRate>('exchangeRates'));
 });
 
 class ExchangeRateLocalService {
-  static const String _boxName = 'exchangeRates';
+  final Box<ExchangeRate> _box;
 
-  Future<Box<ExchangeRate>> _openBox() async {
-    return await Hive.openBox<ExchangeRate>(_boxName);
-  }
+  ExchangeRateLocalService(this._box);
 
   Future<void> saveRate(ExchangeRate rate) async {
-    final box = await _openBox();
     // 데이터를 하나만 저장할 것이므로, 고정된 키를 사용한다.
-    await box.put('latest', rate);
+    await _box.put('latest', rate);
   }
 
   Future<ExchangeRate?> getRate() async {
-    final box = await _openBox();
-    return box.get('latest');
+    return _box.get('latest');
   }
 }

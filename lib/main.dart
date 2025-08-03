@@ -12,8 +12,9 @@ void main() async {
   // Hive 어댑터 등록
   Hive.registerAdapter(ExchangeRateAdapter());
 
-  // 설정을 저장할 Box 열기
+  // 사용할 Box들 미리 열기
   await Hive.openBox('settings');
+  await Hive.openBox<ExchangeRate>('exchangeRates');
 
   runApp(const ProviderScope(child: MyApp()));
 }
