@@ -7,8 +7,8 @@ part 'exchange_rate.g.dart';
 @JsonSerializable()
 class ExchangeRate extends HiveObject {
   @HiveField(0)
-  @JsonKey(name: 'time_last_update_utc')
-  final String lastUpdated;
+  @JsonKey(name: 'time_last_update_unix')
+  final int lastUpdatedUnix;
 
   @HiveField(1)
   @JsonKey(name: 'base_code')
@@ -19,7 +19,7 @@ class ExchangeRate extends HiveObject {
   final Map<String, double> rates;
 
   ExchangeRate({
-    required this.lastUpdated,
+    required this.lastUpdatedUnix,
     required this.baseCode,
     required this.rates,
   });

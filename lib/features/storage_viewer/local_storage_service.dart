@@ -1,4 +1,6 @@
 
+import 'dart:convert'; // for jsonEncode and utf8
+
 import 'package:finow/features/exchange_rate/exchange_rate.dart'; // ExchangeRate 모델 임포트
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -42,5 +44,41 @@ class LocalStorageService {
       }
     }
     return allData;
+  }
+
+  // 모든 Hive Box의 총 사용량을 바이트 단위로 계산
+  Future<int> getTotalStorageUsage() async {
+    int totalBytes = 0;
+    final boxNames = ['settings', 'exchangeRates'];
+
+    for (var name in boxNames) {
+      if (Hive.isBoxOpen(name)) {
+        Box box;
+        // 타입이 지정된 Box는 해당 타입으로 접근해야 함
+        if (name == 'exchangeRates') {
+          box = Hive.box<ExchangeRate>(name);
+        } else {
+          box = Hive.box(name);
+        }
+        for (var value in box.values) {
+          totalBytes += _getObjectSizeInBytes(value);
+        }
+      }
+    }
+    return totalBytes;
+  }
+
+  // 객체의 크기를 바이트 단위로 추정하는 헬퍼 함수
+  int _getObjectSizeInBytes(dynamic value) {
+    if (value == null) return 0;
+    // 객체를 JSON 문자열로 변환 후 UTF-8 바이트 길이 계산
+    try {
+      final jsonString = json.encode(value.toJson());
+      return utf8.encode(jsonString).length;
+    } catch (e) {
+      // toJson()이 없는 기본 타입(String, int, bool 등) 처리
+      final jsonString = json.encode(value);
+      return utf8.encode(jsonString).length;
+    }
   }
 }

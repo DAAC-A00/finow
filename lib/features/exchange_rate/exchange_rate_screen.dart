@@ -1,14 +1,17 @@
+import 'package:finow/features/exchange_rate/exchange_rate.dart';
+import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart'; // intl 패키지 임포트
 
 class ExchangeRateScreen extends ConsumerWidget {
   const ExchangeRateScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final exchangeRateAsyncValue = ref.watch(exchangeRateFutureProvider);
-    final localRateAsyncValue = ref.watch(localExchangeRateProvider);
+    // 새로운 AsyncNotifierProvider를 watch
+    final asyncRate = ref.watch(exchangeRateProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -16,43 +19,40 @@ class ExchangeRateScreen extends ConsumerWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: () => ref.refresh(exchangeRateFutureProvider),
+            // 새로고침 버튼을 누르면 Notifier의 refresh 메서드 호출
+            onPressed: () => ref.read(exchangeRateProvider.notifier).refresh(),
           ),
         ],
       ),
-      body: exchangeRateAsyncValue.when(
+      body: asyncRate.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) {
-          // API 요청 실패 시 로컬 데이터 보여주기
-          return localRateAsyncValue.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (localErr, localStack) => Center(
-              child: Text('Failed to load data.\nAPI Error: $err\nLocal Error: $localErr'),
-            ),
-            data: (localRate) {
-              if (localRate != null) {
-                return _buildRateList(context, localRate, true);
-              }
-              return const Center(child: Text('No data available.'));
-            },
-          );
-        },
-        data: (rate) => _buildRateList(context, rate, false),
+        error: (err, stack) => Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text('Failed to load data.\nError: $err', textAlign: TextAlign.center),
+          ),
+        ),
+        data: (rate) => _buildRateList(context, rate),
       ),
     );
   }
 
-  Widget _buildRateList(BuildContext context, dynamic rate, bool isLocal) {
-    final rates = rate.rates as Map<String, double>;
+  Widget _buildRateList(BuildContext context, ExchangeRate rate) {
+    final rates = rate.rates;
     final sortedKeys = rates.keys.toList()..sort();
+
+    // UNIX 타임스탬프를 DateTime으로 변환
+    final dateTime = DateTime.fromMillisecondsSinceEpoch(rate.lastUpdatedUnix * 1000);
+    // 날짜 포맷터
+    final formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
+    final formattedDateTime = formatter.format(dateTime);
 
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: Text(
-            'Base: ${rate.baseCode} / Last Updated: ${rate.lastUpdated}'
-            '${isLocal ? ' (Local Data)' : ''}',
+            'Base: ${rate.baseCode} / Last Updated: $formattedDateTime',
             style: Theme.of(context).textTheme.titleMedium,
           ),
         ),

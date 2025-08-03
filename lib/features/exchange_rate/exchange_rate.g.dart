@@ -17,7 +17,7 @@ class ExchangeRateAdapter extends TypeAdapter<ExchangeRate> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return ExchangeRate(
-      lastUpdated: fields[0] as String,
+      lastUpdatedUnix: fields[0] as int,
       baseCode: fields[1] as String,
       rates: (fields[2] as Map).cast<String, double>(),
     );
@@ -28,7 +28,7 @@ class ExchangeRateAdapter extends TypeAdapter<ExchangeRate> {
     writer
       ..writeByte(3)
       ..writeByte(0)
-      ..write(obj.lastUpdated)
+      ..write(obj.lastUpdatedUnix)
       ..writeByte(1)
       ..write(obj.baseCode)
       ..writeByte(2)
@@ -51,7 +51,7 @@ class ExchangeRateAdapter extends TypeAdapter<ExchangeRate> {
 // **************************************************************************
 
 ExchangeRate _$ExchangeRateFromJson(Map<String, dynamic> json) => ExchangeRate(
-      lastUpdated: json['time_last_update_utc'] as String,
+      lastUpdatedUnix: (json['time_last_update_unix'] as num).toInt(),
       baseCode: json['base_code'] as String,
       rates: (json['conversion_rates'] as Map<String, dynamic>).map(
         (k, e) => MapEntry(k, (e as num).toDouble()),
@@ -60,7 +60,7 @@ ExchangeRate _$ExchangeRateFromJson(Map<String, dynamic> json) => ExchangeRate(
 
 Map<String, dynamic> _$ExchangeRateToJson(ExchangeRate instance) =>
     <String, dynamic>{
-      'time_last_update_utc': instance.lastUpdated,
+      'time_last_update_unix': instance.lastUpdatedUnix,
       'base_code': instance.baseCode,
       'conversion_rates': instance.rates,
     };
