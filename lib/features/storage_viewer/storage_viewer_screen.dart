@@ -73,60 +73,78 @@ class StorageViewerScreen extends ConsumerWidget {
                   return const Center(child: Text('No data in any box.'));
                 }
 
-                return ListView.builder(
-                  itemCount: allBoxes.length,
-                  itemBuilder: (context, index) {
-                    final boxName = allBoxes.keys.elementAt(index);
-                    final boxData = allBoxes[boxName]!;
+                return ListView(
+                  children: allBoxes.entries.expand((boxEntry) {
+                    final boxName = boxEntry.key;
+                    final boxData = boxEntry.value;
+                    List<Widget> boxWidgets = [];
 
-                    return Card(
-                      margin: const EdgeInsets.all(8.0),
-                      child: ExpansionTile(
-                        title: Text(boxName,
-                            style: const TextStyle(fontWeight: FontWeight.bold)),
-                        children: boxData.entries.map((entry) {
-                          final key = entry.key;
-                          final value = entry.value;
-                          Widget subtitleWidget;
-
-                          if (value is ExchangeRate) {
-                            subtitleWidget = Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Base: ${value.baseCode}'),
-                                Text('Quote: ${value.quoteCode}'),
-                                Text('Rate: ${value.rate.toStringAsFixed(4)}'),
-                                Text('Quantity: ${value.quantity}'),
-                                Text('Last Updated: ${DateTime.fromMillisecondsSinceEpoch(value.lastUpdatedUnix * 1000).toString()}'),
-                              ],
-                            );
-                          } else {
-                            subtitleWidget = Text(value.toString());
-                          }
-
-                          return ListTile(
-                            title: Text(key.toString()),
-                            subtitle: subtitleWidget,
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.edit, size: 20),
-                                  onPressed: () => _showEditDialog(
-                                      context, ref, localStorageService, boxName, key, value),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.delete, size: 20),
-                                  onPressed: () => _confirmDelete(
-                                      context, ref, localStorageService, boxName, key),
-                                ),
-                              ],
-                            ),
-                          );
-                        }).toList(),
+                    boxWidgets.add(
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                        child: Text(
+                          'Box: $boxName',
+                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     );
-                  },
+
+                    if (boxData.isEmpty) {
+                      boxWidgets.add(const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        child: Text('No data in this box.'),
+                      ));
+                    } else {
+                      boxData.entries.forEach((entry) {
+                        final key = entry.key;
+                        final value = entry.value;
+                        Widget subtitleWidget;
+
+                        if (value is ExchangeRate) {
+                          subtitleWidget = Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Base: ${value.baseCode}'),
+                              Text('Quote: ${value.quoteCode}'),
+                              Text('Rate: ${value.rate.toStringAsFixed(4)}'),
+                              Text('Quantity: ${value.quantity}'),
+                              Text('Last Updated: ${DateTime.fromMillisecondsSinceEpoch(value.lastUpdatedUnix * 1000).toString()}'),
+                            ],
+                          );
+                        } else {
+                          subtitleWidget = Text(value.toString());
+                        }
+
+                        boxWidgets.add(
+                          Card(
+                            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+                            elevation: 1.0,
+                            child: ListTile(
+                              title: Text(key.toString()),
+                              subtitle: subtitleWidget,
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.edit, size: 20),
+                                    onPressed: () => _showEditDialog(
+                                        context, ref, localStorageService, boxName, key, value),
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete, size: 20),
+                                    onPressed: () => _confirmDelete(
+                                        context, ref, localStorageService, boxName, key),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        );
+                      });
+                    }
+                    boxWidgets.add(const Divider()); // Add a divider between boxes
+                    return boxWidgets;
+                  }).toList(),
                 );
               },
             ),
