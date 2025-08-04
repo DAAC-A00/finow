@@ -2,6 +2,7 @@ import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class ExchangeRateScreen extends ConsumerWidget {
@@ -13,7 +14,7 @@ class ExchangeRateScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Exchange Rate'),
+        title: const Text('Exchange Rates'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -48,10 +49,10 @@ class ExchangeRateScreen extends ConsumerWidget {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
           child: Text(
-            'Base: $baseCode / Last Updated: $formattedDateTime',
-            style: Theme.of(context).textTheme.titleMedium,
+            'Last Updated: $formattedDateTime',
+            style: Theme.of(context).textTheme.bodySmall,
           ),
         ),
         Expanded(
@@ -59,9 +60,24 @@ class ExchangeRateScreen extends ConsumerWidget {
             itemCount: rates.length,
             itemBuilder: (context, index) {
               final rate = rates[index];
-              return ListTile(
-                title: Text('${rate.baseCode}/${rate.quoteCode}'),
-                trailing: Text(rate.rate.toString()),
+              return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+                elevation: 2.0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: ListTile(
+                  leading: const Icon(Icons.currency_exchange, color: Colors.blueAccent),
+                  title: Text(
+                    '${rate.baseCode}/${rate.quoteCode}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  trailing: Text(
+                    rate.rate.toStringAsFixed(4),
+                    style: const TextStyle(fontSize: 15),
+                  ),
+                  onTap: () => context.go('/exchange/${rate.quoteCode}', extra: rate),
+                ),
               );
             },
           ),

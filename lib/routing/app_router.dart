@@ -1,4 +1,6 @@
 
+import 'package:finow/features/exchange_rate/exchange_rate.dart';
+import 'package:finow/features/exchange_rate/exchange_rate_detail_screen.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_screen.dart';
 import 'package:finow/features/settings/settings_screen.dart';
 import 'package:finow/features/storage_viewer/storage_viewer_screen.dart';
@@ -42,7 +44,19 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             child: MainScreen(child: child),
           );
         },
-        routes: shellRoutes,
+        routes: [
+          ...shellRoutes,
+          GoRoute(
+            path: '/exchange/:quoteCode',
+            pageBuilder: (context, state) {
+              final rate = state.extra as ExchangeRate;
+              return MaterialPage(
+                child: ExchangeRateDetailScreen(rate: rate),
+                fullscreenDialog: true,
+              );
+            },
+          ),
+        ],
       ),
       // ShellRoute 밖에 최상위 라우트를 정의하여 BottomNav를 가리도록 함
       ...topLevelRoutes,
