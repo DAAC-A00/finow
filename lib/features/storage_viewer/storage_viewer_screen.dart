@@ -5,6 +5,9 @@ import 'package:finow/features/storage_viewer/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+// 검색어를 관리하는 StateProvider
+final searchQueryProvider = StateProvider<String>((ref) => '');
+
 // 모든 Hive Box 데이터를 비동기적으로 가져오는 FutureProvider
 final allStorageDataProvider = FutureProvider<Map<String, Map>>((ref) {
   return ref.watch(localStorageServiceProvider).getAllBoxes();
@@ -27,11 +30,20 @@ class StorageViewerScreen extends ConsumerWidget {
     final asyncData = ref.watch(allStorageDataProvider);
     final asyncUsage = ref.watch(storageUsageProvider);
     final localStorageService = ref.watch(localStorageServiceProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
 
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
-        title: const Text('Local Storage Viewer'),
+        title: TextField(
+          onChanged: (value) => ref.read(searchQueryProvider.notifier).state = value,
+          decoration: const InputDecoration(
+            hintText: 'Search local storage...',
+            border: InputBorder.none,
+            hintStyle: TextStyle(color: Colors.white70),
+          ),
+          style: const TextStyle(color: Colors.white),
+        ),
       ),
       body: Column(
         children: [
@@ -72,13 +84,24 @@ class StorageViewerScreen extends ConsumerWidget {
                   return const Center(child: Text('No data in any box.'));
                 }
 
-                return ListView(
-                  children: allBoxes.entries.expand((boxEntry) {
-                    final boxName = boxEntry.key;
-                    final boxData = boxEntry.value;
-                    List<Widget> boxWidgets = [];
+                final List<Widget> allDisplayWidgets = [];
 
-                    boxWidgets.add(
+                allBoxes.entries.forEach((boxEntry) {
+                  final boxName = boxEntry.key;
+                  final boxData = boxEntry.value;
+                  List<Widget> boxContentWidgets = [];
+
+                  // Filter box data based on search query
+                  final filteredBoxData = boxData.entries.where((entry) {
+                    final key = entry.key.toString().toLowerCase();
+                    final value = entry.value.toString().toLowerCase();
+                    final query = searchQuery.toLowerCase();
+                    return key.contains(query) || value.contains(query) || boxName.toLowerCase().contains(query);
+                  }).toList();
+
+                  // Only add box header if there's matching data or box name matches
+                  if (filteredBoxData.isNotEmpty || boxName.toLowerCase().contains(searchQuery.toLowerCase())) {
+                    boxContentWidgets.add(
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                         child: Row(
@@ -98,13 +121,13 @@ class StorageViewerScreen extends ConsumerWidget {
                       ),
                     );
 
-                    if (boxData.isEmpty) {
-                      boxWidgets.add(const Padding(
+                    if (filteredBoxData.isEmpty) {
+                      boxContentWidgets.add(const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                        child: Text('No data in this box.'),
+                        child: Text('No matching data in this box.'),
                       ));
                     } else {
-                      boxData.entries.forEach((entry) {
+                      filteredBoxData.forEach((entry) {
                         final key = entry.key;
                         final value = entry.value;
                         Widget subtitleWidget;
@@ -124,7 +147,7 @@ class StorageViewerScreen extends ConsumerWidget {
                           subtitleWidget = Text(value.toString());
                         }
 
-                        boxWidgets.add(
+                        boxContentWidgets.add(
                           Card(
                             margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
                             elevation: 1.0,
@@ -151,10 +174,15 @@ class StorageViewerScreen extends ConsumerWidget {
                         );
                       });
                     }
-                    boxWidgets.add(const Divider()); // Add a divider between boxes
-                    return boxWidgets;
-                  }).toList(),
-                );
+                    boxContentWidgets.add(const Divider()); // Add a divider between boxes
+                    allDisplayWidgets.addAll(boxContentWidgets);
+                  }
+                });
+
+                if (allDisplayWidgets.isEmpty && searchQuery.isNotEmpty) {
+                  return const Center(child: Text('No matching data found.'));
+                }
+                return ListView(children: allDisplayWidgets);
               },
             ),
           ),
