@@ -1,4 +1,5 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
+import 'package:finow/features/exchange_rate/exchange_rate_update_service.dart';
 import 'package:finow/routing/app_router.dart';
 import 'package:finow/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -6,7 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
-  // 앱 시작 전 Hive 초기화
+  // 앱 시작 전 초기화
+  WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
 
   // Hive 어댑터 등록
@@ -16,7 +18,11 @@ void main() async {
   await Hive.openBox('settings');
   await Hive.openBox<ExchangeRate>('exchangeRates');
 
-  runApp(const ProviderScope(child: MyApp()));
+  // ProviderContainer를 생성하여 앱 시작 시 백그라운드 작업 수행
+  final container = ProviderContainer();
+  await container.read(exchangeRateUpdateServiceProvider).updateRatesIfNeeded();
+
+  runApp(ProviderScope(parent: container, child: const MyApp()));
 }
 
 class MyApp extends ConsumerWidget {
