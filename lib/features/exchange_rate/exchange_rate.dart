@@ -33,6 +33,22 @@ class ExchangeRate extends HiveObject {
     required this.rate,
   });
 
+  ExchangeRate copyWith({
+    int? lastUpdatedUnix,
+    String? baseCode,
+    String? quoteCode,
+    int? quantity,
+    double? rate,
+  }) {
+    return ExchangeRate(
+      lastUpdatedUnix: lastUpdatedUnix ?? this.lastUpdatedUnix,
+      baseCode: baseCode ?? this.baseCode,
+      quoteCode: quoteCode ?? this.quoteCode,
+      quantity: quantity ?? this.quantity,
+      rate: rate ?? this.rate,
+    );
+  }
+
   factory ExchangeRate.fromJson(Map<String, dynamic> json) =>
       _$ExchangeRateFromJson(json);
 

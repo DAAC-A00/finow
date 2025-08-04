@@ -1,16 +1,18 @@
 
+import 'dart:convert';
+
+import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/storage_viewer/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 // 모든 Hive Box 데이터를 비동기적으로 가져오는 FutureProvider
-final allStorageDataProvider = FutureProvider.autoDispose<Map<String, Map>>((ref) {
+final allStorageDataProvider = FutureProvider<Map<String, Map>>((ref) {
   return ref.watch(localStorageServiceProvider).getAllBoxes();
 });
 
 // 총 스토리지 사용량을 비동기적으로 가져오는 FutureProvider
-final storageUsageProvider = FutureProvider.autoDispose<int>((ref) {
+final storageUsageProvider = FutureProvider<int>((ref) {
   return ref.watch(localStorageServiceProvider).getTotalStorageUsage();
 });
 
@@ -25,9 +27,11 @@ class StorageViewerScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncData = ref.watch(allStorageDataProvider);
     final asyncUsage = ref.watch(storageUsageProvider);
+    final localStorageService = ref.watch(localStorageServiceProvider);
 
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButton(),
         title: const Text('Local Storage Viewer'),
       ),
       body: Column(
@@ -81,9 +85,43 @@ class StorageViewerScreen extends ConsumerWidget {
                         title: Text(boxName,
                             style: const TextStyle(fontWeight: FontWeight.bold)),
                         children: boxData.entries.map((entry) {
+                          final key = entry.key;
+                          final value = entry.value;
+                          Widget subtitleWidget;
+
+                          if (value is ExchangeRate) {
+                            subtitleWidget = Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Base: ${value.baseCode}'),
+                                Text('Quote: ${value.quoteCode}'),
+                                Text('Rate: ${value.rate.toStringAsFixed(4)}'),
+                                Text('Quantity: ${value.quantity}'),
+                                Text('Last Updated: ${DateTime.fromMillisecondsSinceEpoch(value.lastUpdatedUnix * 1000).toString()}'),
+                              ],
+                            );
+                          } else {
+                            subtitleWidget = Text(value.toString());
+                          }
+
                           return ListTile(
-                            title: Text(entry.key.toString()),
-                            subtitle: Text(entry.value.toString()),
+                            title: Text(key.toString()),
+                            subtitle: subtitleWidget,
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.edit, size: 20),
+                                  onPressed: () => _showEditDialog(
+                                      context, ref, localStorageService, boxName, key, value),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.delete, size: 20),
+                                  onPressed: () => _confirmDelete(
+                                      context, ref, localStorageService, boxName, key),
+                                ),
+                              ],
+                            ),
                           );
                         }).toList(),
                       ),
@@ -95,6 +133,159 @@ class StorageViewerScreen extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+
+  // 삭제 확인 대화상자
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref,
+      LocalStorageService localStorageService, String boxName, dynamic key) async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('데이터 삭제'),
+          content: Text('정말로 \'$key\' 항목을 삭제하시겠습니까?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('취소'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('삭제'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      await localStorageService.deleteEntry(boxName, key);
+      ref.invalidate(allStorageDataProvider);
+      ref.invalidate(storageUsageProvider);
+    }
+  }
+
+  // 수정 대화상자
+  Future<void> _showEditDialog(BuildContext context, WidgetRef ref,
+      LocalStorageService localStorageService, String boxName, dynamic key, dynamic value) async {
+    TextEditingController genericController = TextEditingController(text: value.toString());
+    bool? boolValue = value is bool ? value : null;
+
+    // ExchangeRate 전용 컨트롤러들
+    TextEditingController lastUpdatedUnixController = TextEditingController();
+    TextEditingController baseCodeController = TextEditingController();
+    TextEditingController quoteCodeController = TextEditingController();
+    TextEditingController quantityController = TextEditingController();
+    TextEditingController rateController = TextEditingController();
+
+    if (value is ExchangeRate) {
+      lastUpdatedUnixController.text = value.lastUpdatedUnix.toString();
+      baseCodeController.text = value.baseCode;
+      quoteCodeController.text = value.quoteCode;
+      quantityController.text = value.quantity.toString();
+      rateController.text = value.rate.toString();
+    }
+
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('$key 항목 수정'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (value is bool)
+                  SwitchListTile(
+                    title: const Text('값'),
+                    value: boolValue!,
+                    onChanged: (newValue) {
+                      boolValue = newValue;
+                      (context as Element).markNeedsBuild(); // 다이얼로그 내부 UI 갱신
+                    },
+                  )
+                else if (value is ExchangeRate)
+                  Column(
+                    children: [
+                      TextField(
+                        controller: lastUpdatedUnixController,
+                        decoration: const InputDecoration(labelText: 'Last Updated (Unix)'),
+                        keyboardType: TextInputType.number,
+                      ),
+                      TextField(
+                        controller: baseCodeController,
+                        decoration: const InputDecoration(labelText: 'Base Code'),
+                      ),
+                      TextField(
+                        controller: quoteCodeController,
+                        decoration: const InputDecoration(labelText: 'Quote Code'),
+                      ),
+                      TextField(
+                        controller: quantityController,
+                        decoration: const InputDecoration(labelText: 'Quantity'),
+                        keyboardType: TextInputType.number,
+                      ),
+                      TextField(
+                        controller: rateController,
+                        decoration: const InputDecoration(labelText: 'Rate'),
+                        keyboardType: TextInputType.numberWithOptions(decimal: true),
+                      ),
+                    ],
+                  )
+                else
+                  TextField(
+                    controller: genericController,
+                    decoration: const InputDecoration(labelText: '값'),
+                    keyboardType: value is int || value is double
+                        ? TextInputType.number
+                        : TextInputType.text,
+                  ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text('취소'),
+            ),
+            TextButton(
+              onPressed: () async {
+                dynamic newValue;
+                if (value is bool) {
+                  newValue = boolValue;
+                } else if (value is int) {
+                  newValue = int.tryParse(genericController.text);
+                } else if (value is double) {
+                  newValue = double.tryParse(genericController.text);
+                } else if (value is ExchangeRate) {
+                  newValue = ExchangeRate(
+                    lastUpdatedUnix: int.tryParse(lastUpdatedUnixController.text) ?? value.lastUpdatedUnix,
+                    baseCode: baseCodeController.text,
+                    quoteCode: quoteCodeController.text,
+                    quantity: int.tryParse(quantityController.text) ?? value.quantity,
+                    rate: double.tryParse(rateController.text) ?? value.rate,
+                  );
+                } else {
+                  newValue = genericController.text;
+                }
+
+                if (newValue != null) {
+                  await localStorageService.updateEntry(boxName, key, newValue);
+                  ref.invalidate(allStorageDataProvider);
+                  ref.invalidate(storageUsageProvider);
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('유효하지 않은 값입니다.')),
+                  );
+                }
+              },
+              child: const Text('저장'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
