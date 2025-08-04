@@ -18,7 +18,7 @@
 | **실시간 처리** | API Polling 또는 WebSocket 방식으로 구성 가능하되, 기본 구조는 `WebSocket → Stream → UI` 구조를 우선한다. | |
 | **상태 관리** | `Riverpod`을 사용하고, 고빈도 데이터 갱신에 대응하기 위해 `select`, `AsyncNotifier`, `autoDispose` 등의 기능을 활용한다. | |
 | **API 통신** | `Dio` 라이브러리를 사용하며, `timeout`, `cancel`, `retry` 로직을 사전에 정의한다. | |
-| **캐싱** | **`Hive`**를 사용해 로컬 데이터 fallback 구조를 구축한다. | **웹 호환성 및 안정성을 위해 `Isar`는 사용하지 않음** |
+| **캐싱** | **`Hive`**를 사용해 로컬 데이터 fallback 구조를 구축한다. | **웹 호환성 및 안정성을 위해 `Isar`는 사용하지 않음. 모든 Hive Box 데이터는 `localStorageViewer`에서 확인 가능.** |
 | **라우팅** | **`go_router`**를 사용하여 URL 기반의 화면 이동 및 중첩 라우팅을 관리한다. | **웹 브라우저의 History API와 호환성 강화** |
 | **UI 갱신 방식** | `StreamBuilder`, `AnimatedBuilder`, `ValueListenableBuilder` 등의 방식으로 리렌더링 범위를 최소화한다. | |
 
