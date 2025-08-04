@@ -21,7 +21,15 @@ class MenuScreen extends ConsumerWidget {
           return ListTile(
             leading: Icon(menu.icon),
             title: Text(menu.name),
-            onTap: () => context.go(menu.path),
+            onTap: () {
+            if (menu.path == '/menu') return;
+
+            if (menu.showInBottomNav) {
+              context.go(menu.path);
+            } else {
+              context.push(menu.path);
+            }
+          },
           );
         },
       ),

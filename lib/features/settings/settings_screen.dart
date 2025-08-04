@@ -2,6 +2,7 @@
 import 'package:finow/features/settings/admin_mode_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:finow/theme_provider.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -12,13 +13,9 @@ class SettingsScreen extends ConsumerWidget {
     final currentThemeMode = ref.watch(themeModeNotifierProvider);
     final isAdminMode = ref.watch(adminModeProvider);
 
-    // 디버그 출력: canPop() 값 확인
-    print('SettingsScreen: Navigator.of(context).canPop() = ${Navigator.of(context).canPop()}');
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('설정'),
-        leading: Navigator.of(context).canPop() ? const BackButton() : null,
       ),
       body: ListView(
         children: [
