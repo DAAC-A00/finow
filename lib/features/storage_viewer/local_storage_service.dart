@@ -43,6 +43,17 @@ class LocalStorageService {
     await box.put(key, value);
   }
 
+  // 특정 Box의 모든 데이터를 삭제하는 메소드
+  Future<void> clearBox(String boxName) async {
+    dynamic box;
+    if (boxName == 'exchangeRates') {
+      box = Hive.box<ExchangeRate>(boxName);
+    } else {
+      box = Hive.box(boxName);
+    }
+    await box.clear();
+  }
+
   // 총 스토리지 사용량을 계산하는 메소드
   Future<int> getTotalStorageUsage() async {
     final settingsBox = Hive.box('settings');

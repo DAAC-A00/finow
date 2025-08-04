@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
@@ -82,9 +81,19 @@ class StorageViewerScreen extends ConsumerWidget {
                     boxWidgets.add(
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                        child: Text(
-                          'Box: $boxName',
-                          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Box: $boxName',
+                              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.clear_all, size: 24),
+                              onPressed: () => _clearBox(context, ref, localStorageService, boxName),
+                              tooltip: 'Clear all data in this box',
+                            ),
+                          ],
                         ),
                       ),
                     );
@@ -179,6 +188,36 @@ class StorageViewerScreen extends ConsumerWidget {
 
     if (confirm == true) {
       await localStorageService.deleteEntry(boxName, key);
+      ref.invalidate(allStorageDataProvider);
+      ref.invalidate(storageUsageProvider);
+    }
+  }
+
+  // Box 전체 삭제 확인 대화상자
+  Future<void> _clearBox(BuildContext context, WidgetRef ref,
+      LocalStorageService localStorageService, String boxName) async {
+    final bool? confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Box 데이터 모두 삭제'),
+          content: Text('정말로 \'$boxName\' Box의 모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('취소'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('모두 삭제'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      await localStorageService.clearBox(boxName);
       ref.invalidate(allStorageDataProvider);
       ref.invalidate(storageUsageProvider);
     }
