@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -27,13 +26,11 @@ class MainScreen extends ConsumerWidget {
         }).toList(),
         currentIndex: currentIndex,
         onTap: (index) {
-          // 애니메이션 방향 결정을 위해 현재/타겟 인덱스를 extra로 전달
           context.go(
             bottomNavMenus[index].path,
             extra: {'fromIndex': currentIndex, 'toIndex': index},
           );
         },
-        // 활성/비활성 탭 스타일 지정
         type: BottomNavigationBarType.fixed, 
         selectedItemColor: Theme.of(context).colorScheme.primary,
         unselectedItemColor: Colors.grey,
@@ -44,6 +41,6 @@ class MainScreen extends ConsumerWidget {
   int _calculateCurrentIndex(BuildContext context, List<dynamic> bottomNavMenus) {
     final location = GoRouterState.of(context).uri.toString();
     final index = bottomNavMenus.indexWhere((menu) => menu.path == location);
-    return index > -1 ? index : 0; // 일치하는 경로가 없으면 0번 인덱스로
+    return index > -1 ? index : 0;
   }
 }
