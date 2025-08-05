@@ -15,6 +15,7 @@ class SettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButton(),
         title: const Text('설정'),
       ),
       body: ListView(
