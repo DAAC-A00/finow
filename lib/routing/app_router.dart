@@ -46,9 +46,8 @@ final goRouterProvider = Provider<GoRouter>((ref) {
             path: '/exchange/:quoteCode',
             pageBuilder: (context, state) {
               final rate = state.extra as ExchangeRate;
-              return MaterialPage(
+              return NoTransitionPage(
                 child: ExchangeRateDetailScreen(rate: rate),
-                fullscreenDialog: true,
               );
             },
           ),
@@ -81,19 +80,11 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
           screen = PlaceholderScreen(title: menu.name, showBackButton: isTopLevel);
       }
 
-      if (isTopLevel) {
-        return MaterialPage(
-          key: state.pageKey,
-          child: screen,
-          fullscreenDialog: true,
-        );
-      } else {
-        return buildPageWithCustomTransition(
-          context: context,
-          state: state,
-          child: screen,
-        );
-      }
+      return buildPageWithCustomTransition(
+        context: context,
+        state: state,
+        child: screen,
+      );
     },
   );
 }
