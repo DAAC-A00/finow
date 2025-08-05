@@ -76,7 +76,7 @@ class ExchangeRateScreen extends ConsumerWidget {
                     rate.rate.toStringAsFixed(4),
                     style: const TextStyle(fontSize: 15),
                   ),
-                  onTap: () => context.go('/exchange/${rate.quoteCode}', extra: rate),
+                  onTap: () => context.push('/exchange/${rate.quoteCode}', extra: rate),
                 ),
               );
             },

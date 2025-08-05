@@ -42,16 +42,16 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         },
         routes: [
           ...shellRoutes,
-          GoRoute(
-            path: '/exchange/:quoteCode',
-            pageBuilder: (context, state) {
-              final rate = state.extra as ExchangeRate;
-              return NoTransitionPage(
-                child: ExchangeRateDetailScreen(rate: rate),
-              );
-            },
-          ),
         ],
+      ),
+      GoRoute(
+        path: '/exchange/:quoteCode',
+        pageBuilder: (context, state) {
+          final rate = state.extra as ExchangeRate;
+          return NoTransitionPage(
+            child: ExchangeRateDetailScreen(rate: rate),
+          );
+        },
       ),
       ...topLevelRoutes,
     ],
