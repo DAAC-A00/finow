@@ -38,7 +38,7 @@ final filteredRatesProvider = Provider<List<ExchangeRate>>((ref) {
             .compareTo(b.baseCode + b.quoteCode);
       case SortCriteria.byCodeDesc:
         return (b.baseCode + b.quoteCode)
-            .compareTo(a.baseCode + a.quoteCode);
+            .compareTo(a.baseCode + b.quoteCode);
       case SortCriteria.byRateAsc:
         return a.rate.compareTo(b.rate);
       case SortCriteria.byRateDesc:
@@ -51,6 +51,21 @@ final filteredRatesProvider = Provider<List<ExchangeRate>>((ref) {
 
 class ExchangeRateScreen extends ConsumerWidget {
   const ExchangeRateScreen({super.key});
+
+  String _formatRate(double rate) {
+    if (rate >= 1000) return rate.toStringAsFixed(0);
+    if (rate >= 100) return rate.toStringAsFixed(1);
+    if (rate >= 10) return rate.toStringAsFixed(2);
+    if (rate >= 1) return rate.toStringAsFixed(3);
+    if (rate >= 0.1) return rate.toStringAsFixed(4);
+    if (rate >= 0.01) return rate.toStringAsFixed(5);
+    if (rate >= 0.001) return rate.toStringAsFixed(6);
+    if (rate >= 0.0001) return rate.toStringAsFixed(7);
+    if (rate >= 0.00001) return rate.toStringAsFixed(8);
+    if (rate >= 0.000001) return rate.toStringAsFixed(9);
+    if (rate > 0) return rate.toStringAsFixed(10);
+    return rate.toStringAsFixed(2);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -222,7 +237,7 @@ class ExchangeRateScreen extends ConsumerWidget {
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   trailing: Text(
-                    rate.rate.toStringAsFixed(4),
+                    _formatRate(rate.rate),
                     style: const TextStyle(fontSize: 15),
                   ),
                   onTap: () =>
