@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:finow/features/storage_viewer/local_storage_service.dart';
 
 // 정렬 기준을 정의하는 Enum
 enum SortCriteria { byCodeAsc, byCodeDesc, byRateAsc, byRateDesc }
@@ -12,8 +13,7 @@ enum SortCriteria { byCodeAsc, byCodeDesc, byRateAsc, byRateDesc }
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
 // 정렬 기준 관리를 위한 StateProvider (초기값: 코드 오름차순)
-final sortCriteriaProvider =
-    StateProvider<SortCriteria>((ref) => SortCriteria.byCodeAsc);
+final sortCriteriaProvider = StateProvider<SortCriteria>((ref) => SortCriteria.byCodeAsc);
 
 // 검색 및 정렬된 환율 데이터를 제공하는 Provider
 final filteredRatesProvider = Provider<List<ExchangeRate>>((ref) {
@@ -49,8 +49,28 @@ final filteredRatesProvider = Provider<List<ExchangeRate>>((ref) {
   return filtered;
 });
 
-class ExchangeRateScreen extends ConsumerWidget {
+class ExchangeRateScreen extends ConsumerStatefulWidget {
   const ExchangeRateScreen({super.key});
+
+  @override
+  ConsumerState<ExchangeRateScreen> createState() => _ExchangeRateScreenState();
+}
+
+class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
+  late final TextEditingController _controller;
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   String _formatRate(double rate) {
     if (rate >= 1000) return NumberFormat('#,##0').format(rate);
@@ -68,10 +88,17 @@ class ExchangeRateScreen extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final asyncRates = ref.watch(exchangeRateProvider);
     final filteredRates = ref.watch(filteredRatesProvider);
     final sortCriteria = ref.watch(sortCriteriaProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
+
+    // local storage에서 검색어 불러오는 코드 제거
+    // 입력란에 Provider 상태만 반영
+    if (_controller.text != searchQuery) {
+      _controller.text = searchQuery;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -88,8 +115,11 @@ class ExchangeRateScreen extends ConsumerWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
             child: TextField(
-              onChanged: (value) =>
-                  ref.read(searchQueryProvider.notifier).state = value,
+              controller: _controller,
+              onChanged: (value) {
+                ref.read(searchQueryProvider.notifier).state = value;
+                // local storage 저장 코드 제거
+              },
               decoration: const InputDecoration(
                 hintText: 'Search by currency code (e.g., KRW, JPY)',
                 prefixIcon: Icon(Icons.search),
@@ -133,6 +163,7 @@ class ExchangeRateScreen extends ConsumerWidget {
                     } else {
                       notifier.state = SortCriteria.byCodeAsc;
                     }
+                    // local storage 저장 코드 제거
                   },
                 ),
                 const SizedBox(width: 8.0),
@@ -166,6 +197,7 @@ class ExchangeRateScreen extends ConsumerWidget {
                     } else {
                       notifier.state = SortCriteria.byRateAsc;
                     }
+                    // local storage 저장 코드 제거
                   },
                 ),
               ],

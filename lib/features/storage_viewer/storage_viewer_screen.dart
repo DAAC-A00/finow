@@ -19,25 +19,70 @@ final storageUsageProvider = FutureProvider<int>((ref) {
   return ref.watch(localStorageServiceProvider).getTotalStorageUsage();
 });
 
-class StorageViewerScreen extends ConsumerWidget {
+class StorageViewerScreen extends ConsumerStatefulWidget {
   const StorageViewerScreen({super.key});
+
+  @override
+  ConsumerState<StorageViewerScreen> createState() => _StorageViewerScreenState();
+}
+
+class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with RouteAware {
+  late final TextEditingController _controller;
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // RouteObserver 등록
+    final routeObserver = ModalRoute.of(context)?.navigator?.widget.observers.whereType<RouteObserver<PageRoute>>().firstOrNull;
+    routeObserver?.subscribe(this, ModalRoute.of(context)! as PageRoute);
+    // 최초 진입 시에도 invalidate
+    ref.invalidate(allStorageDataProvider);
+  }
+
+  @override
+  void didPopNext() {
+    // 다른 화면에서 다시 돌아올 때마다 invalidate
+    ref.invalidate(allStorageDataProvider);
+  }
 
   // 웹 기준 최대 저장 용량 (10MB)
   static const double maxStorageMB = 10.0;
   static const int maxStorageBytes = 10 * 1024 * 1024; // 10MB를 바이트로 변환
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final asyncData = ref.watch(allStorageDataProvider);
     final asyncUsage = ref.watch(storageUsageProvider);
     final localStorageService = ref.watch(localStorageServiceProvider);
     final searchQuery = ref.watch(searchQueryProvider);
 
+    // local storage에서 검색어 불러오는 코드 제거
+    if (_controller.text != searchQuery) {
+      _controller.text = searchQuery;
+    }
+
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
         title: TextField(
-          onChanged: (value) => ref.read(searchQueryProvider.notifier).state = value,
+          controller: _controller,
+          onChanged: (value) {
+            ref.read(searchQueryProvider.notifier).state = value;
+            // local storage 저장 코드 제거
+          },
           decoration: InputDecoration(
             hintText: 'Search local storage...',
             border: InputBorder.none,
