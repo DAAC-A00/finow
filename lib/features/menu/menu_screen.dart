@@ -22,14 +22,14 @@ class MenuScreen extends ConsumerWidget {
             leading: Icon(menu.icon),
             title: Text(menu.name),
             onTap: () {
-            if (menu.path == '/menu') return;
+              if (menu.path == '/menu') return;
 
-            if (menu.showInBottomNav) {
-              context.go(menu.path);
-            } else {
-              context.push(menu.path);
-            }
-          },
+              if (menu.showInBottomNav) {
+                context.go(menu.path);
+              } else {
+                context.push(menu.path);
+              }
+            },
           );
         },
       ),

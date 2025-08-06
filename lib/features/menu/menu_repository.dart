@@ -20,11 +20,14 @@ class MenuRepository {
     Menu(name: 'Settings', path: '/settings', icon: Icons.settings, showInBottomNav: false),
   ];
 
-  final Menu _adminMenu = const Menu(name: 'Storage', path: '/storage', icon: Icons.storage, showInBottomNav: false);
+  final List<Menu> _adminMenus = const [
+    Menu(name: 'Storage', path: '/storage', icon: Icons.storage, showInBottomNav: false),
+    Menu(name: 'Laboratory', path: '/laboratory', icon: Icons.science, showInBottomNav: false),
+  ];
 
   List<Menu> getMenus() {
     if (_isAdminMode) {
-      return [..._baseMenus, _adminMenu];
+      return [..._baseMenus, ..._adminMenus];
     }
     return _baseMenus;
   }
