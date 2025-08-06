@@ -17,6 +17,7 @@ class LaboratoryScreen extends StatelessWidget {
           title: const Text('Laboratory'),
           bottom: const TabBar(
             isScrollable: true,
+            tabAlignment: TabAlignment.start,
             tabs: [
               Tab(text: 'Show'), // 'Legacy'와 'Dialogs'를 합친 탭
               Tab(text: 'Gestures'),

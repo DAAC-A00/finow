@@ -7,33 +7,56 @@ class ShowTestWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return ListView(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
       children: [
-        ElevatedButton(
-          onPressed: _showToast,
-          child: const Text('Show Toast'),
+        _buildCard(
+          title: 'Toast',
+          subtitle: 'A brief message at the bottom of the screen.',
+          icon: Icons.info_outline,
+          onTap: _showToast,
         ),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () => _showConfirmationDialog(context),
-          child: const Text('Show Confirmation Dialog'),
+        _buildCard(
+          title: 'SnackBar',
+          subtitle: 'A lightweight message with an optional action.',
+          icon: Icons.feedback,
+          onTap: () => _showSnackBar(context),
         ),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () => _showCupertinoAlert(context),
-          child: const Text('Show Cupertino Alert'),
+        _buildCard(
+          title: 'Material Banner',
+          subtitle: 'A banner displayed at the top of the screen.',
+          icon: Icons.view_day_outlined,
+          onTap: () => _showMaterialBanner(context),
         ),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () => _showMaterialBanner(context),
-          child: const Text('Show Material Banner'),
+        _buildCard(
+          title: 'Confirmation Dialog',
+          subtitle: 'A standard Material Design dialog.',
+          icon: Icons.check_circle_outline,
+          onTap: () => _showConfirmationDialog(context),
         ),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () => _showSnackBar(context),
-          child: const Text('Show SnackBar'),
+        _buildCard(
+          title: 'Cupertino Alert',
+          subtitle: 'An iOS-style alert dialog.',
+          icon: Icons.phone_iphone,
+          onTap: () => _showCupertinoAlert(context),
         ),
       ],
+    );
+  }
+
+  Widget _buildCard({required String title, required String subtitle, required IconData icon, required VoidCallback onTap}) {
+    return Card(
+      elevation: 2.0,
+      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+      child: ListTile(
+        leading: Icon(icon, size: 40),
+        title: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+        subtitle: Text(subtitle),
+        trailing: const Icon(Icons.play_arrow),
+        onTap: onTap,
+      ),
     );
   }
 
@@ -42,6 +65,26 @@ class ShowTestWidget extends StatelessWidget {
       msg: "This is a toast message",
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
+    );
+  }
+
+  void _showSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('This is a SnackBar.'),
+        duration: Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _showMaterialBanner(BuildContext context) {
+    ScaffoldMessenger.of(context).showMaterialBanner(
+      MaterialBanner(
+        content: const Text('This is a Material Banner.'),
+        actions: [
+          TextButton(onPressed: () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner(), child: const Text('DISMISS')),
+        ],
+      ),
     );
   }
 
@@ -69,26 +112,6 @@ class ShowTestWidget extends StatelessWidget {
           CupertinoDialogAction(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
           CupertinoDialogAction(onPressed: () => Navigator.of(context).pop(), child: const Text('OK')),
         ],
-      ),
-    );
-  }
-
-  void _showMaterialBanner(BuildContext context) {
-    ScaffoldMessenger.of(context).showMaterialBanner(
-      MaterialBanner(
-        content: const Text('This is a Material Banner.'),
-        actions: [
-          TextButton(onPressed: () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner(), child: const Text('DISMISS')),
-        ],
-      ),
-    );
-  }
-
-  void _showSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('This is a SnackBar.'),
-        duration: Duration(seconds: 2),
       ),
     );
   }
