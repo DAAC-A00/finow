@@ -47,7 +47,6 @@ class ExchangeRateNotifier extends AsyncNotifier<List<ExchangeRate>> {
           baseCode: rate1.quoteCode,
           quoteCode: rate2.quoteCode,
           rate: rate2.rate / rate1.rate,
-          quantity: 1,
           lastUpdatedUnix: rate1.lastUpdatedUnix,
         ));
       }
@@ -59,7 +58,6 @@ class ExchangeRateNotifier extends AsyncNotifier<List<ExchangeRate>> {
         baseCode: rate.quoteCode,
         quoteCode: rate.baseCode,
         rate: 1 / rate.rate,
-        quantity: 1,
         lastUpdatedUnix: rate.lastUpdatedUnix,
       ));
     }

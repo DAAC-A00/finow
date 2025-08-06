@@ -151,7 +151,6 @@ class StorageViewerScreen extends ConsumerWidget {
                               Text('base_code: ${value.baseCode}'),
                               Text('quote_code: ${value.quoteCode}'),
                               Text('rate: ${value.rate}'),
-                              Text('quantity: ${value.quantity}'),
                               Text('time_last_update_unix: ${value.lastUpdatedUnix}'),
                               Padding(
                                 padding: const EdgeInsets.only(left: 8.0, top: 2.0),
@@ -280,14 +279,12 @@ class StorageViewerScreen extends ConsumerWidget {
     TextEditingController lastUpdatedUnixController = TextEditingController();
     TextEditingController baseCodeController = TextEditingController();
     TextEditingController quoteCodeController = TextEditingController();
-    TextEditingController quantityController = TextEditingController();
     TextEditingController rateController = TextEditingController();
 
     if (value is ExchangeRate) {
       lastUpdatedUnixController.text = value.lastUpdatedUnix.toString();
       baseCodeController.text = value.baseCode;
       quoteCodeController.text = value.quoteCode;
-      quantityController.text = value.quantity.toString();
       rateController.text = value.rate.toString();
     }
 
@@ -326,11 +323,6 @@ class StorageViewerScreen extends ConsumerWidget {
                         decoration: const InputDecoration(labelText: 'Quote Code'),
                       ),
                       TextField(
-                        controller: quantityController,
-                        decoration: const InputDecoration(labelText: 'Quantity'),
-                        keyboardType: TextInputType.number,
-                      ),
-                      TextField(
                         controller: rateController,
                         decoration: const InputDecoration(labelText: 'Rate'),
                         keyboardType: TextInputType.numberWithOptions(decimal: true),
@@ -367,7 +359,6 @@ class StorageViewerScreen extends ConsumerWidget {
                     lastUpdatedUnix: int.tryParse(lastUpdatedUnixController.text) ?? value.lastUpdatedUnix,
                     baseCode: baseCodeController.text,
                     quoteCode: quoteCodeController.text,
-                    quantity: int.tryParse(quantityController.text) ?? value.quantity,
                     rate: double.tryParse(rateController.text) ?? value.rate,
                   );
                 } else {

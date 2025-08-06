@@ -19,9 +19,6 @@ class ExchangeRate extends HiveObject {
   final String quoteCode;
 
   @HiveField(3)
-  final int quantity;
-
-  @HiveField(4)
   @JsonKey(name: 'rate')
   final double rate;
 
@@ -29,7 +26,6 @@ class ExchangeRate extends HiveObject {
     required this.lastUpdatedUnix,
     required this.baseCode,
     required this.quoteCode,
-    this.quantity = 1,
     required this.rate,
   });
 
@@ -37,14 +33,12 @@ class ExchangeRate extends HiveObject {
     int? lastUpdatedUnix,
     String? baseCode,
     String? quoteCode,
-    int? quantity,
     double? rate,
   }) {
     return ExchangeRate(
       lastUpdatedUnix: lastUpdatedUnix ?? this.lastUpdatedUnix,
       baseCode: baseCode ?? this.baseCode,
       quoteCode: quoteCode ?? this.quoteCode,
-      quantity: quantity ?? this.quantity,
       rate: rate ?? this.rate,
     );
   }

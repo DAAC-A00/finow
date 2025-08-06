@@ -48,11 +48,6 @@ class ExchangeRateDetailScreen extends StatelessWidget {
                   title: const Text('Quote Code'),
                   trailing: Text(rate.quoteCode),
                 ),
-                ListTile(
-                  leading: const Icon(Icons.format_list_numbered, color: Colors.purple),
-                  title: const Text('Quantity'),
-                  trailing: Text(rate.quantity.toString()),
-                ),
                 const Divider(),
                 ListTile(
                   leading: const Icon(Icons.update, color: Colors.grey),
