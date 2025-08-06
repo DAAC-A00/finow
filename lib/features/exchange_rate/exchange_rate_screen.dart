@@ -53,7 +53,7 @@ class ExchangeRateScreen extends ConsumerWidget {
   const ExchangeRateScreen({super.key});
 
   String _formatRate(double rate) {
-    if (rate >= 1000) return rate.toStringAsFixed(0);
+    if (rate >= 1000) return NumberFormat('#,##0').format(rate);
     if (rate >= 100) return rate.toStringAsFixed(1);
     if (rate >= 10) return rate.toStringAsFixed(2);
     if (rate >= 1) return rate.toStringAsFixed(3);
