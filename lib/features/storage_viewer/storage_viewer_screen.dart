@@ -94,9 +94,20 @@ class StorageViewerScreen extends ConsumerWidget {
                   // Filter box data based on search query
                   final filteredBoxData = boxData.entries.where((entry) {
                     final key = entry.key.toString().toLowerCase();
-                    final value = entry.value.toString().toLowerCase();
+                    final value = entry.value;
                     final query = searchQuery.toLowerCase();
-                    return key.contains(query) || value.contains(query) || boxName.toLowerCase().contains(query);
+
+                    if (value is ExchangeRate) {
+                      final combinedCode = (value.baseCode + value.quoteCode).toLowerCase();
+                      final rateString = value.rate.toString();
+                      return key.contains(query) ||
+                          combinedCode.contains(query) ||
+                          rateString.contains(query) ||
+                          boxName.toLowerCase().contains(query);
+                    }
+
+                    final valueString = value.toString().toLowerCase();
+                    return key.contains(query) || valueString.contains(query) || boxName.toLowerCase().contains(query);
                   }).toList();
 
                   // Only add box header if there's matching data or box name matches
