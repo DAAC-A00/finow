@@ -11,9 +11,9 @@ enum SortCriteria { byCodeAsc, byCodeDesc, byRateAsc, byRateDesc }
 // 검색어 관리를 위한 StateProvider
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
-// 정렬 기준 관리를 위한 StateProvider (초기값: 코드 내림차순)
+// 정렬 기준 관리를 위한 StateProvider (초기값: 코드 오름차순)
 final sortCriteriaProvider =
-    StateProvider<SortCriteria>((ref) => SortCriteria.byCodeDesc);
+    StateProvider<SortCriteria>((ref) => SortCriteria.byCodeAsc);
 
 // 검색 및 정렬된 환율 데이터를 제공하는 Provider
 final filteredRatesProvider = Provider<List<ExchangeRate>>((ref) {
@@ -38,7 +38,7 @@ final filteredRatesProvider = Provider<List<ExchangeRate>>((ref) {
             .compareTo(b.baseCode + b.quoteCode);
       case SortCriteria.byCodeDesc:
         return (b.baseCode + b.quoteCode)
-            .compareTo(a.baseCode + b.quoteCode);
+            .compareTo(a.baseCode + a.quoteCode);
       case SortCriteria.byRateAsc:
         return a.rate.compareTo(b.rate);
       case SortCriteria.byRateDesc:
@@ -131,7 +131,7 @@ class ExchangeRateScreen extends ConsumerWidget {
                           ? SortCriteria.byCodeDesc
                           : SortCriteria.byCodeAsc;
                     } else {
-                      notifier.state = SortCriteria.byCodeDesc;
+                      notifier.state = SortCriteria.byCodeAsc;
                     }
                   },
                 ),
@@ -164,7 +164,7 @@ class ExchangeRateScreen extends ConsumerWidget {
                           ? SortCriteria.byRateDesc
                           : SortCriteria.byRateAsc;
                     } else {
-                      notifier.state = SortCriteria.byRateDesc;
+                      notifier.state = SortCriteria.byRateAsc;
                     }
                   },
                 ),
