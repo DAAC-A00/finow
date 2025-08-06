@@ -4,6 +4,7 @@ import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/storage_viewer/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 // 검색어를 관리하는 StateProvider
 final searchQueryProvider = StateProvider<String>((ref) => '');
@@ -147,11 +148,18 @@ class StorageViewerScreen extends ConsumerWidget {
                           subtitleWidget = Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text('Base: ${value.baseCode}'),
-                              Text('Quote: ${value.quoteCode}'),
-                              Text('Rate: ${value.rate.toStringAsFixed(4)}'),
-                              Text('Quantity: ${value.quantity}'),
-                              Text('Last Updated: ${DateTime.fromMillisecondsSinceEpoch(value.lastUpdatedUnix * 1000).toString()}'),
+                              Text('base_code: ${value.baseCode}'),
+                              Text('quote_code: ${value.quoteCode}'),
+                              Text('rate: ${value.rate}'),
+                              Text('quantity: ${value.quantity}'),
+                              Text('time_last_update_unix: ${value.lastUpdatedUnix}'),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0, top: 2.0),
+                                child: Text(
+                                  '└ Converted: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(value.lastUpdatedUnix * 1000))}',
+                                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.8), fontStyle: FontStyle.italic),
+                                ),
+                              ),
                             ],
                           );
                         } else {
