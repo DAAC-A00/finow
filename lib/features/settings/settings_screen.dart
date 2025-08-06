@@ -16,15 +16,15 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
-        title: const Text('설정'),
+        title: const Text('Settings'),
       ),
       body: ListView(
         children: [
           const ListTile(
-            title: Text('테마 설정', style: TextStyle(fontWeight: FontWeight.bold)),
+            title: Text('Theme Settings', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           RadioListTile<ThemeMode>(
-            title: const Text('시스템 설정'),
+            title: const Text('System Theme'),
             value: ThemeMode.system,
             groupValue: currentThemeMode,
             onChanged: (ThemeMode? value) {
@@ -34,7 +34,7 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
           RadioListTile<ThemeMode>(
-            title: const Text('라이트 모드'),
+            title: const Text('Light Mode'),
             value: ThemeMode.light,
             groupValue: currentThemeMode,
             onChanged: (ThemeMode? value) {
@@ -44,7 +44,7 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
           RadioListTile<ThemeMode>(
-            title: const Text('다크 모드'),
+            title: const Text('Dark Mode'),
             value: ThemeMode.dark,
             groupValue: currentThemeMode,
             onChanged: (ThemeMode? value) {
@@ -55,7 +55,7 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const Divider(),
           SwitchListTile(
-            title: const Text('어드민 모드'),
+            title: const Text('Admin Mode'),
             value: isAdminMode,
             onChanged: (bool value) {
               ref.read(adminModeProvider.notifier).setAdminMode(value);

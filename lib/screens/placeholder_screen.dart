@@ -21,7 +21,7 @@ class PlaceholderScreen extends StatelessWidget {
       ),
       body: Center(
         child: Text(
-          '$title 화면',
+          '$title Screen',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
       ),

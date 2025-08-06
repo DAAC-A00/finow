@@ -38,12 +38,18 @@ class StorageViewerScreen extends ConsumerWidget {
         leading: const BackButton(),
         title: TextField(
           onChanged: (value) => ref.read(searchQueryProvider.notifier).state = value,
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'Search local storage...',
             border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.white70),
+            hintStyle: TextStyle(
+              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              fontSize: 20,
+            ),
           ),
-          style: const TextStyle(color: Colors.white),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontSize: 20,
+          ),
         ),
       ),
       body: Column(
@@ -155,7 +161,7 @@ class StorageViewerScreen extends ConsumerWidget {
                               Padding(
                                 padding: const EdgeInsets.only(left: 8.0, top: 2.0),
                                 child: Text(
-                                  '└ Converted: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(value.lastUpdatedUnix * 1000))}',
+                                  '└ Converted: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(value.lastUpdatedUnix * 1000).toLocal())} (KST)',
                                   style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.8), fontStyle: FontStyle.italic),
                                 ),
                               ),
@@ -216,16 +222,16 @@ class StorageViewerScreen extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('데이터 삭제'),
-          content: Text('정말로 \'$key\' 항목을 삭제하시겠습니까?'),
+          title: const Text('Delete Data'),
+          content: Text('Are you sure you want to delete \'$key\'?'),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('취소'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('삭제'),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -246,16 +252,16 @@ class StorageViewerScreen extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Box 데이터 모두 삭제'),
-          content: Text('정말로 \'$boxName\' Box의 모든 데이터를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.'),
+          title: const Text('Clear Box Data'),
+          content: Text('Are you sure you want to delete all data in \'$boxName\' Box? This action cannot be undone.'),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('취소'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('모두 삭제'),
+              child: const Text('Clear All'),
             ),
           ],
         );
@@ -292,7 +298,7 @@ class StorageViewerScreen extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('$key 항목 수정'),
+          title: Text('Edit $key'),
           content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
