@@ -15,7 +15,7 @@ class ExchangeRateLocalService {
   Future<void> saveRates(List<ExchangeRate> rates) async {
     await _box.clear(); // 기존 데이터를 지우고 새로운 데이터로 대체
     for (var rate in rates) {
-      await _box.put(rate.quoteCode, rate);
+      await _box.put('${rate.baseCode}/${rate.quoteCode}', rate);
     }
   }
 

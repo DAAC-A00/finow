@@ -19,19 +19,53 @@ class ExchangeRateNotifier extends AsyncNotifier<List<ExchangeRate>> {
     _repository = ref.watch(exchangeRateRepositoryProvider);
     _localService = ref.watch(exchangeRateLocalServiceProvider);
 
-    // 로컬 서비스에서 데이터를 가져와 UI에 즉시 표시
     return _localService.getRates();
   }
 
-  // 새로고침 기능은 사용자가 수동으로 최신 데이터를 가져올 수 있도록 유지
   Future<void> refresh() async {
     state = const AsyncValue.loading();
     try {
       final rates = await _repository.getLatestRates('USD');
-      await _localService.saveRates(rates);
-      state = AsyncValue.data(rates);
+      await _expandAndSaveRates(rates);
+      state = AsyncValue.data(await _localService.getRates());
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
   }
+
+  Future<void> _expandAndSaveRates(List<ExchangeRate> baseRates) async {
+    final allRates = {...baseRates};
+
+    for (int i = 0; i < baseRates.length; i++) {
+      for (int j = 0; j < baseRates.length; j++) {
+        if (i == j) continue;
+
+        final rate1 = baseRates[i];
+        final rate2 = baseRates[j];
+
+        allRates.add(ExchangeRate(
+          baseCode: rate1.quoteCode,
+          quoteCode: rate2.quoteCode,
+          rate: rate2.rate / rate1.rate,
+          quantity: 1,
+          lastUpdatedUnix: rate1.lastUpdatedUnix,
+        ));
+      }
+    }
+
+    final List<ExchangeRate> inverseRates = [];
+    for (var rate in allRates) {
+      inverseRates.add(ExchangeRate(
+        baseCode: rate.quoteCode,
+        quoteCode: rate.baseCode,
+        rate: 1 / rate.rate,
+        quantity: 1,
+        lastUpdatedUnix: rate.lastUpdatedUnix,
+      ));
+    }
+    allRates.addAll(inverseRates);
+
+    await _localService.saveRates(allRates.toList());
+  }
 }
+
