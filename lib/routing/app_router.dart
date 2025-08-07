@@ -12,7 +12,6 @@ import 'package:finow/features/menu/menu_repository.dart';
 import 'package:finow/routing/app_transitions.dart';
 import 'package:finow/screens/main_screen.dart';
 import 'package:finow/screens/placeholder_screen.dart';
-import 'package:finow/features/laboratory/laboratory_screen.dart';
 import 'package:finow/features/ui_guide/ui_guide_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -77,9 +76,6 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
           break;
         case '/storage':
           screen = const StorageViewerScreen();
-          break;
-        case '/laboratory':
-          screen = const LaboratoryScreen();
           break;
         case '/ui_guide':
           screen = const UiGuideScreen();
