@@ -29,10 +29,18 @@ class ExchangeRateUpdateService {
           cachedRates.first.lastUpdatedUnix * 1000);
       final now = DateTime.now();
 
-      if (lastUpdated.year == now.year &&
+      // 데이터가 오늘 업데이트되었는지 확인
+      final bool isToday = lastUpdated.year == now.year &&
           lastUpdated.month == now.month &&
-          lastUpdated.day == now.day) {
-        return;
+          lastUpdated.day == now.day;
+
+      // 두 소스의 데이터가 모두 있는지 확인
+      final sources = cachedRates.map((rate) => rate.source).toSet();
+      final bool hasBothSources = sources.contains('exconvert.com') &&
+          sources.contains('v6.exchangerate-api.com');
+
+      if (isToday && hasBothSources) {
+        return; // 오늘 데이터가 있고, 두 소스 모두 존재하면 업데이트 안 함
       }
     }
 
