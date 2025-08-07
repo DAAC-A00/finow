@@ -33,46 +33,14 @@ class ExchangeRateUpdateService {
 
     try {
       final rates = await _repository.getLatestRates('USD');
-      await _expandAndSaveRates(rates);
+      await _saveRates(rates);
     } catch (e) {
       print('Failed to update exchange rates in background: $e');
     }
   }
 
-  Future<void> _expandAndSaveRates(List<ExchangeRate> baseRates) async {
-    final allRates = {...baseRates};
-
-    // USD 기반 환율로 다른 모든 통화 쌍 계산
-    for (int i = 0; i < baseRates.length; i++) {
-      for (int j = 0; j < baseRates.length; j++) {
-        if (i == j) continue;
-
-        final rate1 = baseRates[i]; // USD -> Currency1
-        final rate2 = baseRates[j]; // USD -> Currency2
-
-        // Currency1 -> Currency2 계산
-        allRates.add(ExchangeRate(
-          baseCode: rate1.quoteCode,
-          quoteCode: rate2.quoteCode,
-          rate: rate2.rate / rate1.rate,
-          lastUpdatedUnix: rate1.lastUpdatedUnix,
-        ));
-      }
-    }
-
-    // 역방향 환율 (KRW/USD -> USD/KRW) 추가
-    final List<ExchangeRate> inverseRates = [];
-    for (var rate in allRates) {
-      inverseRates.add(ExchangeRate(
-        baseCode: rate.quoteCode,
-        quoteCode: rate.baseCode,
-        rate: 1 / rate.rate,
-        lastUpdatedUnix: rate.lastUpdatedUnix,
-      ));
-    }
-    allRates.addAll(inverseRates);
-
-    await _localService.saveRates(allRates.toList());
+  Future<void> _saveRates(List<ExchangeRate> rates) async {
+    await _localService.saveRates(rates);
   }
 }
 

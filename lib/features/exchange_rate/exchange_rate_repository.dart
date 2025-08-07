@@ -23,7 +23,9 @@ class ExchangeRateRepository {
         final lastUpdatedUnix = response.data['time_last_update_unix'] as int;
         final baseCode = response.data['base_code'] as String;
 
-        return ratesData.entries.map((entry) {
+        return ratesData.entries
+            .where((entry) => entry.key != baseCode)
+            .map<ExchangeRate>((entry) {
           return ExchangeRate(
             lastUpdatedUnix: lastUpdatedUnix,
             baseCode: baseCode,
@@ -32,10 +34,10 @@ class ExchangeRateRepository {
           );
         }).toList();
       } else {
-        throw Exception('Failed to load exchange rates');
+        throw Exception('Failed to load exchange rates from v6.exchangerate-api.com');
       }
     } catch (e) {
-      throw Exception('Failed to connect to the server: $e');
+      throw Exception('Failed to connect to the v6.exchangerate-api.com server: $e');
     }
   }
 }
