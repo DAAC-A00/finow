@@ -151,11 +151,11 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
 
                     if (value is ExchangeRate) {
                       final combinedCode = (value.baseCode + value.quoteCode).toLowerCase();
-                      final rateString = value.rate.toString();
+                      final priceString = value.price.toString();
                       final sourceString = value.source.toLowerCase();
                       return key.contains(query) ||
                           combinedCode.contains(query) ||
-                          rateString.contains(query) ||
+                          priceString.contains(query) ||
                           sourceString.contains(query);
                     }
 
@@ -202,7 +202,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                             children: [
                               Text('base_code: ${value.baseCode}'),
                               Text('quote_code: ${value.quoteCode}'),
-                              Text('rate: ${value.rate}'),
+                              Text('price: ${value.price}'),
                               Text('source: ${value.source}'), // source 정보 표시
                               Text('time_last_update_unix: ${value.lastUpdatedUnix}'),
                               Padding(
@@ -332,13 +332,13 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
     TextEditingController lastUpdatedUnixController = TextEditingController();
     TextEditingController baseCodeController = TextEditingController();
     TextEditingController quoteCodeController = TextEditingController();
-    TextEditingController rateController = TextEditingController();
+    TextEditingController priceController = TextEditingController();
 
     if (value is ExchangeRate) {
       lastUpdatedUnixController.text = value.lastUpdatedUnix.toString();
       baseCodeController.text = value.baseCode;
       quoteCodeController.text = value.quoteCode;
-      rateController.text = value.rate.toString();
+      priceController.text = value.price.toString();
     }
 
     await showDialog(
@@ -376,8 +376,8 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                         decoration: const InputDecoration(labelText: 'Quote Code'),
                       ),
                       TextField(
-                        controller: rateController,
-                        decoration: const InputDecoration(labelText: 'Rate'),
+                        controller: priceController,
+                        decoration: const InputDecoration(labelText: 'Price'),
                         keyboardType: TextInputType.numberWithOptions(decimal: true),
                       ),
                     ],
@@ -412,7 +412,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                     lastUpdatedUnix: int.tryParse(lastUpdatedUnixController.text) ?? value.lastUpdatedUnix,
                     baseCode: baseCodeController.text,
                     quoteCode: quoteCodeController.text,
-                    rate: double.tryParse(rateController.text) ?? value.rate,
+                    price: double.tryParse(priceController.text) ?? value.price,
                     source: value.source, // 기존 source 값 유지
                   );
                 } else {

@@ -35,7 +35,7 @@ class ExConvertApiClient {
             lastUpdatedUnix: now,
             baseCode: baseCode,
             quoteCode: entry.key,
-            rate: (entry.value as num).toDouble(),
+            price: (entry.value as num).toDouble(),
             source: 'exconvert.com',
           );
         }).toList();

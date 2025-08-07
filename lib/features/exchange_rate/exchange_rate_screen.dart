@@ -7,13 +7,14 @@ import 'package:intl/intl.dart';
 import 'package:finow/features/storage_viewer/local_storage_service.dart';
 
 // 정렬 기준을 정의하는 Enum
-enum SortCriteria { byCodeAsc, byCodeDesc, byRateAsc, byRateDesc }
+enum SortCriteria { byCodeAsc, byCodeDesc, byPriceAsc, byPriceDesc }
 
 // 검색어 관리를 위한 StateProvider
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
 // 정렬 기준 관리를 위한 StateProvider (초기값: 코드 오름차순)
-final sortCriteriaProvider = StateProvider<SortCriteria>((ref) => SortCriteria.byCodeAsc);
+final sortCriteriaProvider =
+    StateProvider<SortCriteria>((ref) => SortCriteria.byCodeAsc);
 
 // 검색 및 정렬된 환율 데이터를 제공하는 Provider
 final filteredRatesProvider = Provider<List<ExchangeRate>>((ref) {
@@ -39,10 +40,10 @@ final filteredRatesProvider = Provider<List<ExchangeRate>>((ref) {
       case SortCriteria.byCodeDesc:
         return (b.baseCode + b.quoteCode)
             .compareTo(a.baseCode + a.quoteCode);
-      case SortCriteria.byRateAsc:
-        return a.rate.compareTo(b.rate);
-      case SortCriteria.byRateDesc:
-        return b.rate.compareTo(a.rate);
+      case SortCriteria.byPriceAsc:
+        return a.price.compareTo(b.price);
+      case SortCriteria.byPriceDesc:
+        return b.price.compareTo(a.price);
     }
   });
 
@@ -72,8 +73,8 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
     super.dispose();
   }
 
-  String _formatRate(double rate) {
-    return rate.toString();
+  String _formatPrice(double price) {
+    return price.toString();
   }
 
   @override
@@ -155,31 +156,31 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                       label: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('Rate'),
+                          const Text('Price'),
                           const SizedBox(width: 4),
-                          if (sortCriteria == SortCriteria.byRateAsc ||
-                              sortCriteria == SortCriteria.byRateDesc)
+                          if (sortCriteria == SortCriteria.byPriceAsc ||
+                              sortCriteria == SortCriteria.byPriceDesc)
                             Icon(
-                              sortCriteria == SortCriteria.byRateAsc
+                              sortCriteria == SortCriteria.byPriceAsc
                                   ? Icons.arrow_upward
                                   : Icons.arrow_downward,
                               size: 16,
                             ),
                         ],
                       ),
-                      selected: sortCriteria == SortCriteria.byRateAsc ||
-                          sortCriteria == SortCriteria.byRateDesc,
+                      selected: sortCriteria == SortCriteria.byPriceAsc ||
+                          sortCriteria == SortCriteria.byPriceDesc,
                       onSelected: (selected) {
                         final notifier = ref.read(sortCriteriaProvider.notifier);
-                        final isCurrentlyRateSort =
-                            notifier.state == SortCriteria.byRateAsc ||
-                                notifier.state == SortCriteria.byRateDesc;
-                        if (isCurrentlyRateSort) {
-                          notifier.state = notifier.state == SortCriteria.byRateAsc
-                              ? SortCriteria.byRateDesc
-                              : SortCriteria.byRateAsc;
+                        final isCurrentlyPriceSort =
+                            notifier.state == SortCriteria.byPriceAsc ||
+                                notifier.state == SortCriteria.byPriceDesc;
+                        if (isCurrentlyPriceSort) {
+                          notifier.state = notifier.state == SortCriteria.byPriceAsc
+                              ? SortCriteria.byPriceDesc
+                              : SortCriteria.byPriceAsc;
                         } else {
-                          notifier.state = SortCriteria.byRateAsc;
+                          notifier.state = SortCriteria.byPriceAsc;
                         }
                       },
                     ),
@@ -202,7 +203,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                       textAlign: TextAlign.center),
                 ),
               ),
-              data: (rates) => _buildRateList(
+              data: (rates) => _buildPriceList(
                 context,
                 filteredRates,
                 rates.isNotEmpty ? rates.first.lastUpdatedUnix : 0,
@@ -214,7 +215,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
     );
   }
 
-  Widget _buildRateList(
+  Widget _buildPriceList(
       BuildContext context, List<ExchangeRate> rates, int lastUpdatedUnix) {
     if (rates.isEmpty) {
       return const Center(
@@ -241,7 +242,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
               trailing: Text(
-                _formatRate(rate.rate),
+                _formatPrice(rate.price),
                 style: const TextStyle(fontSize: 15),
               ),
               onTap: () =>

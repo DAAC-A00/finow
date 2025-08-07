@@ -48,9 +48,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/exchange/:quoteCode',
         pageBuilder: (context, state) {
-          final rate = state.extra as ExchangeRate;
+          final exchangeRate = state.extra as ExchangeRate;
           return NoTransitionPage(
-            child: ExchangeRateDetailScreen(rate: rate),
+            child: ExchangeRateDetailScreen(exchangeRate: exchangeRate),
           );
         },
       ),

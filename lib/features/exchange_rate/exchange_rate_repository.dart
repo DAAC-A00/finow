@@ -30,7 +30,7 @@ class ExchangeRateRepository {
             lastUpdatedUnix: lastUpdatedUnix,
             baseCode: baseCode,
             quoteCode: entry.key,
-            rate: entry.value.toDouble(),
+            price: entry.value.toDouble(),
             source: 'v6.exchangerate-api.com',
           );
         }).toList();

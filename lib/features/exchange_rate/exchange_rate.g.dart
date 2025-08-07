@@ -20,7 +20,7 @@ class ExchangeRateAdapter extends TypeAdapter<ExchangeRate> {
       lastUpdatedUnix: fields[0] as int,
       baseCode: fields[1] as String,
       quoteCode: fields[2] as String,
-      rate: fields[3] as double,
+      price: fields[3] as double,
       source: fields[4] as String,
     );
   }
@@ -36,7 +36,7 @@ class ExchangeRateAdapter extends TypeAdapter<ExchangeRate> {
       ..writeByte(2)
       ..write(obj.quoteCode)
       ..writeByte(3)
-      ..write(obj.rate)
+      ..write(obj.price)
       ..writeByte(4)
       ..write(obj.source);
   }
@@ -60,7 +60,7 @@ ExchangeRate _$ExchangeRateFromJson(Map<String, dynamic> json) => ExchangeRate(
       lastUpdatedUnix: (json['time_last_update_unix'] as num).toInt(),
       baseCode: json['base_code'] as String,
       quoteCode: json['quote_code'] as String,
-      rate: (json['rate'] as num).toDouble(),
+      price: (json['rate'] as num).toDouble(),
       source: json['source'] as String,
     );
 
@@ -69,6 +69,6 @@ Map<String, dynamic> _$ExchangeRateToJson(ExchangeRate instance) =>
       'time_last_update_unix': instance.lastUpdatedUnix,
       'base_code': instance.baseCode,
       'quote_code': instance.quoteCode,
-      'rate': instance.rate,
+      'rate': instance.price,
       'source': instance.source,
     };
