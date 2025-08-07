@@ -1,14 +1,16 @@
+// 이 위젯은 다양한 애니메이션 구현 예시를 제공하여, 프로젝트 내 애니메이션 스타일의 기준점 역할을 합니다.
+// 실제 서비스 적용 전, 애니메이션 효과의 방향성과 일관성을 확인하는 용도로 사용하세요.
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-class AnimationTestWidget extends StatefulWidget {
-  const AnimationTestWidget({super.key});
+class AnimationGuideWidget extends StatefulWidget {
+  const AnimationGuideWidget({super.key});
 
   @override
-  State<AnimationTestWidget> createState() => _AnimationTestWidgetState();
+  State<AnimationGuideWidget> createState() => _AnimationGuideWidgetState();
 }
 
-class _AnimationTestWidgetState extends State<AnimationTestWidget> with TickerProviderStateMixin {
+class _AnimationGuideWidgetState extends State<AnimationGuideWidget> with TickerProviderStateMixin {
   bool _isToggled = false;
   late final AnimationController _controller;
 

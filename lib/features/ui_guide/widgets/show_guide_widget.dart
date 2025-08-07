@@ -1,9 +1,11 @@
+// 이 위젯은 다양한 피드백(Toast, SnackBar, Dialog 등) UI의 구현 예시를 제공하여, 프로젝트 내 피드백 UI의 기준점 역할을 합니다.
+// 실제 서비스 적용 전, 사용자에게 보여지는 피드백 UI의 방향성과 일관성을 확인하는 용도로 사용하세요.
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
-class ShowTestWidget extends StatelessWidget {
-  const ShowTestWidget({super.key});
+class ShowGuideWidget extends StatelessWidget {
+  const ShowGuideWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

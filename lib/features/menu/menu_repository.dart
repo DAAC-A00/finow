@@ -22,7 +22,7 @@ class MenuRepository {
 
   final List<Menu> _adminMenus = const [
     Menu(name: 'Storage', path: '/storage', icon: Icons.storage, showInBottomNav: false),
-    Menu(name: 'Laboratory', path: '/laboratory', icon: Icons.science, showInBottomNav: false),
+    Menu(name: 'UI Guide', path: '/ui_guide', icon: Icons.science, showInBottomNav: false),
   ];
 
   List<Menu> getMenus() {

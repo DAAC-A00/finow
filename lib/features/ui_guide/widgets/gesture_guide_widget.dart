@@ -1,13 +1,15 @@
+// 이 위젯은 다양한 제스처(스와이프, 드래그, 롱프레스 등) 구현 예시를 제공하여, 프로젝트 내 제스처 UX의 기준점 역할을 합니다.
+// 실제 서비스 적용 전, 제스처 동작의 방향성과 일관성을 확인하는 용도로 사용하세요.
 import 'package:flutter/material.dart';
 
-class GestureTestWidget extends StatefulWidget {
-  const GestureTestWidget({super.key});
+class GestureGuideWidget extends StatefulWidget {
+  const GestureGuideWidget({super.key});
 
   @override
-  State<GestureTestWidget> createState() => _GestureTestWidgetState();
+  State<GestureGuideWidget> createState() => _GestureGuideWidgetState();
 }
 
-class _GestureTestWidgetState extends State<GestureTestWidget> {
+class _GestureGuideWidgetState extends State<GestureGuideWidget> {
   List<String> items = List.generate(5, (index) => 'Item ${index + 1}');
   Color _dragColor = Colors.grey;
   String _lastEvent = 'None';

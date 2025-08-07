@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'widgets/animation_test_widget.dart';
-import 'widgets/gesture_test_widget.dart';
-import 'widgets/show_test_widget.dart';
-import 'widgets/toggle_switch_test_widget.dart';
+import 'widgets/animation_guide_widget.dart';
+import 'widgets/gesture_guide_widget.dart';
+import 'widgets/show_guide_widget.dart';
+import 'widgets/toggle_switch_guide_widget.dart';
 
-class LaboratoryScreen extends StatelessWidget {
-  const LaboratoryScreen({super.key});
+class UiGuideScreen extends StatelessWidget {
+  const UiGuideScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,12 +14,12 @@ class LaboratoryScreen extends StatelessWidget {
       length: 4, // 탭 개수 수정
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Laboratory'),
+          title: const Text('UI Guide'),
           bottom: const TabBar(
             isScrollable: true,
             tabAlignment: TabAlignment.start,
             tabs: [
-              Tab(text: 'Show'), // 'Legacy'와 'Dialogs'를 합친 탭
+              Tab(text: 'Show'),
               Tab(text: 'Gestures'),
               Tab(text: 'Animations'),
               Tab(text: 'Toggles'),
@@ -28,10 +28,10 @@ class LaboratoryScreen extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            _buildTabContent(const ShowTestWidget()), // 새로운 위젯 연결
-            _buildTabContent(const GestureTestWidget()),
-            _buildTabContent(const AnimationTestWidget()),
-            _buildTabContent(const ToggleSwitchTestWidget()),
+            _buildTabContent(const ShowGuideWidget()),
+            _buildTabContent(const GestureGuideWidget()),
+            _buildTabContent(const AnimationGuideWidget()),
+            _buildTabContent(const ToggleSwitchGuideWidget()),
           ],
         ),
       ),

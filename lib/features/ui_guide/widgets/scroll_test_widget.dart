@@ -1,13 +1,15 @@
+// 이 위젯은 스크롤 및 리스트 UI의 구현 예시를 제공하여, 프로젝트 내 스크롤/리스트 컴포넌트의 기준점 역할을 합니다.
+// 실제 서비스 적용 전, 스크롤 동작과 리스트 UI의 일관성을 확인하는 용도로 사용하세요.
 import 'package:flutter/material.dart';
 
-class ScrollTestWidget extends StatefulWidget {
-  const ScrollTestWidget({super.key});
+class ScrollGuideWidget extends StatefulWidget {
+  const ScrollGuideWidget({super.key});
 
   @override
-  State<ScrollTestWidget> createState() => _ScrollTestWidgetState();
+  State<ScrollGuideWidget> createState() => _ScrollGuideWidgetState();
 }
 
-class _ScrollTestWidgetState extends State<ScrollTestWidget> {
+class _ScrollGuideWidgetState extends State<ScrollGuideWidget> {
   final List<String> _items = List.generate(20, (i) => 'Item ${i + 1}');
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
