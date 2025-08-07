@@ -22,11 +22,15 @@ class ExchangeRate extends HiveObject {
   @JsonKey(name: 'rate')
   final double rate;
 
+  @HiveField(4)
+  final String source;
+
   ExchangeRate({
     required this.lastUpdatedUnix,
     required this.baseCode,
     required this.quoteCode,
     required this.rate,
+    required this.source,
   });
 
   ExchangeRate copyWith({
@@ -34,12 +38,14 @@ class ExchangeRate extends HiveObject {
     String? baseCode,
     String? quoteCode,
     double? rate,
+    String? source,
   }) {
     return ExchangeRate(
       lastUpdatedUnix: lastUpdatedUnix ?? this.lastUpdatedUnix,
       baseCode: baseCode ?? this.baseCode,
       quoteCode: quoteCode ?? this.quoteCode,
       rate: rate ?? this.rate,
+      source: source ?? this.source,
     );
   }
 

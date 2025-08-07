@@ -21,13 +21,14 @@ class ExchangeRateAdapter extends TypeAdapter<ExchangeRate> {
       baseCode: fields[1] as String,
       quoteCode: fields[2] as String,
       rate: fields[3] as double,
+      source: fields[4] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, ExchangeRate obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.lastUpdatedUnix)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class ExchangeRateAdapter extends TypeAdapter<ExchangeRate> {
       ..writeByte(2)
       ..write(obj.quoteCode)
       ..writeByte(3)
-      ..write(obj.rate);
+      ..write(obj.rate)
+      ..writeByte(4)
+      ..write(obj.source);
   }
 
   @override
@@ -58,6 +61,7 @@ ExchangeRate _$ExchangeRateFromJson(Map<String, dynamic> json) => ExchangeRate(
       baseCode: json['base_code'] as String,
       quoteCode: json['quote_code'] as String,
       rate: (json['rate'] as num).toDouble(),
+      source: json['source'] as String,
     );
 
 Map<String, dynamic> _$ExchangeRateToJson(ExchangeRate instance) =>
@@ -66,4 +70,5 @@ Map<String, dynamic> _$ExchangeRateToJson(ExchangeRate instance) =>
       'base_code': instance.baseCode,
       'quote_code': instance.quoteCode,
       'rate': instance.rate,
+      'source': instance.source,
     };

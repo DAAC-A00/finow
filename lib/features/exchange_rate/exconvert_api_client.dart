@@ -29,6 +29,7 @@ class ExConvertApiClient {
             baseCode: baseCode,
             quoteCode: entry.key,
             rate: (entry.value as num).toDouble(),
+            source: 'exconvert.com',
           );
         }).toList();
       } else {

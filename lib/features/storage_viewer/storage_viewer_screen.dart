@@ -152,9 +152,11 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                     if (value is ExchangeRate) {
                       final combinedCode = (value.baseCode + value.quoteCode).toLowerCase();
                       final rateString = value.rate.toString();
+                      final sourceString = value.source.toLowerCase();
                       return key.contains(query) ||
                           combinedCode.contains(query) ||
                           rateString.contains(query) ||
+                          sourceString.contains(query) ||
                           boxName.toLowerCase().contains(query);
                     }
 
@@ -202,6 +204,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                               Text('base_code: ${value.baseCode}'),
                               Text('quote_code: ${value.quoteCode}'),
                               Text('rate: ${value.rate}'),
+                              Text('source: ${value.source}'), // source 정보 표시
                               Text('time_last_update_unix: ${value.lastUpdatedUnix}'),
                               Padding(
                                 padding: const EdgeInsets.only(left: 8.0, top: 2.0),
@@ -411,6 +414,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                     baseCode: baseCodeController.text,
                     quoteCode: quoteCodeController.text,
                     rate: double.tryParse(rateController.text) ?? value.rate,
+                    source: value.source, // 기존 source 값 유지
                   );
                 } else {
                   newValue = genericController.text;

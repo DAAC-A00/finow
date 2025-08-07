@@ -26,44 +26,11 @@ class ExchangeRateNotifier extends AsyncNotifier<List<ExchangeRate>> {
     state = const AsyncValue.loading();
     try {
       final rates = await _repository.getLatestRates('USD');
-      await _expandAndSaveRates(rates);
+      await _localService.saveRates(rates);
       state = AsyncValue.data(await _localService.getRates());
     } catch (e, stack) {
       state = AsyncValue.error(e, stack);
     }
-  }
-
-  Future<void> _expandAndSaveRates(List<ExchangeRate> baseRates) async {
-    final allRates = {...baseRates};
-
-    for (int i = 0; i < baseRates.length; i++) {
-      for (int j = 0; j < baseRates.length; j++) {
-        if (i == j) continue;
-
-        final rate1 = baseRates[i];
-        final rate2 = baseRates[j];
-
-        allRates.add(ExchangeRate(
-          baseCode: rate1.quoteCode,
-          quoteCode: rate2.quoteCode,
-          rate: rate2.rate / rate1.rate,
-          lastUpdatedUnix: rate1.lastUpdatedUnix,
-        ));
-      }
-    }
-
-    final List<ExchangeRate> inverseRates = [];
-    for (var rate in allRates) {
-      inverseRates.add(ExchangeRate(
-        baseCode: rate.quoteCode,
-        quoteCode: rate.baseCode,
-        rate: 1 / rate.rate,
-        lastUpdatedUnix: rate.lastUpdatedUnix,
-      ));
-    }
-    allRates.addAll(inverseRates);
-
-    await _localService.saveRates(allRates.toList());
   }
 }
 
