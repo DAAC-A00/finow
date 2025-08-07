@@ -73,18 +73,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
   }
 
   String _formatRate(double rate) {
-    if (rate >= 1000) return NumberFormat('#,##0').format(rate);
-    if (rate >= 100) return rate.toStringAsFixed(1);
-    if (rate >= 10) return rate.toStringAsFixed(2);
-    if (rate >= 1) return rate.toStringAsFixed(3);
-    if (rate >= 0.1) return rate.toStringAsFixed(4);
-    if (rate >= 0.01) return rate.toStringAsFixed(5);
-    if (rate >= 0.001) return rate.toStringAsFixed(6);
-    if (rate >= 0.0001) return rate.toStringAsFixed(7);
-    if (rate >= 0.00001) return rate.toStringAsFixed(8);
-    if (rate >= 0.000001) return rate.toStringAsFixed(9);
-    if (rate > 0) return rate.toStringAsFixed(10);
-    return rate.toStringAsFixed(2);
+    return rate.toString();
   }
 
   @override
@@ -124,74 +113,81 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween, // 정렬 버튼과 개수 표시를 양 끝으로
               children: [
-                FilterChip(
-                  label: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('ABC'),
-                      const SizedBox(width: 4),
-                      if (sortCriteria == SortCriteria.byCodeAsc ||
-                          sortCriteria == SortCriteria.byCodeDesc)
-                        Icon(
-                          sortCriteria == SortCriteria.byCodeAsc
-                              ? Icons.arrow_upward
-                              : Icons.arrow_downward,
-                          size: 16,
-                        ),
-                    ],
-                  ),
-                  selected: sortCriteria == SortCriteria.byCodeAsc ||
-                      sortCriteria == SortCriteria.byCodeDesc,
-                  onSelected: (selected) {
-                    final notifier = ref.read(sortCriteriaProvider.notifier);
-                    final isCurrentlyCodeSort =
-                        notifier.state == SortCriteria.byCodeAsc ||
-                            notifier.state == SortCriteria.byCodeDesc;
-                    if (isCurrentlyCodeSort) {
-                      notifier.state = notifier.state == SortCriteria.byCodeAsc
-                          ? SortCriteria.byCodeDesc
-                          : SortCriteria.byCodeAsc;
-                    } else {
-                      notifier.state = SortCriteria.byCodeAsc;
-                    }
-                    // local storage 저장 코드 제거
-                  },
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    FilterChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('ABC'),
+                          const SizedBox(width: 4),
+                          if (sortCriteria == SortCriteria.byCodeAsc ||
+                              sortCriteria == SortCriteria.byCodeDesc)
+                            Icon(
+                              sortCriteria == SortCriteria.byCodeAsc
+                                  ? Icons.arrow_upward
+                                  : Icons.arrow_downward,
+                              size: 16,
+                            ),
+                        ],
+                      ),
+                      selected: sortCriteria == SortCriteria.byCodeAsc ||
+                          sortCriteria == SortCriteria.byCodeDesc,
+                      onSelected: (selected) {
+                        final notifier = ref.read(sortCriteriaProvider.notifier);
+                        final isCurrentlyCodeSort =
+                            notifier.state == SortCriteria.byCodeAsc ||
+                                notifier.state == SortCriteria.byCodeDesc;
+                        if (isCurrentlyCodeSort) {
+                          notifier.state = notifier.state == SortCriteria.byCodeAsc
+                              ? SortCriteria.byCodeDesc
+                              : SortCriteria.byCodeAsc;
+                        } else {
+                          notifier.state = SortCriteria.byCodeAsc;
+                        }
+                      },
+                    ),
+                    const SizedBox(width: 8.0),
+                    FilterChip(
+                      label: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Text('Rate'),
+                          const SizedBox(width: 4),
+                          if (sortCriteria == SortCriteria.byRateAsc ||
+                              sortCriteria == SortCriteria.byRateDesc)
+                            Icon(
+                              sortCriteria == SortCriteria.byRateAsc
+                                  ? Icons.arrow_upward
+                                  : Icons.arrow_downward,
+                              size: 16,
+                            ),
+                        ],
+                      ),
+                      selected: sortCriteria == SortCriteria.byRateAsc ||
+                          sortCriteria == SortCriteria.byRateDesc,
+                      onSelected: (selected) {
+                        final notifier = ref.read(sortCriteriaProvider.notifier);
+                        final isCurrentlyRateSort =
+                            notifier.state == SortCriteria.byRateAsc ||
+                                notifier.state == SortCriteria.byRateDesc;
+                        if (isCurrentlyRateSort) {
+                          notifier.state = notifier.state == SortCriteria.byRateAsc
+                              ? SortCriteria.byRateDesc
+                              : SortCriteria.byRateAsc;
+                        } else {
+                          notifier.state = SortCriteria.byRateAsc;
+                        }
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8.0),
-                FilterChip(
-                  label: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text('Rate'),
-                      const SizedBox(width: 4),
-                      if (sortCriteria == SortCriteria.byRateAsc ||
-                          sortCriteria == SortCriteria.byRateDesc)
-                        Icon(
-                          sortCriteria == SortCriteria.byRateAsc
-                              ? Icons.arrow_upward
-                              : Icons.arrow_downward,
-                          size: 16,
-                        ),
-                    ],
-                  ),
-                  selected: sortCriteria == SortCriteria.byRateAsc ||
-                      sortCriteria == SortCriteria.byRateDesc,
-                  onSelected: (selected) {
-                    final notifier = ref.read(sortCriteriaProvider.notifier);
-                    final isCurrentlyRateSort =
-                        notifier.state == SortCriteria.byRateAsc ||
-                            notifier.state == SortCriteria.byRateDesc;
-                    if (isCurrentlyRateSort) {
-                      notifier.state = notifier.state == SortCriteria.byRateAsc
-                          ? SortCriteria.byRateDesc
-                          : SortCriteria.byRateAsc;
-                    } else {
-                      notifier.state = SortCriteria.byRateAsc;
-                    }
-                    // local storage 저장 코드 제거
-                  },
+                Text(
+                  '${filteredRates.length} items',
+                  style: Theme.of(context).textTheme.bodySmall,
                 ),
               ],
             ),
@@ -225,54 +221,35 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
           child: Text('No data available or matches your search.'));
     }
 
-    final dateTime =
-        DateTime.fromMillisecondsSinceEpoch(lastUpdatedUnix * 1000);
-    final formatter = DateFormat('yyyy-MM-dd HH:mm:ss');
-    final formattedDateTime = formatter.format(dateTime);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        if (lastUpdatedUnix > 0)
-          Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: Text(
-              'Last Updated: $formattedDateTime',
-              style: Theme.of(context).textTheme.bodySmall,
+    return Expanded(
+      child: ListView.builder(
+        itemCount: rates.length,
+        itemBuilder: (context, index) {
+          final rate = rates[index];
+          return Card(
+            margin:
+                const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
+            elevation: 2.0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8.0),
             ),
-          ),
-        Expanded(
-          child: ListView.builder(
-            itemCount: rates.length,
-            itemBuilder: (context, index) {
-              final rate = rates[index];
-              return Card(
-                margin:
-                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
-                elevation: 2.0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
-                child: ListTile(
-                  leading: const Icon(Icons.currency_exchange,
-                      color: Colors.blueAccent),
-                  title: Text(
-                    '${rate.baseCode}/${rate.quoteCode}',
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  trailing: Text(
-                    _formatRate(rate.rate),
-                    style: const TextStyle(fontSize: 15),
-                  ),
-                  onTap: () =>
-                      context.push('/exchange/${rate.quoteCode}', extra: rate),
-                ),
-              );
-            },
-          ),
-        ),
-      ],
+            child: ListTile(
+              leading: const Icon(Icons.currency_exchange,
+                  color: Colors.blueAccent),
+              title: Text(
+                '${rate.baseCode}/${rate.quoteCode}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              trailing: Text(
+                _formatRate(rate.rate),
+                style: const TextStyle(fontSize: 15),
+              ),
+              onTap: () =>
+                  context.push('/exchange/${rate.quoteCode}', extra: rate),
+            ),
+          );
+        },
+      ),
     );
   }
 }

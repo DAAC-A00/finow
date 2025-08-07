@@ -28,7 +28,9 @@ class ExConvertApiClient {
         final now = DateTime.now().millisecondsSinceEpoch ~/ 1000;
         final baseCode = response.data['base'] as String;
 
-        return ratesData.entries.map<ExchangeRate>((entry) {
+        return ratesData.entries
+            .where((entry) => entry.key != baseCode) // baseCode와 quoteCode가 다른 경우만 필터링
+            .map<ExchangeRate>((entry) {
           return ExchangeRate(
             lastUpdatedUnix: now,
             baseCode: baseCode,
