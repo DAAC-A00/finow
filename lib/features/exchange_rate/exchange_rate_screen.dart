@@ -227,6 +227,15 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
         itemCount: rates.length,
         itemBuilder: (context, index) {
           final rate = rates[index];
+          Widget leadingIcon;
+          if (rate.source == 'exconvert.com') {
+            leadingIcon = Image.asset('images/exconvert.png');
+          } else if (rate.source == 'v6.exchangerate-api.com') {
+            leadingIcon = Image.asset('images/exchangerate-api.png');
+          } else {
+            leadingIcon = const Icon(Icons.currency_exchange, color: Colors.blueAccent);
+          }
+
           return Card(
             margin:
                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 6.0),
@@ -235,8 +244,11 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: ListTile(
-              leading: const Icon(Icons.currency_exchange,
-                  color: Colors.blueAccent),
+              leading: SizedBox(
+                width: 40, // 아이콘/이미지 너비 고정
+                height: 40, // 아이콘/이미지 높이 고정
+                child: leadingIcon,
+              ),
               title: Text(
                 '${rate.baseCode}/${rate.quoteCode}',
                 style: const TextStyle(fontWeight: FontWeight.bold),
