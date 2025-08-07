@@ -1,5 +1,6 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_update_service.dart';
+import 'package:finow/features/exchange_rate/exconvert_periodic_update_service.dart';
 import 'package:finow/routing/app_router.dart';
 import 'package:finow/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,12 @@ void main() async {
 
   // ProviderContainer를 생성하여 앱 시작 시 백그라운드 작업 수행
   final container = ProviderContainer();
+
+  // 1. v6 API를 통해 부족한 환율 정보를 한 번 가져옴
   await container.read(exchangeRateUpdateServiceProvider).updateRatesIfNeeded();
+
+  // 2. ExConvert API를 통해 1분마다 주기적으로 환율 정보 업데이트 시작
+  container.read(exConvertPeriodicUpdateServiceProvider).startPeriodicUpdates();
 
   runApp(ProviderScope(parent: container, child: const MyApp()));
 }

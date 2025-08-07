@@ -74,6 +74,9 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
   }
 
   String _formatPrice(double price) {
+    if (price >= 1000) {
+      return NumberFormat('#,##0').format(price);
+    }
     return price.toString();
   }
 
