@@ -156,12 +156,11 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                       return key.contains(query) ||
                           combinedCode.contains(query) ||
                           rateString.contains(query) ||
-                          sourceString.contains(query) ||
-                          boxName.toLowerCase().contains(query);
+                          sourceString.contains(query);
                     }
 
                     final valueString = value.toString().toLowerCase();
-                    return key.contains(query) || valueString.contains(query) || boxName.toLowerCase().contains(query);
+                    return key.contains(query) || valueString.contains(query);
                   }).toList();
 
                   // Only add box header if there's matching data or box name matches
@@ -173,7 +172,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Box: $boxName',
+                              'Box: $boxName (${filteredBoxData.length} items)', // 데이터 개수 표시
                               style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             IconButton(
