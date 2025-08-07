@@ -1,6 +1,5 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_update_service.dart';
-import 'package:finow/features/exchange_rate/exconvert_update_service.dart';
 import 'package:finow/routing/app_router.dart';
 import 'package:finow/theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +21,6 @@ void main() async {
   // ProviderContainer를 생성하여 앱 시작 시 백그라운드 작업 수행
   final container = ProviderContainer();
   await container.read(exchangeRateUpdateServiceProvider).updateRatesIfNeeded();
-  await container.read(exConvertUpdateServiceProvider).updateExConvertRates();
 
   runApp(ProviderScope(parent: container, child: const MyApp()));
 }

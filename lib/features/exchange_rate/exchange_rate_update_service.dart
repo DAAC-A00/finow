@@ -1,20 +1,25 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_local_service.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_repository.dart';
+import 'package:finow/features/exchange_rate/exconvert_api_client.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final exchangeRateUpdateServiceProvider = Provider<ExchangeRateUpdateService>((ref) {
+final exchangeRateUpdateServiceProvider =
+    Provider<ExchangeRateUpdateService>((ref) {
   return ExchangeRateUpdateService(
+    ref.watch(exConvertApiClientProvider),
     ref.watch(exchangeRateRepositoryProvider),
     ref.watch(exchangeRateLocalServiceProvider),
   );
 });
 
 class ExchangeRateUpdateService {
+  final ExConvertApiClient _exConvertApiClient;
   final ExchangeRateRepository _repository;
   final ExchangeRateLocalService _localService;
 
-  ExchangeRateUpdateService(this._repository, this._localService);
+  ExchangeRateUpdateService(
+      this._exConvertApiClient, this._repository, this._localService);
 
   Future<void> updateRatesIfNeeded() async {
     final cachedRates = await _localService.getRates();
@@ -32,15 +37,27 @@ class ExchangeRateUpdateService {
     }
 
     try {
-      final rates = await _repository.getLatestRates('USD');
-      await _saveRates(rates);
+      // 1. exconvert.com에서 데이터 가져오기
+      final exConvertRates = await _exConvertApiClient.getLatestRates('USD');
+      final exConvertRateMap = {
+        for (var rate in exConvertRates) '${rate.baseCode}/${rate.quoteCode}': rate
+      };
+
+      // 2. v6.exchangerate-api.com에서 데이터 가져오기
+      final v6Rates = await _repository.getLatestRates('USD');
+
+      // 3. v6 데이터에서 exconvert에 없는 정보만 필터링
+      final combinedRates = List<ExchangeRate>.from(exConvertRates);
+      for (var v6Rate in v6Rates) {
+        final key = '${v6Rate.baseCode}/${v6Rate.quoteCode}';
+        if (!exConvertRateMap.containsKey(key)) {
+          combinedRates.add(v6Rate);
+        }
+      }
+
+      await _localService.saveRates(combinedRates);
     } catch (e) {
       print('Failed to update exchange rates in background: $e');
     }
   }
-
-  Future<void> _saveRates(List<ExchangeRate> rates) async {
-    await _localService.saveRates(rates);
-  }
 }
-

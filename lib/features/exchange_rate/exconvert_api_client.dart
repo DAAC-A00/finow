@@ -1,5 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+final exConvertApiClientProvider = Provider<ExConvertApiClient>((ref) {
+  return ExConvertApiClient();
+});
 
 class ExConvertApiClient {
   final Dio _dio;
