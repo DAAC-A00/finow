@@ -102,7 +102,16 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Exchange Rates'),
+        title: TextField(
+          controller: _controller,
+          onChanged: (value) {
+            ref.read(searchQueryProvider.notifier).state = value;
+          },
+          decoration: const InputDecoration(
+            hintText: 'Search by currency code (e.g., KRW, JPY)',
+            border: InputBorder.none,
+          ),
+        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -112,22 +121,6 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 8.0),
-            child: TextField(
-              controller: _controller,
-              onChanged: (value) {
-                ref.read(searchQueryProvider.notifier).state = value;
-                // local storage 저장 코드 제거
-              },
-              decoration: const InputDecoration(
-                hintText: 'Search by currency code (e.g., KRW, JPY)',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(vertical: 10.0),
-              ),
-            ),
-          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
