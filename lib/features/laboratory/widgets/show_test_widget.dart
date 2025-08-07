@@ -13,6 +13,12 @@ class ShowTestWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       children: [
         _buildCard(
+          title: 'Bottom Sheet',
+          subtitle: 'A sheet that slides up from the bottom.',
+          icon: Icons.vertical_align_bottom,
+          onTap: () => _showBottomSheet(context),
+        ),
+        _buildCard(
           title: 'Toast',
           subtitle: 'A brief message at the bottom of the screen.',
           icon: Icons.info_outline,
@@ -56,6 +62,20 @@ class ShowTestWidget extends StatelessWidget {
         subtitle: Text(subtitle),
         trailing: const Icon(Icons.play_arrow),
         onTap: onTap,
+      ),
+    );
+  }
+
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => Container(
+        height: 200,
+        child: Center(
+          child: Text(
+            'This is a Bottom Sheet',
+          ),
+        ),
       ),
     );
   }
