@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:finow/features/storage_viewer/local_storage_service.dart';
+import 'package:finow/ui_scale_provider.dart';
 
 // 정렬 기준을 정의하는 Enum
 enum SortCriteria { byCodeAsc, byCodeDesc, byPriceAsc, byPriceDesc }
@@ -126,11 +127,11 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                       label: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('ABC'),
+                          const ScaledText('ABC'),
                           const SizedBox(width: 4),
                           if (sortCriteria == SortCriteria.byCodeAsc ||
                               sortCriteria == SortCriteria.byCodeDesc)
-                            Icon(
+                            ScaledIcon(
                               sortCriteria == SortCriteria.byCodeAsc
                                   ? Icons.arrow_upward
                                   : Icons.arrow_downward,
@@ -159,11 +160,11 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                       label: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Text('Price'),
+                          const ScaledText('Price'),
                           const SizedBox(width: 4),
                           if (sortCriteria == SortCriteria.byPriceAsc ||
                               sortCriteria == SortCriteria.byPriceDesc)
-                            Icon(
+                            ScaledIcon(
                               sortCriteria == SortCriteria.byPriceAsc
                                   ? Icons.arrow_upward
                                   : Icons.arrow_downward,
@@ -189,7 +190,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                     ),
                   ],
                 ),
-                Text(
+                ScaledText(
                   '${filteredRates.length} items',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
@@ -202,7 +203,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
               error: (err, stack) => Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Text('Failed to load data.\nError: $err',
+                  child: ScaledText('Failed to load data.\nError: $err',
                       textAlign: TextAlign.center),
                 ),
               ),
@@ -222,7 +223,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
       BuildContext context, List<ExchangeRate> rates, int lastUpdatedUnix) {
     if (rates.isEmpty) {
       return const Center(
-          child: Text('No data available or matches your search.'));
+          child: ScaledText('No data available or matches your search.'));
     }
 
     return Expanded(
@@ -232,11 +233,23 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
           final rate = rates[index];
           Widget leadingIcon;
           if (rate.source == 'exconvert.com') {
-            leadingIcon = Image.asset('images/exconvert.png');
+            leadingIcon = const ScaledAssetImage(
+              assetPath: 'images/exconvert.png',
+              baseWidth: 20,
+              baseHeight: 20,
+            );
           } else if (rate.source == 'v6.exchangerate-api.com') {
-            leadingIcon = Image.asset('images/exchangerate-api.png');
+            leadingIcon = const ScaledAssetImage(
+              assetPath: 'images/exchangerate-api.png',
+              baseWidth: 20,
+              baseHeight: 20,
+            );
           } else {
-            leadingIcon = const Icon(Icons.currency_exchange, color: Colors.blueAccent);
+            leadingIcon = const ScaledIcon(
+              Icons.currency_exchange,
+              color: Colors.blueAccent,
+              size: 20,
+            );
           }
 
           return Card(
@@ -247,16 +260,12 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: ListTile(
-              leading: SizedBox(
-                width: 40, // 아이콘/이미지 너비 고정
-                height: 40, // 아이콘/이미지 높이 고정
-                child: leadingIcon,
-              ),
-              title: Text(
+              leading: leadingIcon,
+              title: ScaledText(
                 '${rate.baseCode}/${rate.quoteCode}',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              trailing: Text(
+              trailing: ScaledText(
                 _formatPrice(rate.price),
                 style: const TextStyle(fontSize: 15),
               ),

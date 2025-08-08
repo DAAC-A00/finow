@@ -1,6 +1,7 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:finow/ui_scale_provider.dart';
 
 class ExchangeRateDetailScreen extends StatelessWidget {
   final ExchangeRate exchangeRate;
@@ -30,7 +31,7 @@ class ExchangeRateDetailScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 ListTile(
-                  leading: const Icon(Icons.show_chart, color: Colors.blueAccent),
+                  leading: const ScaledIcon(Icons.show_chart, color: Colors.blueAccent),
                   title: const Text('Price'),
                   trailing: Text(
                     exchangeRate.price.toString(),
@@ -39,18 +40,18 @@ class ExchangeRateDetailScreen extends StatelessWidget {
                 ),
                 const Divider(),
                 ListTile(
-                  leading: const Icon(Icons.flag, color: Colors.green),
+                  leading: const ScaledIcon(Icons.flag, color: Colors.green),
                   title: const Text('Base Code'),
                   trailing: Text(exchangeRate.baseCode),
                 ),
                 ListTile(
-                  leading: const Icon(Icons.flag_outlined, color: Colors.orange),
+                  leading: const ScaledIcon(Icons.flag_outlined, color: Colors.orange),
                   title: const Text('Quote Code'),
                   trailing: Text(exchangeRate.quoteCode),
                 ),
                 const Divider(),
                 ListTile(
-                  leading: const Icon(Icons.update, color: Colors.grey),
+                  leading: const ScaledIcon(Icons.update, color: Colors.grey),
                   title: const Text('Last Updated'),
                   trailing: Text(formattedDateTime),
                 ),

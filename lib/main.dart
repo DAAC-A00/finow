@@ -3,6 +3,8 @@ import 'package:finow/features/exchange_rate/exchange_rate_update_service.dart';
 import 'package:finow/features/exchange_rate/exconvert_periodic_update_service.dart';
 import 'package:finow/routing/app_router.dart';
 import 'package:finow/theme_provider.dart';
+import 'package:finow/font_size_provider.dart';
+import 'package:finow/ui_scale_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -37,6 +39,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeNotifierProvider);
+    final fontSizeOption = ref.watch(fontSizeNotifierProvider);
     final goRouter = ref.watch(goRouterProvider);
 
     return MaterialApp.router(
@@ -51,7 +54,18 @@ class MyApp extends ConsumerWidget {
         brightness: Brightness.dark,
       ),
       themeMode: themeMode,
-      routerConfig: goRouter, // go_router 설정 적용
+      routerConfig: goRouter,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(fontSizeOption.scale),
+          ),
+          child: UIScaleProvider(
+            scale: fontSizeOption.scale,
+            child: child!,
+          ),
+        );
+      },
     );
   }
 }

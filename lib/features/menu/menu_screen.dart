@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:finow/features/menu/menu_repository.dart';
+import 'package:finow/ui_scale_provider.dart';
 
 class MenuScreen extends ConsumerWidget {
   const MenuScreen({super.key});
@@ -19,7 +20,7 @@ class MenuScreen extends ConsumerWidget {
         itemBuilder: (context, index) {
           final menu = menus[index];
           return ListTile(
-            leading: Icon(menu.icon),
+            leading: ScaledIcon(menu.icon),
             title: Text(menu.name),
             onTap: () {
               if (menu.path == '/menu') return;

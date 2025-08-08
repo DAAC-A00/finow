@@ -5,6 +5,7 @@ import 'package:finow/features/storage_viewer/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:finow/ui_scale_provider.dart';
 
 // 검색어를 관리하는 StateProvider
 final searchQueryProvider = StateProvider<String>((ref) => '');
@@ -176,7 +177,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                               style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.clear_all, size: 24),
+                              icon: const ScaledIcon(Icons.clear_all, size: 24),
                               onPressed: () => _clearBox(context, ref, localStorageService, boxName),
                               tooltip: 'Clear all data in this box',
                             ),
@@ -229,12 +230,12 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.edit, size: 20),
+                                    icon: const ScaledIcon(Icons.edit, size: 20),
                                     onPressed: () => _showEditDialog(
                                         context, ref, localStorageService, boxName, key, value),
                                   ),
                                   IconButton(
-                                    icon: const Icon(Icons.delete, size: 20),
+                                    icon: const ScaledIcon(Icons.delete, size: 20),
                                     onPressed: () => _confirmDelete(
                                         context, ref, localStorageService, boxName, key),
                                   ),
