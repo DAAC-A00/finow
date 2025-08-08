@@ -226,10 +226,9 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
           child: ScaledText('No data available or matches your search.'));
     }
 
-    return Expanded(
-      child: ListView.builder(
-        itemCount: rates.length,
-        itemBuilder: (context, index) {
+    return ListView.builder(
+      itemCount: rates.length,
+      itemBuilder: (context, index) {
           final rate = rates[index];
           Widget leadingIcon;
           if (rate.source == 'exconvert.com') {
@@ -274,7 +273,6 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
             ),
           );
         },
-      ),
     );
   }
 }
