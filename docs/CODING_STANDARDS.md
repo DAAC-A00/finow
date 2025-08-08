@@ -11,53 +11,26 @@
 - **Service 파일**: `*_service.dart`
 
 ### 디렉토리명
-```
-lib/
-├── features/           # 기능별 모듈
-│   ├── exchange_rate/  # snake_case
-│   ├── settings/       # snake_case
-│   └── menu/          # snake_case
-├── screens/           # 공통 화면
-├── routing/           # 라우팅 관련
-└── ...
-```
+**기능별 모듈화**: features/ 하위에 exchange_rate, settings, menu 등 snake_case로 구성
+
+👉 **전체 폴더 구조**: UI Guide의 **Architecture** 탭에서 확인하세요
 
 ## 클래스 및 변수 명명 규칙
 
 ### 클래스명
-```dart
-// ✅ 올바른 예시
-class ExchangeRateScreen extends StatelessWidget {}
-class FontSizeProvider extends StateNotifier<FontSizeOption> {}
-class ExchangeRateRepository {}
+**PascalCase 사용**: ExchangeRateScreen, FontSizeProvider, ExchangeRateRepository
 
-// ❌ 잘못된 예시
-class exchangeRateScreen {}  // PascalCase 위반
-class ExchangeRate_Screen {}  // 언더스코어 사용 금지
-```
+**금지**: snake_case, 언더스코어 사용
 
 ### 변수명
-```dart
-// ✅ 올바른 예시
-final String baseCode = 'USD';
-final double exchangeRate = 1.23;
-final List<ExchangeRate> filteredRates = [];
+**camelCase 사용**: baseCode, exchangeRate, filteredRates
 
-// ❌ 잘못된 예시
-final String base_code = 'USD';  // snake_case는 상수에만 사용
-final double ExchangeRate = 1.23;  // PascalCase 금지
-```
+**금지**: snake_case(상수 전용), PascalCase
 
 ### 상수명
-```dart
-// ✅ 올바른 예시
-const String API_BASE_URL = 'https://api.example.com';
-const int MAX_RETRY_COUNT = 3;
-const double DEFAULT_FONT_SCALE = 1.0;
+**UPPER_SNAKE_CASE**: API_BASE_URL, MAX_RETRY_COUNT, DEFAULT_FONT_SCALE
 
-// Private 상수
-const String _apiKey = 'secret_key';
-```
+**Private 상수**: _privateConstant
 
 ## 위젯 작성 규칙
 
@@ -108,32 +81,18 @@ class ExchangeRateScreen extends ConsumerWidget {
 ```
 
 ### 3. 스케일링 위젯 사용
-```dart
-// ✅ 올바른 예시
-ScaledIcon(Icons.home, size: 24)
-ScaledText('Hello World')
-ScaledAssetImage(assetPath: 'images/logo.png', baseWidth: 40, baseHeight: 40)
+**필수 사용**: ScaledIcon, ScaledAssetImage 등 스케일링 위젯만 사용
 
-// ❌ 잘못된 예시 (스케일링 미적용)
-Icon(Icons.home, size: 24)  // 폰트 크기 설정에 반응하지 않음
-```
+**금지**: 일반 Icon, Image.asset 사용
+
+👉 **구현 예시**: UI Guide의 **Scaling** 탭에서 확인하세요
 
 ## Provider 작성 규칙
 
 ### 1. Provider 명명
-```dart
-// ✅ 올바른 예시
-final exchangeRateProvider = AsyncNotifierProvider<ExchangeRateNotifier, List<ExchangeRate>>(
-  ExchangeRateNotifier.new,
-);
+**패턴별 명명**: exchangeRateProvider, fontSizeNotifierProvider, searchQueryProvider
 
-final fontSizeNotifierProvider = NotifierProvider<FontSizeNotifier, FontSizeOption>(
-  FontSizeNotifier.new,
-);
-
-// StateProvider (간단한 상태)
-final searchQueryProvider = StateProvider<String>((ref) => '');
-```
+👉 **구현 예시**: UI Guide의 **Providers** 탭에서 확인하세요
 
 ### 2. Provider 구조
 ```dart

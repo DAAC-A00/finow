@@ -4,6 +4,10 @@ import 'widgets/animation_guide_widget.dart';
 import 'widgets/gesture_guide_widget.dart';
 import 'widgets/show_guide_widget.dart';
 import 'widgets/toggle_switch_guide_widget.dart';
+import 'widgets/providers_guide_widget.dart';
+import 'widgets/scaling_guide_widget.dart';
+import 'widgets/architecture_guide_widget.dart';
+import 'widgets/principles_guide_widget.dart';
 
 class UiGuideScreen extends StatelessWidget {
   const UiGuideScreen({super.key});
@@ -11,10 +15,10 @@ class UiGuideScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4, // 탭 개수 수정
+      length: 8, // 탭 개수 8개로 확장
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('UI Guide'),
+          title: const Text('UI Guide & Code Examples'),
           bottom: const TabBar(
             isScrollable: true,
             tabAlignment: TabAlignment.start,
@@ -23,6 +27,10 @@ class UiGuideScreen extends StatelessWidget {
               Tab(text: 'Gestures'),
               Tab(text: 'Animations'),
               Tab(text: 'Toggles'),
+              Tab(text: 'Providers'),
+              Tab(text: 'Scaling'),
+              Tab(text: 'Architecture'),
+              Tab(text: 'Principles'),
             ],
           ),
         ),
@@ -32,6 +40,10 @@ class UiGuideScreen extends StatelessWidget {
             _buildTabContent(const GestureGuideWidget()),
             _buildTabContent(const AnimationGuideWidget()),
             _buildTabContent(const ToggleSwitchGuideWidget()),
+            _buildTabContent(const ProvidersGuideWidget()),
+            _buildTabContent(const ScalingGuideWidget()),
+            _buildTabContent(const ArchitectureGuideWidget()),
+            _buildTabContent(const PrinciplesGuideWidget()),
           ],
         ),
       ),

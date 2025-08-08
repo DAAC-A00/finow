@@ -16,46 +16,14 @@
 ### 🏗️ 모든 개발 작업 공통 규칙
 
 #### 1. 실제 구현된 아키텍처 패턴
-```dart
-// ✅ 실제 프로젝트 구조 (정확히 따를 것)
-features/
-├── [feature_name]/
-│   ├── [feature]_screen.dart          # UI Layer
-│   ├── [feature]_provider.dart        # State Management (다양한 패턴)
-│   ├── [feature]_repository.dart      # Business Logic + Repository
-│   ├── [feature]_local_service.dart   # Local Storage Service  
-│   ├── [feature]_api_client.dart      # External API Service
-│   ├── [feature]_update_service.dart  # Background Service
-│   └── [feature].dart                 # Model/Entity (Hive + JSON)
-```
+**폴더 구조**: features/[feature_name]/ 내부에 screen, provider, repository, local_service, api_client, update_service, model 파일들을 분리하여 구현
+
+👉 **상세 구조와 예시**: UI Guide의 **Architecture** 탭에서 확인하세요
 
 #### 2. 실제 사용되는 상태 관리 패턴들
-```dart
-// ✅ AsyncNotifier - 비동기 데이터 관리
-final exchangeRateProvider = AsyncNotifierProvider<ExchangeRateNotifier, List<ExchangeRate>>(
-  ExchangeRateNotifier.new,
-);
+**5가지 Provider 패턴**: AsyncNotifier(비동기 데이터), StateNotifier(복잡한 상태), StateProvider(간단한 상태), FutureProvider(읽기 전용), Provider(서비스 인스턴스)
 
-// ✅ StateNotifier - 복잡한 상태 관리 
-final adminModeProvider = StateNotifierProvider<AdminModeNotifier, bool>((ref) {
-  final localStorage = ref.watch(localStorageServiceProvider);
-  final initialValue = localStorage.read<bool>('isAdminMode') ?? false;
-  return AdminModeNotifier(initialValue, localStorage);
-});
-
-// ✅ StateProvider - 간단한 상태
-final searchQueryProvider = StateProvider<String>((ref) => '');
-
-// ✅ FutureProvider - 읽기 전용 비동기 데이터
-final allStorageDataProvider = FutureProvider<Map<String, Map>>((ref) {
-  return ref.watch(localStorageServiceProvider).getAllBoxes();
-});
-
-// ✅ Provider - 서비스 인스턴스
-final localStorageServiceProvider = Provider<LocalStorageService>((ref) {
-  return LocalStorageService();
-});
-```
+👉 **구체적인 구현과 예시**: UI Guide의 **Providers** 탭에서 확인하세요
 
 #### 3. 실제 사용 중인 네이밍 규칙 (엄격 준수)
 - **파일명**: `snake_case.dart` (실제 적용됨)
@@ -68,157 +36,47 @@ final localStorageServiceProvider = Provider<LocalStorageService>((ref) {
   - `[state]Provider` (StateProvider)
 
 #### 4. 실제 기술 스택 (정확히 사용할 것)
-```yaml
-# 필수 의존성 (pubspec.yaml 기반)
-flutter_riverpod: ^2.6.1
-go_router: ^16.0.0
-hive: ^2.2.3
-hive_flutter: ^1.1.0
-dio: ^5.5.0+1
-json_annotation: ^4.9.0
-intl: ^0.19.0
-lottie: ^3.1.2  # 애니메이션
+**핵심 패키지들**: flutter_riverpod(^2.6.1), go_router(^16.0.0), hive(^2.2.3), dio(^5.5.0+1) 등
 
-# 개발 도구
-build_runner: ^2.4.11
-hive_generator: ^2.0.1
-json_serializable: ^6.8.0
-flutter_lints: ^6.0.0
-```
+👉 **전체 목록과 버전**: `docs/TECH_STACK.md` 참조
 
 ### 🎨 UI 개발 필수 규칙 (실제 구현 기반)
 
 #### 1. 스케일링 시스템 (100% 준수)
-```dart
-// ✅ 실제 구현된 방식
-return MaterialApp.router(
-  builder: (context, child) {
-    return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-        textScaler: TextScaler.linear(fontSizeOption.scale), // 실제 적용됨
-      ),
-      child: UIScaleProvider(
-        scale: fontSizeOption.scale,
-        child: child!,
-      ),
-    );
-  },
-);
+**기본 원리**: MediaQuery textScaler + UIScaleProvider 조합으로 글자 및 이미지 자동 스케일링
 
-// ✅ UI 요소 사용법
-ScaledIcon(menu.icon)                    // BottomNav에서 실제 사용됨
-ScaledAssetImage(                        // 실제 구현됨
-  assetPath: 'images/logo.png', 
-  baseWidth: 20,  // 실제 프로젝트에서 20 사용
-  baseHeight: 20
-)
-Text('Hello World')                      // 자동 스케일링 (MediaQuery 적용)
-```
+**필수 사용**: ScaledIcon(모든 아이콘), ScaledAssetImage(모든 이미지), 일반 Text(자동 스케일링)
+
+👉 **구현 방법과 예시**: UI Guide의 **Scaling** 탭에서 확인하세요
 
 #### 2. 실제 구현된 메뉴 시스템 패턴
-```dart
-// ✅ Repository 패턴으로 구현된 메뉴 시스템
-final menuRepositoryProvider = Provider<MenuRepository>((ref) {
-  final isAdminMode = ref.watch(adminModeProvider);
-  return MenuRepository(isAdminMode);  // Admin Mode 기반 동적 메뉴
-});
+**Repository 패턴**: Admin Mode 상태에 따라 동적으로 메뉴 제공
 
-// ✅ 실제 메뉴 구조
-const Menu(name: 'Home', path: '/home', icon: Icons.home, showInBottomNav: true),
-const Menu(name: 'Exchange Rate', path: '/exchange', icon: Icons.attach_money, showInBottomNav: true),
-const Menu(name: 'Menu', path: '/menu', icon: Icons.menu, showInBottomNav: true),
-const Menu(name: 'Settings', path: '/settings', icon: Icons.settings, showInBottomNav: false),
-// Admin 전용
-const Menu(name: 'Storage', path: '/storage', icon: Icons.storage, showInBottomNav: false),
-const Menu(name: 'UI Guide', path: '/ui_guide', icon: Icons.science, showInBottomNav: false),
-```
+**메뉴 구조**: 기본 메뉴(Home, Exchange Rate, Menu, Settings) + Admin 전용(Storage, UI Guide)
+
+👉 **구현 방법**: UI Guide의 **Architecture** 탭에서 확인하세요
 
 #### 3. 실제 Model 구조 (Hive + JSON)
-```dart
-// ✅ 실제 구현된 모델 패턴
-@HiveType(typeId: 1)
-@JsonSerializable()
-class ExchangeRate extends HiveObject {
-  @HiveField(0)
-  @JsonKey(name: 'time_last_update_unix')
-  final int lastUpdatedUnix;
-  
-  // JSON 직렬화 + Hive 저장 모두 지원
-  factory ExchangeRate.fromJson(Map<String, dynamic> json) => _$ExchangeRateFromJson(json);
-  Map<String, dynamic> toJson() => _$ExchangeRateToJson(this);
-}
-```
+**이중 직렬화**: @HiveType + @JsonSerializable 어노테이션으로 JSON API와 로컬 DB 모두 지원
+
+👉 **구체적인 구현**: UI Guide의 **Architecture** 탭에서 확인하세요
 
 ### 🔧 실제 구현된 서비스 패턴들
 
 #### 1. Local Storage Service 패턴
-```dart
-// ✅ 실제 구현된 방식
-class LocalStorageService {
-  Future<Map<String, Map>> getAllBoxes() async {
-    final settingsBox = Hive.box('settings');
-    final exchangeRatesBox = Hive.box<ExchangeRate>('exchangeRates');
-    return {
-      'settings': settingsBox.toMap(),
-      'exchangeRates': exchangeRatesBox.toMap(),
-    };
-  }
-  
-  // 타입별 박스 처리
-  Future<void> deleteEntry(String boxName, dynamic key) async {
-    dynamic box;
-    if (boxName == 'exchangeRates') {
-      box = Hive.box<ExchangeRate>(boxName);
-    } else {
-      box = Hive.box(boxName);
-    }
-    await box.delete(key);
-  }
-}
-```
+**Hive 박스 관리**: 타입별로 박스를 분리하여 처리 (settings, exchangeRates)
+
+👉 **구현 예시**: UI Guide의 **Architecture** 탭에서 확인하세요
 
 #### 2. Repository + Service 분리 패턴
-```dart
-// ✅ 실제 구현된 분리 방식
-class ExchangeRateNotifier extends AsyncNotifier<List<ExchangeRate>> {
-  late ExConvertApiClient _exConvertApiClient;     // API 서비스
-  late ExchangeRateRepository _repository;        // 비즈니스 로직  
-  late ExchangeRateLocalService _localService;    // 로컬 저장소
+**책임 분리**: API Client(외부 API), Repository(비즈니스 로직), Local Service(로컬 저장)
 
-  @override
-  FutureOr<List<ExchangeRate>> build() async {
-    _exConvertApiClient = ref.watch(exConvertApiClientProvider);
-    _repository = ref.watch(exchangeRateRepositoryProvider);
-    _localService = ref.watch(exchangeRateLocalServiceProvider);
-    
-    return _localService.getRates();  // 초기 로드는 로컬에서
-  }
-}
-```
+👉 **구현 예시**: UI Guide의 **Architecture** 탭에서 확인하세요
 
 #### 3. 실제 라우팅 구조
-```dart
-// ✅ 실제 구현된 라우팅 (ShellRoute + GoRoute)
-GoRouter(
-  initialLocation: '/home',
-  routes: [
-    ShellRoute(  // BottomNav가 있는 메인 셸
-      pageBuilder: (context, state, child) {
-        return NoTransitionPage(child: MainScreen(child: child));
-      },
-      routes: [...shellRoutes],  // 하단 네비게이션 화면들
-    ),
-    GoRoute(  // 상세 화면 (파라미터 전달)
-      path: '/exchange/:quoteCode',
-      pageBuilder: (context, state) {
-        final exchangeRate = state.extra as ExchangeRate;
-        return NoTransitionPage(child: ExchangeRateDetailScreen(exchangeRate: exchangeRate));
-      },
-    ),
-    ...topLevelRoutes,  // 설정, 어드민 화면들
-  ],
-);
-```
+**이중 구조**: ShellRoute(하단 네비게이션) + GoRoute(상세 화면), NoTransitionPage로 전환 애니메이션 제거
+
+👉 **구현 예시**: UI Guide의 **Architecture** 탭에서 확인하세요
 
 ## 🚨 실제 코드베이스 기반 금지 사항
 
