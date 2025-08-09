@@ -83,7 +83,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
             hintText: 'Search local storage...',
             border: InputBorder.none,
             hintStyle: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withAlpha(178), // withOpacity(0.7)
+              color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.7).round()), // withOpacity(0.7)
               fontSize: 20,
             ),
           ),
@@ -352,6 +352,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                     value: boolValue!,
                     onChanged: (newValue) {
                       boolValue = newValue;
+                      if (!context.mounted) return;
                       (context as Element).markNeedsBuild(); // 다이얼로그 내부 UI 갱신
                     },
                   )
@@ -422,8 +423,9 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                   ref.invalidate(storageUsageProvider);
                   Navigator.of(context).pop();
                 } else {
-                  if (!context.mounted) return;
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  final currentContext = context;
+                  if (!currentContext.mounted) return;
+                  ScaffoldMessenger.of(currentContext).showSnackBar(
                     const SnackBar(content: Text('유효하지 않은 값입니다.')),
                   );
                 }

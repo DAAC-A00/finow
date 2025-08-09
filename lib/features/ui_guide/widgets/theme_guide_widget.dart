@@ -1,5 +1,6 @@
 // 이 위젯은 다크모드/라이트모드 테마 시스템의 구현 예시와 가이드라인을 제공합니다.
 // 프로젝트 내 모든 UI 컴포넌트가 다크모드/라이트모드를 완벽히 지원하도록 하는 기준점 역할을 합니다.
+import 'package:finow/ui_scale_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:finow/theme_provider.dart';
@@ -12,6 +13,7 @@ class ThemeGuideWidget extends ConsumerWidget {
     final themeMode = ref.watch(themeModeNotifierProvider);
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     return ListView(
       shrinkWrap: true,
@@ -25,18 +27,18 @@ class ThemeGuideWidget extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              ScaledText(
                 '현재 테마: ${isDarkMode ? "다크 모드" : "라이트 모드"}',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                style: textTheme.titleMedium?.copyWith(
                   color: colorScheme.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
+              ScaledText(
                 '시스템 테마 모드: ${themeMode.name}',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurface.withOpacity(0.8),
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface.withAlpha((255 * 0.8).round()),
                 ),
               ),
               const SizedBox(height: 16),
@@ -76,7 +78,9 @@ class ThemeGuideWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildSectionCard(BuildContext context, {required String title, required Widget child}) {
+  Widget _buildSectionCard(BuildContext context,
+      {required String title, required Widget child}) {
+    final textTheme = Theme.of(context).textTheme;
     return Card(
       elevation: 2.0,
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
@@ -86,9 +90,9 @@ class ThemeGuideWidget extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
+            ScaledText(
               title,
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              style: textTheme.titleLarge?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.bold,
               ),
@@ -102,52 +106,61 @@ class ThemeGuideWidget extends ConsumerWidget {
   }
 
   Widget _buildThemeToggleButtons(WidgetRef ref, ThemeMode currentMode) {
+    final context = ref.context;
+    final colorScheme = Theme.of(context).colorScheme;
+
     return Row(
       children: [
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: () => ref.read(themeModeNotifierProvider.notifier).setThemeMode(ThemeMode.light),
-            icon: const Icon(Icons.light_mode),
-            label: const Text('라이트 모드'),
+            onPressed: () => ref
+                .read(themeModeNotifierProvider.notifier)
+                .setThemeMode(ThemeMode.light),
+            icon: const ScaledIcon(Icons.light_mode),
+            label: const ScaledText('라이트 모드'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: currentMode == ThemeMode.light 
-                ? Theme.of(ref.context).colorScheme.primary 
-                : Theme.of(ref.context).colorScheme.surface,
-              foregroundColor: currentMode == ThemeMode.light 
-                ? Theme.of(ref.context).colorScheme.onPrimary 
-                : Theme.of(ref.context).colorScheme.onSurface,
+              backgroundColor: currentMode == ThemeMode.light
+                  ? colorScheme.primary
+                  : colorScheme.surface,
+              foregroundColor: currentMode == ThemeMode.light
+                  ? colorScheme.onPrimary
+                  : colorScheme.onSurface,
             ),
           ),
         ),
         const SizedBox(width: 8),
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: () => ref.read(themeModeNotifierProvider.notifier).setThemeMode(ThemeMode.dark),
-            icon: const Icon(Icons.dark_mode),
-            label: const Text('다크 모드'),
+            onPressed: () => ref
+                .read(themeModeNotifierProvider.notifier)
+                .setThemeMode(ThemeMode.dark),
+            icon: const ScaledIcon(Icons.dark_mode),
+            label: const ScaledText('다크 모드'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: currentMode == ThemeMode.dark 
-                ? Theme.of(ref.context).colorScheme.primary 
-                : Theme.of(ref.context).colorScheme.surface,
-              foregroundColor: currentMode == ThemeMode.dark 
-                ? Theme.of(ref.context).colorScheme.onPrimary 
-                : Theme.of(ref.context).colorScheme.onSurface,
+              backgroundColor: currentMode == ThemeMode.dark
+                  ? colorScheme.primary
+                  : colorScheme.surface,
+              foregroundColor: currentMode == ThemeMode.dark
+                  ? colorScheme.onPrimary
+                  : colorScheme.onSurface,
             ),
           ),
         ),
         const SizedBox(width: 8),
         Expanded(
           child: ElevatedButton.icon(
-            onPressed: () => ref.read(themeModeNotifierProvider.notifier).setThemeMode(ThemeMode.system),
-            icon: const Icon(Icons.settings),
-            label: const Text('시스템'),
+            onPressed: () => ref
+                .read(themeModeNotifierProvider.notifier)
+                .setThemeMode(ThemeMode.system),
+            icon: const ScaledIcon(Icons.settings),
+            label: const ScaledText('시스템'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: currentMode == ThemeMode.system 
-                ? Theme.of(ref.context).colorScheme.primary 
-                : Theme.of(ref.context).colorScheme.surface,
-              foregroundColor: currentMode == ThemeMode.system 
-                ? Theme.of(ref.context).colorScheme.onPrimary 
-                : Theme.of(ref.context).colorScheme.onSurface,
+              backgroundColor: currentMode == ThemeMode.system
+                  ? colorScheme.primary
+                  : colorScheme.surface,
+              foregroundColor: currentMode == ThemeMode.system
+                  ? colorScheme.onPrimary
+                  : colorScheme.onSurface,
             ),
           ),
         ),
@@ -156,11 +169,12 @@ class ThemeGuideWidget extends ConsumerWidget {
   }
 
   Widget _buildColorPalette(BuildContext context, ColorScheme colorScheme) {
+    final textTheme = Theme.of(context).textTheme;
     final colors = [
       ('Primary', colorScheme.primary, colorScheme.onPrimary),
       ('Secondary', colorScheme.secondary, colorScheme.onSecondary),
       ('Surface', colorScheme.surface, colorScheme.onSurface),
-      ('Background', colorScheme.background, colorScheme.onBackground),
+      ('Background', colorScheme.surface, colorScheme.onSurface),
       ('Error', colorScheme.error, colorScheme.onError),
       ('Outline', colorScheme.outline, colorScheme.onSurface),
     ];
@@ -175,14 +189,13 @@ class ThemeGuideWidget extends ConsumerWidget {
           decoration: BoxDecoration(
             color: colorInfo.$2,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: colorScheme.outline.withOpacity(0.3)),
+            border: Border.all(color: colorScheme.outline.withAlpha((255 * 0.3).round())),
           ),
           child: Center(
-            child: Text(
+            child: ScaledText(
               colorInfo.$1,
-              style: TextStyle(
+              style: textTheme.labelMedium?.copyWith(
                 color: colorInfo.$3,
-                fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
@@ -195,6 +208,7 @@ class ThemeGuideWidget extends ConsumerWidget {
 
   Widget _buildTextStyleGuide(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final styles = [
       ('Display Large', textTheme.displayLarge),
       ('Headline Large', textTheme.headlineLarge),
@@ -214,18 +228,18 @@ class ThemeGuideWidget extends ConsumerWidget {
             children: [
               SizedBox(
                 width: 120,
-                child: Text(
+                child: ScaledText(
                   styleInfo.$1,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  style: textTheme.bodySmall?.copyWith(
+                    color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
                   ),
                 ),
               ),
               Expanded(
-                child: Text(
+                child: ScaledText(
                   '샘플 텍스트',
                   style: styleInfo.$2?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ),
@@ -237,6 +251,7 @@ class ThemeGuideWidget extends ConsumerWidget {
   }
 
   Widget _buildComponentExamples(BuildContext context, ColorScheme colorScheme) {
+    final textTheme = Theme.of(context).textTheme;
     return Column(
       children: [
         // 버튼 예시
@@ -245,46 +260,51 @@ class ThemeGuideWidget extends ConsumerWidget {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {},
-                child: const Text('Elevated Button'),
+                child: const ScaledText('Elevated Button'),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: OutlinedButton(
                 onPressed: () {},
-                child: const Text('Outlined Button'),
+                child: const ScaledText('Outlined Button'),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: TextButton(
                 onPressed: () {},
-                child: const Text('Text Button'),
+                child: const ScaledText('Text Button'),
               ),
             ),
           ],
         ),
         const SizedBox(height: 16),
-        
+
         // 카드와 리스트 타일 예시
         Card(
           child: ListTile(
-            leading: Icon(Icons.palette, color: colorScheme.primary),
-            title: Text('테마 적용 예시', style: TextStyle(color: colorScheme.onSurface)),
-            subtitle: Text('다크/라이트 모드 호환', style: TextStyle(color: colorScheme.onSurface.withOpacity(0.7))),
-            trailing: Icon(Icons.arrow_forward_ios, color: colorScheme.onSurface.withOpacity(0.5)),
+            leading: ScaledIcon(Icons.palette, color: colorScheme.primary),
+            title: ScaledText('테마 적용 예시',
+                style: textTheme.titleMedium
+                    ?.copyWith(color: colorScheme.onSurface)),
+            subtitle: ScaledText('다크/라이트 모드 호환',
+                style: textTheme.bodyMedium
+                    ?.copyWith(color: colorScheme.onSurface.withAlpha((255 * 0.7).round()))),
+            trailing: ScaledIcon(Icons.arrow_forward_ios,
+                color: colorScheme.onSurface.withAlpha((255 * 0.5).round())),
           ),
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // 입력 필드 예시
         TextField(
           decoration: InputDecoration(
             labelText: '입력 필드 예시',
             hintText: '텍스트를 입력하세요',
             border: const OutlineInputBorder(),
-            prefixIcon: Icon(Icons.edit, color: colorScheme.primary),
+            prefixIcon: ScaledIcon(Icons.edit, color: colorScheme.primary),
           ),
         ),
       ],
@@ -292,6 +312,8 @@ class ThemeGuideWidget extends ConsumerWidget {
   }
 
   Widget _buildDevelopmentGuidelines(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     final guidelines = [
       '✅ Theme.of(context).colorScheme를 사용하여 색상 적용',
       '✅ Theme.of(context).textTheme를 사용하여 텍스트 스타일 적용',
@@ -312,21 +334,18 @@ class ThemeGuideWidget extends ConsumerWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
+              ScaledText(
                 guideline.substring(0, 2),
-                style: TextStyle(
-                  fontSize: 16,
-                  color: isWarning 
-                    ? Theme.of(context).colorScheme.error 
-                    : Theme.of(context).colorScheme.primary,
+                style: textTheme.titleMedium?.copyWith(
+                  color: isWarning ? colorScheme.error : colorScheme.primary,
                 ),
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: Text(
+                child: ScaledText(
                   guideline.substring(3),
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurface,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface,
                   ),
                 ),
               ),

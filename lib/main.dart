@@ -21,16 +21,35 @@ void main() async {
   await Hive.openBox('settings');
   await Hive.openBox<ExchangeRate>('exchangeRates');
 
-  // ProviderContainer를 생성하여 앱 시작 시 백그라운드 작업 수행
-  final container = ProviderContainer();
+  runApp(const ProviderScope(child: _AppInitializer()));
+}
 
-  // 1. v6 API를 통해 부족한 환율 정보를 한 번 가져옴
-  await container.read(exchangeRateUpdateServiceProvider).updateRatesIfNeeded();
+class _AppInitializer extends ConsumerStatefulWidget {
+  const _AppInitializer();
 
-  // 2. ExConvert API를 통해 1분마다 주기적으로 환율 정보 업데이트 시작
-  container.read(exConvertPeriodicUpdateServiceProvider).startPeriodicUpdates();
+  @override
+  ConsumerState<_AppInitializer> createState() => __AppInitializerState();
+}
 
-  runApp(ProviderScope(parent: container, child: const MyApp()));
+class __AppInitializerState extends ConsumerState<_AppInitializer> {
+  @override
+  void initState() {
+    super.initState();
+    _initializeProviders();
+  }
+
+  Future<void> _initializeProviders() async {
+    // 1. v6 API를 통해 부족한 환율 정보를 한 번 가져옴
+    await ref.read(exchangeRateUpdateServiceProvider).updateRatesIfNeeded();
+
+    // 2. ExConvert API를 통해 1분마다 주기적으로 환율 정보 업데이트 시작
+    ref.read(exConvertPeriodicUpdateServiceProvider).startPeriodicUpdates();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return const MyApp();
+  }
 }
 
 class MyApp extends ConsumerWidget {

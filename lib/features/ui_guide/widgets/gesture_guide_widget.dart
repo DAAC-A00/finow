@@ -1,5 +1,6 @@
 // 이 위젯은 다양한 제스처(스와이프, 드래그, 롱프레스 등) 구현 예시를 제공하여, 프로젝트 내 제스처 UX의 기준점 역할을 합니다.
 // 실제 서비스 적용 전, 제스처 동작의 방향성과 일관성을 확인하는 용도로 사용하세요.
+import 'package:finow/ui_scale_provider.dart';
 import 'package:flutter/material.dart';
 
 class GestureGuideWidget extends StatefulWidget {
@@ -13,21 +14,22 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
   List<String> items = List.generate(5, (index) => 'Item ${index + 1}');
   Color? _dragColor;
   String _lastEvent = 'None';
-  
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _dragColor ??= Theme.of(context).colorScheme.surfaceContainerHighest; // surfaceVariant -> surfaceContainerHighest
+    _dragColor ??=
+        Theme.of(context).colorScheme.surfaceContainerHighest; // surfaceVariant -> surfaceContainerHighest
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    
+
     return Column(
       children: [
-        Text(
+        ScaledText(
           'Dismissible (Swipe to delete)',
           style: textTheme.titleMedium?.copyWith(
             color: colorScheme.onSurface,
@@ -36,47 +38,47 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
         ),
         const SizedBox(height: 8),
         ...items.map((item) => Card(
-          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
-          color: colorScheme.surface,
-          child: Dismissible(
-            key: Key(item),
-            onDismissed: (direction) {
-              setState(() {
-                items.remove(item);
-              });
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
-                    '$item dismissed',
-                    style: TextStyle(color: colorScheme.onInverseSurface),
+              margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+              color: colorScheme.surface,
+              child: Dismissible(
+                key: Key(item),
+                onDismissed: (direction) {
+                  setState(() {
+                    items.remove(item);
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: ScaledText(
+                        '$item dismissed',
+                        style: TextStyle(color: colorScheme.onInverseSurface),
+                      ),
+                      backgroundColor: colorScheme.inverseSurface,
+                    ),
+                  );
+                },
+                background: Container(
+                  color: colorScheme.error,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.only(right: 16),
+                  child: ScaledIcon(
+                    Icons.delete,
+                    color: colorScheme.onError,
                   ),
-                  backgroundColor: colorScheme.inverseSurface,
                 ),
-              );
-            },
-            background: Container(
-              color: colorScheme.error,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 16),
-              child: Icon(
-                Icons.delete,
-                color: colorScheme.onError,
+                child: ListTile(
+                  title: ScaledText(
+                    item,
+                    style: TextStyle(color: colorScheme.onSurface),
+                  ),
+                  leading: ScaledIcon(
+                    Icons.drag_handle,
+                    color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
+                  ),
+                ),
               ),
-            ),
-            child: ListTile(
-              title: Text(
-                item,
-                style: TextStyle(color: colorScheme.onSurface),
-              ),
-              leading: Icon(
-                Icons.drag_handle,
-                color: colorScheme.onSurface.withAlpha(153), // withOpacity(0.6)
-              ),
-            ),
-          ),
-        )),
+            )),
         const SizedBox(height: 20),
-        Text(
+        ScaledText(
           'Draggable & DragTarget',
           style: textTheme.titleMedium?.copyWith(
             color: colorScheme.onSurface,
@@ -92,30 +94,30 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
               feedback: CircleAvatar(
                 backgroundColor: colorScheme.primary,
                 radius: 25,
-                child: Icon(
+                child: ScaledIcon(
                   Icons.touch_app,
                   color: colorScheme.onPrimary,
                 ),
               ),
               childWhenDragging: CircleAvatar(
-                backgroundColor: colorScheme.surfaceContainerHighest, // surfaceVariant -> surfaceContainerHighest
+                backgroundColor: colorScheme.surfaceContainerHighest,
                 radius: 25,
-                child: Icon(
+                child: ScaledIcon(
                   Icons.touch_app,
-                  color: colorScheme.onSurfaceVariant.withAlpha(128), // withOpacity(0.5)
+                  color: colorScheme.onSurfaceVariant.withAlpha((255 * 0.5).round()),
                 ),
               ),
               child: CircleAvatar(
                 backgroundColor: colorScheme.primary,
                 radius: 25,
-                child: Icon(
+                child: ScaledIcon(
                   Icons.touch_app,
                   color: colorScheme.onPrimary,
                 ),
               ),
             ),
             DragTarget<Color>(
-              onAcceptWithDetails: (details) { // onAccept -> onAcceptWithDetails
+              onAcceptWithDetails: (details) {
                 setState(() {
                   _dragColor = details.data;
                 });
@@ -129,13 +131,13 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
                     color: _dragColor,
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: isHovering 
-                        ? colorScheme.primary 
-                        : colorScheme.outline.withAlpha(77), // withOpacity(0.3)
+                      color: isHovering
+                          ? colorScheme.primary
+                          : colorScheme.outline.withAlpha((255 * 0.3).round()),
                       width: isHovering ? 3 : 1,
                     ),
                   ),
-                  child: Icon(
+                  child: ScaledIcon(
                     Icons.track_changes,
                     color: colorScheme.onSurface,
                     size: 40,
@@ -146,7 +148,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
           ],
         ),
         const SizedBox(height: 20),
-        Text(
+        ScaledText(
           'Long Press & Double Tap',
           style: textTheme.titleMedium?.copyWith(
             color: colorScheme.onSurface,
@@ -164,21 +166,21 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
               color: colorScheme.primaryContainer,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: colorScheme.outline.withAlpha(77), // withOpacity(0.3)
+                color: colorScheme.outline.withAlpha((255 * 0.3).round()),
               ),
             ),
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(
+                  ScaledIcon(
                     Icons.touch_app,
                     color: colorScheme.onPrimaryContainer,
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  ScaledText(
                     _lastEvent,
-                    style: TextStyle(
+                    style: textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onPrimaryContainer,
                       fontWeight: FontWeight.bold,
                     ),

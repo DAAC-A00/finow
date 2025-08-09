@@ -11,7 +11,7 @@ class ScalingGuideWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentFontSize = ref.watch(fontSizeNotifierProvider);
-    
+
     return ListView(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -19,103 +19,106 @@ class ScalingGuideWidget extends ConsumerWidget {
       children: [
         _buildHeaderCard(),
         const SizedBox(height: 16),
-        
         _buildCurrentScaleCard(currentFontSize),
-        
         _buildScalingExampleCard(
           title: '스케일링된 텍스트 예시',
           subtitle: '일반 Text 위젯은 MediaQuery textScaler로 자동 스케일링',
           child: _buildTextScalingExample(),
         ),
-        
         _buildScalingExampleCard(
           title: '스케일링된 아이콘 예시',
           subtitle: 'ScaledIcon 사용 - UIScaleProvider 기반',
           child: _buildIconScalingExample(),
         ),
-        
         _buildScalingExampleCard(
           title: '스케일링된 이미지 예시',
           subtitle: 'ScaledAssetImage 사용 - baseWidth/Height 기준 스케일링',
           child: _buildImageScalingExample(),
         ),
-        
         _buildScalingExampleCard(
           title: '비교: 일반 vs 스케일링',
           subtitle: '차이점을 명확히 보여주는 비교 예시',
           child: _buildComparisonExample(),
         ),
-        
         _buildImplementationGuideCard(),
       ],
     );
   }
 
   Widget _buildHeaderCard() {
-    return Card(
-      elevation: 4.0,
-      color: Colors.green.shade50,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const ScaledIcon(
-              Icons.zoom_in,
-              size: 48,
-              color: Colors.green,
-            ),
-            const SizedBox(height: 8),
-            const ScaledText(
-              'UI 스케일링 시스템',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.green,
+    return Builder(builder: (context) {
+      final colorScheme = Theme.of(context).colorScheme;
+      final textTheme = Theme.of(context).textTheme;
+      return Card(
+        elevation: 4.0,
+        color: colorScheme.secondaryContainer.withAlpha((255 * 0.5).round()),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              ScaledIcon(
+                Icons.zoom_in,
+                size: 48,
+                color: colorScheme.secondary,
               ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            const ScaledText(
-              'MediaQuery textScaler + UIScaleProvider 조합으로 전체 UI 스케일링',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
-          ],
+              const SizedBox(height: 8),
+              ScaledText(
+                'UI 스케일링 시스템',
+                style: textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: colorScheme.onSecondaryContainer,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              ScaledText(
+                'MediaQuery textScaler + UIScaleProvider 조합으로 전체 UI 스케일링',
+                textAlign: TextAlign.center,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSecondaryContainer.withAlpha((255 * 0.8).round()),
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildCurrentScaleCard(FontSizeOption currentFontSize) {
-    return Card(
-      elevation: 3.0,
-      color: Colors.blue.shade50,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const ScaledIcon(Icons.settings, color: Colors.blue),
-            const SizedBox(width: 12),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const ScaledText(
-                  '현재 스케일 설정',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                ScaledText(
-                  '${currentFontSize.label}: ${currentFontSize.scale}x',
-                  style: const TextStyle(fontSize: 16, color: Colors.blue),
-                ),
-              ],
-            ),
-            const SizedBox(width: 16),
-            const ScaledText('← Settings에서 변경해보세요'),
-          ],
+    return Builder(builder: (context) {
+      final colorScheme = Theme.of(context).colorScheme;
+      final textTheme = Theme.of(context).textTheme;
+      return Card(
+        elevation: 3.0,
+        color: colorScheme.primaryContainer.withAlpha((255 * 0.5).round()),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ScaledIcon(Icons.settings, color: colorScheme.primary),
+              const SizedBox(width: 12),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  ScaledText(
+                    '현재 스케일 설정',
+                    style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  ScaledText(
+                    '${currentFontSize.label}: ${currentFontSize.scale}x',
+                    style: textTheme.bodyLarge?.copyWith(color: colorScheme.primary),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 16),
+              const ScaledText('← Settings에서 변경해보세요'),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildScalingExampleCard({
@@ -123,293 +126,315 @@ class ScalingGuideWidget extends ConsumerWidget {
     required String subtitle,
     required Widget child,
   }) {
-    return Card(
-      elevation: 2.0,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
+    return Builder(builder: (context) {
+      final colorScheme = Theme.of(context).colorScheme;
+      final textTheme = Theme.of(context).textTheme;
+      return Card(
+        elevation: 2.0,
+        margin: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  ScaledIcon(Icons.widgets, color: colorScheme.tertiary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ScaledText(
+                          title,
+                          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                        ),
+                        ScaledText(
+                          subtitle,
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              child,
+            ],
+          ),
+        ),
+      );
+    });
+  }
+
+  Widget _buildTextScalingExample() {
+    return Builder(builder: (context) {
+      final colorScheme = Theme.of(context).colorScheme;
+      final textTheme = Theme.of(context).textTheme;
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: colorScheme.tertiaryContainer.withAlpha((255 * 0.2).round()),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '작은 텍스트 (fontSize: 12)',
+              style: textTheme.bodySmall,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '일반 텍스트 (fontSize: 16)',
+              style: textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '큰 텍스트 (fontSize: 20)',
+              style: textTheme.headlineSmall,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              '매우 큰 텍스트 (fontSize: 24)',
+              style: textTheme.titleLarge?.copyWith(color: colorScheme.tertiary),
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildIconScalingExample() {
+    return Builder(builder: (context) {
+      final colorScheme = Theme.of(context).colorScheme;
+      final textTheme = Theme.of(context).textTheme;
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: colorScheme.primaryContainer.withAlpha((255 * 0.2).round()),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Wrap(
+          spacing: 16,
+          runSpacing: 16,
+          alignment: WrapAlignment.center,
+          children: [
+            Column(
+              children: [
+                const ScaledIcon(Icons.home, size: 16),
+                Text('16px', style: textTheme.labelSmall),
+              ],
+            ),
+            Column(
+              children: [
+                const ScaledIcon(Icons.search, size: 24),
+                Text('24px', style: textTheme.labelSmall),
+              ],
+            ),
+            Column(
+              children: [
+                const ScaledIcon(Icons.settings, size: 32),
+                Text('32px', style: textTheme.labelSmall),
+              ],
+            ),
+            Column(
+              children: [
+                ScaledIcon(Icons.favorite, size: 40, color: colorScheme.error),
+                Text('40px', style: textTheme.labelSmall),
+              ],
+            ),
+            Column(
+              children: [
+                ScaledIcon(Icons.star, size: 48, color: colorScheme.secondary),
+                Text('48px', style: textTheme.labelSmall),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildImageScalingExample() {
+    return Builder(builder: (context) {
+      final colorScheme = Theme.of(context).colorScheme;
+      final textTheme = Theme.of(context).textTheme;
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: colorScheme.secondaryContainer.withAlpha((255 * 0.2).round()),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          children: [
+            ScaledText(
+              '실제 프로젝트에서 사용되는 이미지들',
+              style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  children: [
+                    const ScaledAssetImage(
+                      assetPath: 'images/exconvert.png',
+                      baseWidth: 24,
+                      baseHeight: 24,
+                    ),
+                    const SizedBox(height: 4),
+                    Text('24x24', style: textTheme.labelSmall),
+                  ],
+                ),
+                Column(
+                  children: [
+                    const ScaledAssetImage(
+                      assetPath: 'images/exchangerate-api.png',
+                      baseWidth: 32,
+                      baseHeight: 32,
+                    ),
+                    const SizedBox(height: 4),
+                    Text('32x32', style: textTheme.labelSmall),
+                  ],
+                ),
+                Column(
+                  children: [
+                    const ScaledAssetImage(
+                      assetPath: 'images/exconvert.png',
+                      baseWidth: 48,
+                      baseHeight: 48,
+                    ),
+                    const SizedBox(height: 4),
+                    Text('48x48', style: textTheme.labelSmall),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
+  }
+
+  Widget _buildComparisonExample() {
+    return Builder(builder: (context) {
+      final colorScheme = Theme.of(context).colorScheme;
+      final textTheme = Theme.of(context).textTheme;
+      return Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: colorScheme.errorContainer.withAlpha((255 * 0.2).round()),
+          borderRadius: BorderRadius.circular(8),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const ScaledIcon(Icons.widgets, color: Colors.orange),
+                ScaledIcon(Icons.warning, color: colorScheme.error, size: 16),
                 const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ScaledText(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      ScaledText(
-                        subtitle,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
+                ScaledText(
+                  '❌ 스케일링 미적용 (잘못된 사용)',
+                  style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.error),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            child,
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const Icon(Icons.home, size: 24), // 일반 Icon - 스케일링 안됨
+                const SizedBox(width: 16),
+                Text('일반 Icon (고정 크기)', style: textTheme.bodyMedium),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                ScaledIcon(Icons.check_circle, color: colorScheme.secondary, size: 16),
+                const SizedBox(width: 8),
+                ScaledText(
+                  '✅ 스케일링 적용 (올바른 사용)',
+                  style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.secondary),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                const ScaledIcon(Icons.home, size: 24), // ScaledIcon - 스케일링 적용됨
+                const SizedBox(width: 16),
+                Text('ScaledIcon (반응형 크기)', style: textTheme.bodyMedium),
+              ],
+            ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildTextScalingExample() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.purple.shade50,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: const Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '작은 텍스트 (fontSize: 12)',
-            style: TextStyle(fontSize: 12),
-          ),
-          SizedBox(height: 8),
-          Text(
-            '일반 텍스트 (fontSize: 16)',
-            style: TextStyle(fontSize: 16),
-          ),
-          SizedBox(height: 8),
-          Text(
-            '큰 텍스트 (fontSize: 20)',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 8),
-          Text(
-            '매우 큰 텍스트 (fontSize: 24)',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.purple),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildIconScalingExample() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.blue.shade50,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: const Wrap(
-        spacing: 16,
-        runSpacing: 16,
-        children: [
-          Column(
-            children: [
-              ScaledIcon(Icons.home, size: 16),
-              Text('16px', style: TextStyle(fontSize: 10)),
-            ],
-          ),
-          Column(
-            children: [
-              ScaledIcon(Icons.search, size: 24),
-              Text('24px', style: TextStyle(fontSize: 10)),
-            ],
-          ),
-          Column(
-            children: [
-              ScaledIcon(Icons.settings, size: 32),
-              Text('32px', style: TextStyle(fontSize: 10)),
-            ],
-          ),
-          Column(
-            children: [
-              ScaledIcon(Icons.favorite, size: 40, color: Colors.red),
-              Text('40px', style: TextStyle(fontSize: 10)),
-            ],
-          ),
-          Column(
-            children: [
-              ScaledIcon(Icons.star, size: 48, color: Colors.amber),
-              Text('48px', style: TextStyle(fontSize: 10)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildImageScalingExample() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.green.shade50,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: const Column(
-        children: [
-          Text(
-            '실제 프로젝트에서 사용되는 이미지들',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Column(
-                children: [
-                  ScaledAssetImage(
-                    assetPath: 'images/exconvert.png',
-                    baseWidth: 24,
-                    baseHeight: 24,
-                  ),
-                  SizedBox(height: 4),
-                  Text('24x24', style: TextStyle(fontSize: 10)),
-                ],
-              ),
-              Column(
-                children: [
-                  ScaledAssetImage(
-                    assetPath: 'images/exchangerate-api.png',
-                    baseWidth: 32,
-                    baseHeight: 32,
-                  ),
-                  SizedBox(height: 4),
-                  Text('32x32', style: TextStyle(fontSize: 10)),
-                ],
-              ),
-              Column(
-                children: [
-                  ScaledAssetImage(
-                    assetPath: 'images/exconvert.png',
-                    baseWidth: 48,
-                    baseHeight: 48,
-                  ),
-                  SizedBox(height: 4),
-                  Text('48x48', style: TextStyle(fontSize: 10)),
-                ],
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildComparisonExample() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.red.shade50,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            children: [
-              Icon(Icons.warning, color: Colors.red, size: 16),
-              SizedBox(width: 8),
-              Text(
-                '❌ 스케일링 미적용 (잘못된 사용)',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const Row(
-            children: [
-              Icon(Icons.home, size: 24), // 일반 Icon - 스케일링 안됨
-              SizedBox(width: 16),
-              Text('일반 Icon (고정 크기)', style: TextStyle(fontSize: 14)),
-            ],
-          ),
-          const SizedBox(height: 16),
-          const Row(
-            children: [
-              Icon(Icons.check_circle, color: Colors.green, size: 16),
-              SizedBox(width: 8),
-              Text(
-                '✅ 스케일링 적용 (올바른 사용)',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          const Row(
-            children: [
-              ScaledIcon(Icons.home, size: 24), // ScaledIcon - 스케일링 적용됨
-              SizedBox(width: 16),
-              Text('ScaledIcon (반응형 크기)', style: TextStyle(fontSize: 14)),
-            ],
-          ),
-        ],
-      ),
-    );
+      );
+    });
   }
 
   Widget _buildImplementationGuideCard() {
-    return Card(
-      elevation: 2.0,
-      color: Colors.grey.shade50,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Row(
-              children: [
-                ScaledIcon(Icons.code, color: Colors.indigo),
-                SizedBox(width: 8),
-                ScaledText(
-                  '구현 가이드',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            _buildImplementationItem('Text 위젯', '일반 Text() 사용 - 자동 스케일링', Colors.blue),
-            _buildImplementationItem('아이콘', 'ScaledIcon() 사용 필수', Colors.orange),
-            _buildImplementationItem('이미지', 'ScaledAssetImage() 사용 필수', Colors.green),
-            _buildImplementationItem('금지 사항', 'Icon(), Image.asset() 직접 사용 금지', Colors.red),
-            const SizedBox(height: 12),
-            Container(
-              padding: const EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                color: Colors.indigo.shade50,
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return Builder(builder: (context) {
+      final colorScheme = Theme.of(context).colorScheme;
+      final textTheme = Theme.of(context).textTheme;
+      return Card(
+        elevation: 2.0,
+        color: colorScheme.surfaceContainerHighest,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
                 children: [
+                  ScaledIcon(Icons.code, color: colorScheme.primary),
+                  const SizedBox(width: 8),
                   ScaledText(
-                    '핵심 원리:',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.indigo),
-                  ),
-                  SizedBox(height: 4),
-                  ScaledText(
-                    '• MediaQuery textScaler: 텍스트 자동 스케일링\n'
-                    '• UIScaleProvider: 아이콘/이미지 수동 스케일링\n'
-                    '• FontSizeProvider: 사용자 설정 값 제공',
-                    style: TextStyle(fontSize: 12),
+                    '구현 가이드',
+                    style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
-            ),
-          ],
+              const SizedBox(height: 12),
+              _buildImplementationItem(context, 'Text 위젯', '일반 Text() 사용 - 자동 스케일링', colorScheme.primary),
+              _buildImplementationItem(context, '아이콘', 'ScaledIcon() 사용 필수', colorScheme.secondary),
+              _buildImplementationItem(context, '이미지', 'ScaledAssetImage() 사용 필수', colorScheme.tertiary),
+              _buildImplementationItem(context, '금지 사항', 'Icon(), Image.asset() 직접 사용 금지', colorScheme.error),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: colorScheme.primaryContainer.withAlpha((255 * 0.3).round()),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ScaledText(
+                      '핵심 원리:',
+                      style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary),
+                    ),
+                    const SizedBox(height: 4),
+                    ScaledText(
+                      '• MediaQuery textScaler: 텍스트 자동 스케일링\n'
+                      '• UIScaleProvider: 아이콘/이미지 수동 스케일링\n'
+                      '• FontSizeProvider: 사용자 설정 값 제공',
+                      style: textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    });
   }
 
-  Widget _buildImplementationItem(String component, String usage, Color color) {
+  Widget _buildImplementationItem(BuildContext context, String component, String usage, Color color) {
+    final textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
@@ -426,9 +451,9 @@ class ScalingGuideWidget extends ConsumerWidget {
           ),
           ScaledText(
             '$component: ',
-            style: TextStyle(fontWeight: FontWeight.bold, color: color),
+            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: color),
           ),
-          Expanded(child: ScaledText(usage)),
+          Expanded(child: ScaledText(usage, style: textTheme.bodyMedium)),
         ],
       ),
     );

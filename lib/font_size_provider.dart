@@ -1,5 +1,4 @@
 import 'package:finow/features/storage_viewer/local_storage_service.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 enum FontSizeOption {

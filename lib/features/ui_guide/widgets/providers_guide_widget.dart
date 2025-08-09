@@ -74,35 +74,30 @@ class ProvidersGuideWidget extends ConsumerWidget {
       children: [
         _buildHeaderCard(context, 'Finow Provider 패턴 예시'),
         const SizedBox(height: 16),
-        
         _buildProviderExampleCard(
           context,
           title: '1. StateProvider',
           subtitle: '간단한 상태 관리 (예: 카운터, 검색어)',
           child: _buildStateProviderExample(ref),
         ),
-        
         _buildProviderExampleCard(
           context,
           title: '2. AsyncNotifier',
           subtitle: '비동기 데이터 관리 (예: 환율 데이터)',
           child: _buildAsyncNotifierExample(ref),
         ),
-        
         _buildProviderExampleCard(
           context,
           title: '3. StateNotifier',
           subtitle: '복잡한 상태 관리 (예: Admin Mode)',
           child: _buildStateNotifierExample(ref),
         ),
-        
         _buildProviderExampleCard(
           context,
           title: '4. FutureProvider',
           subtitle: '읽기 전용 비동기 데이터',
           child: _buildFutureProviderExample(ref),
         ),
-        
         _buildUsageGuideCard(context),
       ],
     );
@@ -111,7 +106,6 @@ class ProvidersGuideWidget extends ConsumerWidget {
   Widget _buildHeaderCard(BuildContext context, String title) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    
     return Card(
       elevation: 4.0,
       color: colorScheme.primaryContainer,
@@ -119,9 +113,10 @@ class ProvidersGuideWidget extends ConsumerWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            const ScaledIcon(
+            ScaledIcon(
               Icons.account_tree,
               size: 48,
+              color: colorScheme.primary,
             ),
             const SizedBox(height: 8),
             ScaledText(
@@ -133,10 +128,12 @@ class ProvidersGuideWidget extends ConsumerWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            const ScaledText(
+            ScaledText(
               '실제 프로젝트에서 사용되는 5가지 Provider 패턴의 동작 예시',
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onPrimaryContainer.withAlpha((255 * 0.8).round()),
+              ),
             ),
           ],
         ),
@@ -150,6 +147,8 @@ class ProvidersGuideWidget extends ConsumerWidget {
     required String subtitle,
     required Widget child,
   }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     return Card(
       elevation: 2.0,
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -160,7 +159,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const ScaledIcon(Icons.code, color: Colors.green),
+                ScaledIcon(Icons.code, color: colorScheme.secondary),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
@@ -168,14 +167,15 @@ class ProvidersGuideWidget extends ConsumerWidget {
                     children: [
                       ScaledText(
                         title,
-                        style: const TextStyle(
-                          fontSize: 16,
+                        style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
                       ScaledText(
                         subtitle,
-                        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant.withAlpha(204)), // withOpacity(0.8)
+                        style: textTheme.bodySmall?.copyWith(
+                          color: colorScheme.onSurfaceVariant.withAlpha((255 * 0.8).round()),
+                        ),
                       ),
                     ],
                   ),
@@ -192,24 +192,22 @@ class ProvidersGuideWidget extends ConsumerWidget {
 
   Widget _buildStateProviderExample(WidgetRef ref) {
     final counter = ref.watch(counterProvider);
-    
     return Builder(
       builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
-        
+        final textTheme = Theme.of(context).textTheme;
         return Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: colorScheme.secondaryContainer,
+            color: colorScheme.secondaryContainer.withAlpha((255 * 0.5).round()),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ScaledText(
-                '카운터: $counter', 
-                style: TextStyle(
-                  fontSize: 16,
+                '카운터: $counter',
+                style: textTheme.bodyLarge?.copyWith(
                   color: colorScheme.onSecondaryContainer,
                 ),
               ),
@@ -241,40 +239,39 @@ class ProvidersGuideWidget extends ConsumerWidget {
 
   Widget _buildAsyncNotifierExample(WidgetRef ref) {
     final asyncCounter = ref.watch(asyncCounterProvider);
-    
     return Builder(
       builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
-        
+        final textTheme = Theme.of(context).textTheme;
         return Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: colorScheme.tertiaryContainer,
+            color: colorScheme.tertiaryContainer.withAlpha((255 * 0.5).round()),
             borderRadius: BorderRadius.circular(8),
           ),
           child: asyncCounter.when(
             loading: () => Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                const SizedBox(
+                    width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
                 const SizedBox(width: 8),
                 ScaledText(
-                  '로딩 중...', 
-                  style: TextStyle(color: colorScheme.onTertiaryContainer),
+                  '로딩 중...',
+                  style: textTheme.bodyMedium?.copyWith(color: colorScheme.onTertiaryContainer),
                 ),
               ],
             ),
             error: (error, stack) => ScaledText(
-              '오류: $error', 
-              style: TextStyle(color: colorScheme.error),
+              '오류: $error',
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.error),
             ),
             data: (data) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ScaledText(
-                  '비동기 카운터: $data', 
-                  style: TextStyle(
-                    fontSize: 16,
+                  '비동기 카운터: $data',
+                  style: textTheme.bodyLarge?.copyWith(
                     color: colorScheme.onTertiaryContainer,
                   ),
                 ),
@@ -293,24 +290,22 @@ class ProvidersGuideWidget extends ConsumerWidget {
 
   Widget _buildStateNotifierExample(WidgetRef ref) {
     final exampleState = ref.watch(exampleStateNotifierProvider);
-    
     return Builder(
       builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
-        
+        final textTheme = Theme.of(context).textTheme;
         return Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: colorScheme.surfaceContainerHighest, // surfaceVariant -> surfaceContainerHighest
+            color: colorScheme.surfaceContainerHighest,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ScaledText(
-                '메시지: ${exampleState.message}', 
-                style: TextStyle(
-                  fontSize: 16,
+                '메시지: ${exampleState.message}',
+                style: textTheme.bodyLarge?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
               ),
@@ -319,11 +314,12 @@ class ProvidersGuideWidget extends ConsumerWidget {
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                    const SizedBox(
+                        width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
                     const SizedBox(width: 8),
                     ScaledText(
-                      '업데이트 중...', 
-                      style: TextStyle(color: colorScheme.onSurfaceVariant),
+                      '업데이트 중...',
+                      style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                     ),
                   ],
                 )
@@ -343,40 +339,39 @@ class ProvidersGuideWidget extends ConsumerWidget {
 
   Widget _buildFutureProviderExample(WidgetRef ref) {
     final futureData = ref.watch(futureExampleProvider);
-    
     return Builder(
       builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
-        
+        final textTheme = Theme.of(context).textTheme;
         return Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: colorScheme.primaryContainer.withAlpha(128), // withOpacity(0.5)
+            color: colorScheme.primaryContainer.withAlpha((255 * 0.5).round()),
             borderRadius: BorderRadius.circular(8),
           ),
           child: futureData.when(
             loading: () => Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                const SizedBox(
+                    width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
                 const SizedBox(width: 8),
                 ScaledText(
                   '데이터 로딩 중... (2초)',
-                  style: TextStyle(color: colorScheme.onPrimaryContainer),
+                  style: textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimaryContainer),
                 ),
               ],
             ),
             error: (error, stack) => ScaledText(
-              '오류: $error', 
-              style: TextStyle(color: colorScheme.error),
+              '오류: $error',
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.error),
             ),
             data: (data) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 ScaledText(
-                  '데이터: $data', 
-                  style: TextStyle(
-                    fontSize: 16,
+                  '데이터: $data',
+                  style: textTheme.bodyLarge?.copyWith(
                     color: colorScheme.onPrimaryContainer,
                   ),
                 ),
@@ -396,7 +391,6 @@ class ProvidersGuideWidget extends ConsumerWidget {
   Widget _buildUsageGuideCard(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    
     return Card(
       elevation: 2.0,
       color: colorScheme.surface,
@@ -408,7 +402,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
             Row(
               children: [
                 ScaledIcon(
-                  Icons.lightbulb, 
+                  Icons.lightbulb,
                   color: colorScheme.secondary,
                 ),
                 const SizedBox(width: 8),
@@ -434,31 +428,31 @@ class ProvidersGuideWidget extends ConsumerWidget {
   }
 
   Widget _buildGuideItem(BuildContext context, String provider, String usage) {
+    final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
-    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ScaledText(
-            '• ', 
-            style: TextStyle(
+            '• ',
+            style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
             ),
           ),
           ScaledText(
             '$provider: ',
-            style: TextStyle(
-              fontWeight: FontWeight.bold, 
+            style: textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
               color: colorScheme.primary,
             ),
           ),
           Expanded(
             child: ScaledText(
               usage,
-              style: TextStyle(color: colorScheme.onSurface),
+              style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
             ),
           ),
         ],

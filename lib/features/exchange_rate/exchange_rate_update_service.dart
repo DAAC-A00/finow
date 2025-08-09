@@ -2,6 +2,7 @@ import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_local_service.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 
 /// 앱 시작 시 v6.exchangerate-api.com의 데이터를 사용하여
 /// 로컬 환율 정보를 보충하는 일회성 서비스를 제공하는 Provider
@@ -39,10 +40,10 @@ class ExchangeRateUpdateService {
 
       if (ratesToSave.isNotEmpty) {
         await _localService.saveRates(ratesToSave);
-        
+
       }
     } catch (e) {
-      
+      debugPrint('Error updating exchange rates: $e');
     }
   }
 }

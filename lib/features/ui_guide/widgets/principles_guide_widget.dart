@@ -1,5 +1,3 @@
-
-
 // 설계 원칙과 코딩 표준의 실제 적용 예시를 제공합니다.
 // docs에서 제거된 설계 원칙 관련 코드 예시들을 실제로 동작하는 형태로 구현합니다.
 import 'package:flutter/material.dart';
@@ -26,31 +24,26 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
       children: [
         _buildHeaderCard(),
         const SizedBox(height: 16),
-        
         _buildPrincipleCard(
           title: 'SOLID 원칙',
           subtitle: '객체지향 설계 5원칙 적용 예시',
           child: _buildSOLIDExample(),
         ),
-        
         _buildPrincipleCard(
           title: 'const 생성자 원칙',
           subtitle: '성능 최적화를 위한 const 사용',
           child: _buildConstExample(),
         ),
-        
         _buildPrincipleCard(
           title: '위젯 분리 원칙',
           subtitle: '단일 책임과 가독성을 위한 위젯 분리',
           child: _buildWidgetSeparationExample(),
         ),
-        
         _buildPrincipleCard(
           title: '성능 최적화 원칙',
           subtitle: '60FPS 유지를 위한 최적화 기법',
           child: _buildPerformanceExample(),
         ),
-        
         _buildPrincipleCard(
           title: '에러 처리 원칙',
           subtitle: '견고한 앱을 위한 에러 처리',
@@ -65,7 +58,6 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
       builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
         final textTheme = Theme.of(context).textTheme;
-        
         return Card(
           elevation: 4.0,
           color: colorScheme.primaryContainer,
@@ -92,7 +84,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
                   '코드 품질과 유지보수성을 위한 핵심 개발 원칙들',
                   textAlign: TextAlign.center,
                   style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onPrimaryContainer.withAlpha(204), // withOpacity(0.8)
+                    color: colorScheme.onPrimaryContainer.withAlpha(204),
                   ),
                 ),
               ],
@@ -112,7 +104,6 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
       builder: (context) {
         final colorScheme = Theme.of(context).colorScheme;
         final textTheme = Theme.of(context).textTheme;
-        
         return Card(
           elevation: 2.0,
           margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -125,7 +116,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
                 Row(
                   children: [
                     ScaledIcon(
-                      Icons.check_circle, 
+                      Icons.check_circle,
                       color: colorScheme.primary,
                     ),
                     const SizedBox(width: 8),
@@ -143,7 +134,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
                           ScaledText(
                             subtitle,
                             style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurface.withAlpha(178), // withOpacity(0.7)
+                              color: colorScheme.onSurface.withAlpha(178),
                             ),
                           ),
                         ],
@@ -162,16 +153,19 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
   }
 
   Widget _buildSOLIDExample() {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSOLIDPrinciple(
-          'S', 'Single Responsibility', 
+          'S',
+          'Single Responsibility',
           '단일 책임: 각 클래스는 하나의 책임만',
-          'ExchangeRateScreen → UI만\nExchangeRateRepository → 데이터만',
+          '''ExchangeRateScreen → UI만
+ExchangeRateRepository → 데이터만''',
           _showSRPExample,
           () => setState(() => _showSRPExample = !_showSRPExample),
-          Colors.red,
+          colorScheme.error,
         ),
         _buildSOLIDPrinciple(
           'O', 'Open/Closed',
@@ -179,7 +173,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
           'ApiClient 인터페이스로 ExConvert, ExchangeRate 구현체 분리',
           _showOCPExample,
           () => setState(() => _showOCPExample = !_showOCPExample),
-          Colors.blue,
+          colorScheme.primary,
         ),
         _buildSOLIDPrinciple(
           'L', 'Liskov Substitution',
@@ -187,7 +181,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
           'StorageService 인터페이스로 Hive, Secure 구현체 교체 가능',
           false,
           null,
-          Colors.green,
+          colorScheme.secondary,
         ),
         _buildSOLIDPrinciple(
           'I', 'Interface Segregation',
@@ -195,7 +189,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
           'ReadableStorage, WritableStorage 인터페이스 분리',
           false,
           null,
-          Colors.orange,
+          colorScheme.tertiary,
         ),
         _buildSOLIDPrinciple(
           'D', 'Dependency Inversion',
@@ -203,21 +197,37 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
           'Provider로 서비스 주입, 구현체 교체 용이',
           false,
           null,
-          Colors.purple,
+          colorScheme.surfaceTint,
         ),
       ],
     );
   }
 
   Widget _buildSOLIDPrinciple(
-    String letter, 
-    String name, 
-    String description, 
+    String letter,
+    String name,
+    String description,
     String example,
     bool isExpanded,
     VoidCallback? onTap,
     Color color,
   ) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+
+    Color onColor;
+    if (color == colorScheme.primary || color == colorScheme.surfaceTint) {
+      onColor = colorScheme.onPrimary;
+    } else if (color == colorScheme.secondary) {
+      onColor = colorScheme.onSecondary;
+    } else if (color == colorScheme.tertiary) {
+      onColor = colorScheme.onTertiary;
+    } else if (color == colorScheme.error) {
+      onColor = colorScheme.onError;
+    } else {
+      onColor = colorScheme.onSurface;
+    }
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       child: Column(
@@ -227,7 +237,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: color.withAlpha(25), // withOpacity(0.1)
+                color: color.withAlpha(25),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -242,8 +252,8 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
                     child: Center(
                       child: ScaledText(
                         letter,
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: textTheme.titleMedium?.copyWith(
+                          color: onColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -256,14 +266,16 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
                       children: [
                         ScaledText(
                           name,
-                          style: TextStyle(
+                          style: textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: color,
                           ),
                         ),
                         ScaledText(
                           description,
-                          style: const TextStyle(fontSize: 12),
+                          style: textTheme.bodySmall?.copyWith(
+                            color: colorScheme.onSurface.withAlpha(178),
+                          ),
                         ),
                       ],
                     ),
@@ -282,12 +294,12 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
               margin: const EdgeInsets.only(left: 44, top: 8),
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.grey.shade100,
+                color: colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(4),
               ),
               child: ScaledText(
                 example,
-                style: const TextStyle(fontSize: 11, fontFamily: 'monospace'),
+                style: textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
               ),
             ),
         ],
@@ -296,15 +308,17 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
   }
 
   Widget _buildConstExample() {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const ScaledText(
+            ScaledText(
               'const 사용 예시',
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             TextButton.icon(
               onPressed: () => setState(() => _showConstExample = !_showConstExample),
@@ -317,33 +331,31 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.green.shade50,
+              color: colorScheme.secondaryContainer.withAlpha(51),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ScaledText(
+                ScaledText(
                   '✅ 올바른 예시',
-                  style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                  style: textTheme.bodyMedium?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.black87,
+                    color: colorScheme.inverseSurface,
                     borderRadius: BorderRadius.circular(4),
                   ),
                   child: const SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: ScaledText(
-                      'const ScaledText(\'정적 텍스트\')\n'
-                      'const ScaledIcon(Icons.home)\n'
-                      'const SizedBox(height: 16)',
+                      '''const ScaledText('정적 텍스트')
+const ScaledIcon(Icons.home)
+const SizedBox(height: 16)''',
                       style: TextStyle(
                         fontFamily: 'monospace',
-                        color: Colors.green,
-                        fontSize: 11,
                       ),
                     ),
                   ),
@@ -355,32 +367,31 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: Colors.red.shade50,
+              color: colorScheme.errorContainer.withAlpha(51),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ScaledText(
+                ScaledText(
                   '❌ 잘못된 예시',
-                  style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                  style: textTheme.bodyMedium?.copyWith(color: colorScheme.error, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 4),
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
-                    color: Colors.black87,
+                    color: colorScheme.errorContainer.withAlpha(128),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const SingleChildScrollView(
+                  child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: ScaledText(
-                      'ScaledText(\'정적 텍스트\')  // const 누락\n'
-                      'ScaledIcon(Icons.home)     // const 누락',
-                      style: TextStyle(
+                      '''ScaledText('정적 텍스트')  // const 누락
+ScaledIcon(Icons.home)     // const 누락''',
+                      style: textTheme.bodySmall?.copyWith(
                         fontFamily: 'monospace',
-                        color: Colors.red,
-                        fontSize: 11,
+                        color: colorScheme.onErrorContainer,
                       ),
                     ),
                   ),
@@ -396,42 +407,43 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
   }
 
   Widget _buildLiveConstExample() {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.blue.shade50,
+        color: colorScheme.primaryContainer.withAlpha(51),
         borderRadius: BorderRadius.circular(8),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ScaledText(
             '실제 const 적용 예시:',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+            style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary),
           ),
-          SizedBox(height: 8),
-          // 실제로 const가 적용된 위젯들
+          const SizedBox(height: 8),
           Row(
             children: [
-              ScaledIcon(Icons.check, color: Colors.green),
-              SizedBox(width: 8),
-              ScaledText('const ScaledIcon 사용'),
+              ScaledIcon(Icons.check, color: colorScheme.secondary),
+              const SizedBox(width: 8),
+              const ScaledText('const ScaledIcon 사용'),
             ],
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Row(
             children: [
-              ScaledIcon(Icons.text_fields, color: Colors.blue),
-              SizedBox(width: 8),
-              ScaledText('const ScaledText 사용'),
+              ScaledIcon(Icons.text_fields, color: colorScheme.primary),
+              const SizedBox(width: 8),
+              const ScaledText('const ScaledText 사용'),
             ],
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Row(
             children: [
-              ScaledIcon(Icons.space_bar, color: Colors.grey),
-              SizedBox(width: 8),
-              ScaledText('const SizedBox 사용'),
+              ScaledIcon(Icons.space_bar, color: colorScheme.onSurface.withAlpha(153)),
+              const SizedBox(width: 8),
+              const ScaledText('const SizedBox 사용'),
             ],
           ),
         ],
@@ -440,28 +452,30 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
   }
 
   Widget _buildWidgetSeparationExample() {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.green.shade50,
+            color: colorScheme.secondaryContainer.withAlpha(51),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const ScaledText(
+              ScaledText(
                 '✅ 올바른 위젯 분리',
-                style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                style: textTheme.bodyMedium?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
-              _buildWidgetStructureItem('ExchangeRateScreen', 'build() 메서드', Colors.blue),
-              _buildWidgetStructureItem('  └─ _buildAppBar()', 'AppBar 구성', Colors.green),
-              _buildWidgetStructureItem('  └─ _buildBody()', 'Body 구성', Colors.green),
-              _buildWidgetStructureItem('      └─ _buildFilterChips()', '필터 버튼들', Colors.orange),
-              _buildWidgetStructureItem('      └─ _buildPriceList()', '환율 리스트', Colors.orange),
+              _buildWidgetStructureItem('ExchangeRateScreen', 'build() 메서드', colorScheme.primary),
+              _buildWidgetStructureItem('  └─ _buildAppBar()', 'AppBar 구성', colorScheme.secondary),
+              _buildWidgetStructureItem('  └─ _buildBody()', 'Body 구성', colorScheme.secondary),
+              _buildWidgetStructureItem('      └─ _buildFilterChips()', '필터 버튼들', colorScheme.tertiary),
+              _buildWidgetStructureItem('      └─ _buildPriceList()', '환율 리스트', colorScheme.tertiary),
             ],
           ),
         ),
@@ -469,22 +483,22 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.red.shade50,
+            color: colorScheme.errorContainer.withAlpha(51),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ScaledText(
                 '❌ 잘못된 예시: 모든 것을 build()에',
-                style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                style: textTheme.bodyMedium?.copyWith(color: colorScheme.error, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 4),
-              ScaledText(
-                '• 100줄 이상의 복잡한 build() 메서드\n'
-                '• 가독성 저하 및 유지보수 어려움\n'
-                '• 재사용성 부족',
-                style: TextStyle(fontSize: 12),
+              const SizedBox(height: 4),
+              const ScaledText(
+                '''• 100줄 이상의 복잡한 build() 메서드
+• 가독성 저하 및 유지보수 어려움
+• 재사용성 부족''',
+                style: TextStyle(),
               ),
             ],
           ),
@@ -494,6 +508,8 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
   }
 
   Widget _buildWidgetStructureItem(String name, String description, Color color) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 2),
       child: Row(
@@ -509,18 +525,17 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
           ),
           ScaledText(
             name,
-            style: TextStyle(
+            style: textTheme.bodySmall?.copyWith(
               fontFamily: 'monospace',
               fontWeight: FontWeight.bold,
               color: color,
-              fontSize: 11,
             ),
           ),
           const SizedBox(width: 8),
           Expanded(
             child: ScaledText(
               description,
-              style: const TextStyle(fontSize: 11, color: Colors.grey),
+              style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface.withAlpha(153)),
             ),
           ),
         ],
@@ -529,6 +544,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
   }
 
   Widget _buildPerformanceExample() {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -536,42 +552,43 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
           'const 생성자',
           '위젯 재생성 방지',
           'const Text(), const Icon()',
-          Colors.green,
+          colorScheme.secondary,
         ),
         _buildPerformanceItem(
           'RepaintBoundary',
           '불필요한 리페인트 방지',
           'RepaintBoundary(child: ComplexWidget())',
-          Colors.blue,
+          colorScheme.primary,
         ),
         _buildPerformanceItem(
           'ListView.builder',
           '가상화로 메모리 최적화',
           '큰 리스트에는 builder 패턴',
-          Colors.orange,
+          colorScheme.tertiary,
         ),
         _buildPerformanceItem(
           'Provider.select',
           '필요한 상태만 구독',
           'ref.watch(provider.select((s) => s.field))',
-          Colors.purple,
+          colorScheme.surfaceTint,
         ),
         _buildPerformanceItem(
           'autoDispose',
           '사용하지 않는 Provider 해제',
           'AsyncNotifierProvider.autoDispose',
-          Colors.teal,
+          colorScheme.error,
         ),
       ],
     );
   }
 
   Widget _buildPerformanceItem(String technique, String purpose, String example, Color color) {
+    final textTheme = Theme.of(context).textTheme;
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 4),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: color.withAlpha(25), // withOpacity(0.1)
+        color: color.withAlpha(25),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -591,15 +608,14 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
               children: [
                 ScaledText(
                   technique,
-                  style: TextStyle(
+                  style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: color,
-                    fontSize: 12,
                   ),
                 ),
                 ScaledText(
                   '$purpose: $example',
-                  style: const TextStyle(fontSize: 11),
+                  style: textTheme.bodySmall,
                 ),
               ],
             ),
@@ -610,25 +626,27 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
   }
 
   Widget _buildErrorHandlingExample() {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.amber.shade50,
+            color: colorScheme.tertiaryContainer.withAlpha(51),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
                 children: [
-                  ScaledIcon(Icons.error_outline, color: Colors.amber, size: 16),
-                  SizedBox(width: 8),
+                  ScaledIcon(Icons.error_outline, color: colorScheme.tertiary, size: 16),
+                  const SizedBox(width: 8),
                   ScaledText(
                     'AsyncValue.when 패턴',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.amber),
+                    style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.tertiary),
                   ),
                 ],
               ),
@@ -636,24 +654,22 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: Colors.black87,
+                  color: colorScheme.inverseSurface,
                   borderRadius: BorderRadius.circular(4),
                 ),
                 child: const SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
                   child: ScaledText(
-                    'asyncData.when(\n'
-                    '  loading: () => CircularProgressIndicator(),\n'
-                    '  error: (error, stack) => ErrorWidget(\n'
-                    '    error: error,\n'
-                    '    onRetry: () => ref.refresh(provider),\n'
-                    '  ),\n'
-                    '  data: (data) => DataWidget(data: data),\n'
-                    ')',
+                    '''asyncData.when(
+  loading: () => CircularProgressIndicator(),
+  error: (error, stack) => ErrorWidget(
+    error: error,
+    onRetry: () => ref.refresh(provider),
+  ),
+  data: (data) => DataWidget(data: data),
+)''',
                     style: TextStyle(
                       fontFamily: 'monospace',
-                      color: Colors.green,
-                      fontSize: 10,
                     ),
                   ),
                 ),
@@ -665,29 +681,29 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.red.shade50,
+            color: colorScheme.errorContainer.withAlpha(51),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Column(
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  ScaledIcon(Icons.warning, color: Colors.red, size: 16),
-                  SizedBox(width: 8),
+                  ScaledIcon(Icons.warning, color: colorScheme.error, size: 16),
+                  const SizedBox(width: 8),
                   ScaledText(
                     '에러 처리 원칙',
-                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red),
+                    style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.error),
                   ),
                 ],
               ),
-              SizedBox(height: 8),
-              ScaledText(
-                '• 모든 API 호출에 try-catch 적용\n'
-                '• 사용자에게 명확한 에러 메시지 제공\n'
-                '• 재시도 메커니즘 구현\n'
-                '• FlutterError.onError로 앱 크래시 방지',
-                style: TextStyle(fontSize: 12),
+              const SizedBox(height: 8),
+              const ScaledText(
+                '''• 모든 API 호출에 try-catch 적용
+• 사용자에게 명확한 에러 메시지 제공
+• 재시도 메커니즘 구현
+• FlutterError.onError로 앱 크래시 방지''',
+                style: TextStyle(),
               ),
             ],
           ),

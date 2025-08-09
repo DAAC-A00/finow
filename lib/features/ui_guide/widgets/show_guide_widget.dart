@@ -1,6 +1,4 @@
-
-// 이 위젯은 다양한 피드백(Toast, SnackBar, Dialog 등) UI의 구현 예시를 제공하여, 프로젝트 내 피드백 UI의 기준점 역할을 합니다.
-// 실제 서비스 적용 전, 사용자에게 보여지는 피드백 UI의 방향성과 일관성을 확인하는 용도로 사용하세요.
+import 'package:finow/ui_scale_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -27,7 +25,7 @@ class ShowGuideWidget extends StatelessWidget {
           title: 'Toast',
           subtitle: 'A brief message at the bottom of the screen.',
           icon: Icons.info_outline,
-          onTap: _showToast,
+          onTap: () => _showToast(context),
         ),
         _buildCard(
           context: context,
@@ -61,33 +59,42 @@ class ShowGuideWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildCard({required BuildContext context, required String title, required String subtitle, required IconData icon, required VoidCallback onTap}) {
+  Widget _buildCard({
+    required BuildContext context,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     return Card(
       elevation: 2.0,
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-      color: Theme.of(context).colorScheme.surface,
+      color: colorScheme.surface,
       child: ListTile(
-        leading: Icon(
-          icon, 
+        leading: ScaledIcon(
+          icon,
           size: 40,
-          color: Theme.of(context).colorScheme.primary,
+          color: colorScheme.primary,
         ),
-        title: Text(
-          title, 
-          style: TextStyle(
+        title: ScaledText(
+          title,
+          style: textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
+            color: colorScheme.onSurface,
           ),
         ),
-        subtitle: Text(
+        subtitle: ScaledText(
           subtitle,
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withAlpha(178), // withOpacity(0.7)
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface.withAlpha((255 * 0.7).round()),
           ),
         ),
-        trailing: Icon(
+        trailing: ScaledIcon(
           Icons.play_arrow,
-          color: Theme.of(context).colorScheme.onSurface.withAlpha(153), // withOpacity(0.6)
+          color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
         ),
         onTap: onTap,
       ),
@@ -95,34 +102,37 @@ class ShowGuideWidget extends StatelessWidget {
   }
 
   void _showBottomSheet(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     showModalBottomSheet(
       context: context,
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: colorScheme.surface,
       builder: (context) => Container(
         height: 200,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          color: colorScheme.surface,
           borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
         ),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              ScaledIcon(
                 Icons.drag_handle,
-                color: Theme.of(context).colorScheme.onSurface.withAlpha(102), // withOpacity(0.4)
+                color: colorScheme.onSurface.withAlpha((255 * 0.4).round()),
               ),
               const SizedBox(height: 16),
-              Text(
+              ScaledText(
                 'This is a Bottom Sheet',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurface,
+                style: textTheme.titleMedium?.copyWith(
+                  color: colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const Text('닫기'),
+                child: const ScaledText('닫기'),
               ),
             ],
           ),
@@ -131,28 +141,37 @@ class ShowGuideWidget extends StatelessWidget {
     );
   }
 
-  void _showToast() {
+  void _showToast(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final uiScale = UIScaleProvider.of(context).scale;
+
     Fluttertoast.showToast(
       msg: "This is a toast message",
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
+      backgroundColor: colorScheme.inverseSurface,
+      textColor: colorScheme.onInverseSurface,
+      fontSize: 16.0 * uiScale,
     );
   }
 
   void _showSnackBar(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
+        content: ScaledText(
           'This is a SnackBar.',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onInverseSurface,
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onInverseSurface,
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.inverseSurface,
+        backgroundColor: colorScheme.inverseSurface,
         duration: const Duration(seconds: 2),
         action: SnackBarAction(
           label: '확인',
-          textColor: Theme.of(context).colorScheme.inversePrimary,
+          textColor: colorScheme.inversePrimary,
           onPressed: () {},
         ),
       ),
@@ -160,26 +179,30 @@ class ShowGuideWidget extends StatelessWidget {
   }
 
   void _showMaterialBanner(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     ScaffoldMessenger.of(context).showMaterialBanner(
       MaterialBanner(
-        content: Text(
+        content: ScaledText(
           'This is a Material Banner.',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface,
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface,
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        leading: Icon(
+        backgroundColor: colorScheme.surface,
+        leading: ScaledIcon(
           Icons.info_outline,
-          color: Theme.of(context).colorScheme.primary,
+          color: colorScheme.primary,
         ),
         actions: [
           TextButton(
-            onPressed: () => ScaffoldMessenger.of(context).hideCurrentMaterialBanner(), 
-            child: Text(
+            onPressed: () =>
+                ScaffoldMessenger.of(context).hideCurrentMaterialBanner(),
+            child: ScaledText(
               '닫기',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.primary,
+              style: textTheme.labelLarge?.copyWith(
+                color: colorScheme.primary,
               ),
             ),
           ),
@@ -189,35 +212,38 @@ class ShowGuideWidget extends StatelessWidget {
   }
 
   void _showConfirmationDialog(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        title: Text(
+        backgroundColor: colorScheme.surface,
+        title: ScaledText(
           'Confirm Action',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface,
+          style: textTheme.titleLarge?.copyWith(
+            color: colorScheme.onSurface,
           ),
         ),
-        content: Text(
+        content: ScaledText(
           'Are you sure you want to proceed?',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface.withAlpha(204), // withOpacity(0.8)
+          style: textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurface.withAlpha((255 * 0.8).round()),
           ),
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(context).pop(), 
-            child: Text(
+            onPressed: () => Navigator.of(context).pop(),
+            child: ScaledText(
               'Cancel',
-              style: TextStyle(
-                color: Theme.of(context).colorScheme.onSurface.withAlpha(153), // withOpacity(0.6)
+              style: textTheme.labelLarge?.copyWith(
+                color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
               ),
             ),
           ),
           ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(), 
-            child: const Text('OK'),
+            onPressed: () => Navigator.of(context).pop(),
+            child: const ScaledText('OK'),
           ),
         ],
       ),
@@ -228,27 +254,19 @@ class ShowGuideWidget extends StatelessWidget {
     showCupertinoDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
-        title: const Text('Cupertino Alert'),
-        content: const Text('This is a Cupertino-style alert.'),
+        title: const ScaledText('Cupertino Alert'),
+        content: const ScaledText('This is a Cupertino-style alert.'),
         actions: [
-          CupertinoDialogAction(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancel')),
-          CupertinoDialogAction(onPressed: () => Navigator.of(context).pop(), child: const Text('OK')),
+          CupertinoDialogAction(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const ScaledText('Cancel'),
+          ),
+          CupertinoDialogAction(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const ScaledText('OK'),
+          ),
         ],
       ),
-    );
-  }
-}
-
-// Helper class to pass context to Fluttertoast
-class ToastHelper {
-  static void showToast(BuildContext context, String msg) {
-    Fluttertoast.showToast(
-      msg: msg,
-      toastLength: Toast.LENGTH_SHORT,
-      gravity: ToastGravity.BOTTOM,
-      backgroundColor: Theme.of(context).colorScheme.inverseSurface,
-      textColor: Theme.of(context).colorScheme.onInverseSurface,
-      fontSize: 16.0,
     );
   }
 }
