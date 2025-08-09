@@ -5,7 +5,6 @@ import 'package:finow/theme_provider.dart';
 import 'widgets/animation_guide_widget.dart';
 import 'widgets/gesture_guide_widget.dart';
 import 'widgets/show_guide_widget.dart';
-import 'widgets/toggle_switch_guide_widget.dart';
 import 'widgets/providers_guide_widget.dart';
 import 'widgets/scaling_guide_widget.dart';
 import 'widgets/architecture_guide_widget.dart';
@@ -20,7 +19,7 @@ class UiGuideScreen extends ConsumerWidget {
     final isDarkMode = Theme.of(context).brightness == Brightness.dark;
     
     return DefaultTabController(
-      length: 9, // 탭 개수 9개로 확장 (테마 탭 추가)
+      length: 8, // 탭 개수 8개로 변경 (Toggles 탭 제거)
       child: Scaffold(
         appBar: AppBar(
           title: const Text('UI & Code Guide'),
@@ -51,7 +50,6 @@ class UiGuideScreen extends ConsumerWidget {
               Tab(text: 'Show'),
               Tab(text: 'Gestures'),
               Tab(text: 'Animations'),
-              Tab(text: 'Toggles'),
               Tab(text: 'Providers'),
               Tab(text: 'Scaling'),
               Tab(text: 'Architecture'),
@@ -66,7 +64,6 @@ class UiGuideScreen extends ConsumerWidget {
             _buildTabContent(const ShowGuideWidget()),
             _buildTabContent(const GestureGuideWidget()),
             _buildTabContent(const AnimationGuideWidget()),
-            _buildTabContent(const ToggleSwitchGuideWidget()),
             _buildTabContent(const ProvidersGuideWidget()),
             _buildTabContent(const ScalingGuideWidget()),
             _buildTabContent(const ArchitectureGuideWidget()),

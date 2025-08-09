@@ -15,6 +15,10 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
   Color? _dragColor;
   String _lastEvent = 'None';
 
+  bool _isSwitchOn = false;
+  bool _isChecked = false;
+  int? _selectedRadio = 0;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -190,6 +194,55 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
             ),
           ),
         ),
+        const SizedBox(height: 20),
+        ScaledText(
+          'Toggles',
+          style: textTheme.titleMedium?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
+        SwitchListTile(
+          title: const ScaledText('Switch'),
+          value: _isSwitchOn,
+          onChanged: (value) {
+            setState(() {
+              _isSwitchOn = value;
+            });
+          },
+        ),
+        CheckboxListTile(
+          title: const ScaledText('Checkbox'),
+          value: _isChecked,
+          onChanged: (value) {
+            setState(() {
+              _isChecked = value!;
+            });
+          },
+        ),
+        RadioListTile<int>(
+          title: const ScaledText('Radio Option 1'),
+          value: 0,
+          groupValue: _selectedRadio,
+          onChanged: (value) {
+            setState(() {
+              _selectedRadio = value;
+            });
+          },
+        ),
+        RadioListTile<int>(
+          title: const ScaledText('Radio Option 2'),
+          value: 1,
+          groupValue: _selectedRadio,
+          onChanged: (value) {
+            setState(() {
+              _selectedRadio = value;
+            });
+          },
+        ),
+        const SizedBox(height: 20),
+        // Add more toggle examples here if needed
       ],
     );
   }
