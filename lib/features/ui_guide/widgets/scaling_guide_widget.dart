@@ -345,9 +345,9 @@ class ScalingGuideWidget extends ConsumerWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.home, size: 24), // 일반 Icon - 스케일링 안됨
+                const ScaledIcon(Icons.home, size: 24), // 일반 Icon - 스케일링 안됨
                 const SizedBox(width: 16),
-                Text('일반 Icon (고정 크기)', style: textTheme.bodyMedium),
+                ScaledText('일반 Icon (고정 크기)', style: textTheme.bodyMedium),
               ],
             ),
             const SizedBox(height: 16),
@@ -366,7 +366,7 @@ class ScalingGuideWidget extends ConsumerWidget {
               children: [
                 const ScaledIcon(Icons.home, size: 24), // ScaledIcon - 스케일링 적용됨
                 const SizedBox(width: 16),
-                Text('ScaledIcon (반응형 크기)', style: textTheme.bodyMedium),
+                ScaledText('ScaledIcon (반응형 크기)', style: textTheme.bodyMedium),
               ],
             ),
           ],

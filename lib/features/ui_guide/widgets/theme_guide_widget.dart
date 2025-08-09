@@ -318,7 +318,7 @@ class ThemeGuideWidget extends ConsumerWidget {
       '✅ Theme.of(context).colorScheme를 사용하여 색상 적용',
       '✅ Theme.of(context).textTheme를 사용하여 텍스트 스타일 적용',
       '✅ 하드코딩된 색상값 사용 금지 (예: Colors.white, Colors.black)',
-      '✅ 투명도는 withOpacity()를 사용하여 동적으로 적용',
+      '✅ 투명도는 withAlpha()를 사용하여 동적으로 적용',
       '✅ 아이콘과 이미지도 테마에 맞게 색상 조정',
       '✅ 커스텀 위젯 생성 시 반드시 다크/라이트 모드 테스트',
       '⚠️ 그림자와 elevation은 다크모드에서 자동 조정됨',

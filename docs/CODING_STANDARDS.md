@@ -80,12 +80,15 @@ class ExchangeRateScreen extends ConsumerWidget {
 }
 ```
 
-### 3. 스케일링 위젯 사용
-**필수 사용**: ScaledIcon, ScaledAssetImage 등 스케일링 위젯만 사용
+*   **테마 사용 (Material Design 3 기반):**
+    *   색상, 텍스트 스타일, 아이콘 크기 등 모든 UI 요소는 `Theme.of(context)`를 통해 접근하여 사용합니다. 하드코딩된 색상이나 스타일 사용을 **엄격히 금지**합니다.
+    *   **`Theme.of(context).colorScheme`**: Material Design 3의 동적 색상 시스템을 활용하여 앱의 색상을 가져옵니다. (예: `colorScheme.primary`, `colorScheme.onSurface`, `colorScheme.surfaceContainerHighest`)
+    *   **`Theme.of(context).textTheme`**: Material Design 3의 타이포그래피 스케일을 사용하여 텍스트 스타일을 가져옵니다. (예: `textTheme.bodyMedium`, `textTheme.titleLarge`)
+    *   **컴포넌트 테마**: `ThemeData`를 통해 `ElevatedButtonTheme`, `CardTheme`, `AppBarTheme` 등을 정의하여 앱 전체의 컴포넌트 스타일을 일관되게 관리합니다.
 
-**금지**: 일반 Icon, Image.asset 사용
-
-👉 **구현 예시**: UI Guide의 **Scaling** 탭에서 확인하세요
+*   **UI 스케일링:**
+    *   텍스트는 `MediaQuery.of(context).textScaler`를 통해 자동으로 스케일링됩니다.
+    *   아이콘은 `ScaledIcon` 위젯을 사용하고, 이미지는 `ScaledAssetImage` 위젯을 사용하여 UI 스케일링 시스템에 맞게 크기가 조정되도록 합니다. `Icon()`이나 `Image.asset()`을 직접 사용하는 것을 **금지**합니다.
 
 ## Provider 작성 규칙
 

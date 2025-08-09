@@ -50,7 +50,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
                     SnackBar(
                       content: ScaledText(
                         '$item dismissed',
-                        style: TextStyle(color: colorScheme.onInverseSurface),
+                        style: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface),
                       ),
                       backgroundColor: colorScheme.inverseSurface,
                     ),
@@ -68,7 +68,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
                 child: ListTile(
                   title: ScaledText(
                     item,
-                    style: TextStyle(color: colorScheme.onSurface),
+                    style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
                   ),
                   leading: ScaledIcon(
                     Icons.drag_handle,

@@ -143,7 +143,7 @@ final exchangeRateRepositoryProvider = Provider<ExchangeRateRepository>((ref) {
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
 │  │   Models    │  │   Usecases  │  │Repositories │        │
 │  │  (Entities) │  │ (Business   │  │(Interfaces) │        │
-│  │             │  │   Logic)    │  │             │        │
+│  │   Logic)    │  │             │  │             │        │
 │  └─────────────┘  └─────────────┘  └─────────────┘        │
 ├─────────────────────────────────────────────────────────────┤
 │                      Data Layer                             │
