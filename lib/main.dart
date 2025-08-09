@@ -1,6 +1,7 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_update_service.dart';
 import 'package:finow/features/exchange_rate/exconvert_periodic_update_service.dart';
+import 'package:finow/features/integrated_symbols/services/integrated_symbols_sync_service.dart';
 import 'package:finow/routing/app_router.dart';
 import 'package:finow/theme_provider.dart';
 import 'package:finow/font_size_provider.dart';
@@ -20,6 +21,7 @@ void main() async {
   // 사용할 Box들 미리 열기
   await Hive.openBox('settings');
   await Hive.openBox<ExchangeRate>('exchangeRates');
+  await Hive.openBox('integrated_instruments');
 
   runApp(const ProviderScope(child: _AppInitializer()));
 }
@@ -44,6 +46,9 @@ class __AppInitializerState extends ConsumerState<_AppInitializer> {
 
     // 2. ExConvert API를 통해 1분마다 주기적으로 환율 정보 업데이트 시작
     ref.read(exConvertPeriodicUpdateServiceProvider).startPeriodicUpdates();
+    
+    // 3. 통합 심볼 정보 초기 동기화 및 Bithumb 경고 정보 주기적 업데이트 시작
+    await ref.read(integratedSymbolsSyncServiceProvider).performInitialSync();
   }
 
   @override

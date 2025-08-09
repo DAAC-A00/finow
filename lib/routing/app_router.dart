@@ -1,6 +1,7 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_detail_screen.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_screen.dart';
+import 'package:finow/features/integrated_symbols/screens/integrated_symbols_screen.dart';
 import 'package:finow/features/menu/menu_screen.dart';
 import 'package:finow/features/settings/settings_screen.dart';
 import 'package:finow/features/storage_viewer/storage_viewer_screen.dart';
@@ -70,6 +71,9 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
           break;
         case '/exchange':
           screen = const ExchangeRateScreen();
+          break;
+        case '/integrated_symbols':
+          screen = const IntegratedSymbolsScreen();
           break;
         case '/settings':
           screen = const SettingsScreen();
