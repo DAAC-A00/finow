@@ -83,17 +83,9 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
           onChanged: (value) {
             ref.read(searchQueryProvider.notifier).state = value;
           },
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'Search local storage...',
             border: InputBorder.none,
-            hintStyle: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.7).round()),
-              fontSize: 20,
-            ),
-          ),
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSurface,
-            fontSize: 20,
           ),
         ),
         actions: [
@@ -103,33 +95,15 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
             onPressed: () => _showBoxListBottomSheet(context, ref),
           ),
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: Theme.of(context).colorScheme.primary,
-          unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.6).round()),
-          indicatorColor: Theme.of(context).colorScheme.primary,
-          tabs: const [
-            Tab(
-              icon: Icon(Icons.settings),
-              text: 'Settings',
-            ),
-            Tab(
-              icon: Icon(Icons.attach_money),
-              text: 'Exchange Rates',
-            ),
-            Tab(
-              icon: Icon(Icons.currency_exchange),
-              text: 'Symbols',
-            ),
-          ],
-        ),
       ),
       body: Column(
         children: [
-          // 스토리지 사용량 표시 위젯
           asyncUsage.when(
             loading: () => const LinearProgressIndicator(),
-            error: (err, stack) => Text('Usage Error: $err'),
+            error: (err, stack) => Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text('Usage Error: $err'),
+            ),
             data: (currentBytes) {
               final currentMB = currentBytes / (1024 * 1024);
               final percentage = (currentBytes / maxStorageBytes) * 100;
@@ -145,15 +119,35 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                     const SizedBox(height: 8),
                     LinearProgressIndicator(
                       value: percentage / 100,
-                      backgroundColor: Colors.grey[300],
+                      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                      valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
                     ),
                   ],
                 ),
               );
             },
           ),
-          const Divider(),
-          // TabBarView로 각 Box 데이터 표시
+          const Divider(height: 1),
+          TabBar(
+            controller: _tabController,
+            labelColor: Theme.of(context).colorScheme.primary,
+            unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
+            indicatorColor: Theme.of(context).colorScheme.primary,
+            tabs: const [
+              Tab(
+                icon: Icon(Icons.settings),
+                text: 'Settings',
+              ),
+              Tab(
+                icon: Icon(Icons.attach_money),
+                text: 'Exchange Rates',
+              ),
+              Tab(
+                icon: Icon(Icons.currency_exchange),
+                text: 'Symbols',
+              ),
+            ],
+          ),
           Expanded(
             child: TabBarView(
               controller: _tabController,
