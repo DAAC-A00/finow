@@ -1,6 +1,3 @@
-
-
-
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -75,4 +72,3 @@ class LocalStorageService {
   T? read<T>(String key) => Hive.box('settings').get(key) as T?;
   void write<T>(String key, T value) => Hive.box('settings').put(key, value);
 }
-

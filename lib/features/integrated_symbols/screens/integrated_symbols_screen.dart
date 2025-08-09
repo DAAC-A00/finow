@@ -50,7 +50,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
         bottom: TabBar(
           controller: _tabController,
           labelColor: colorScheme.primary,
-          unselectedLabelColor: colorScheme.onSurface.withOpacity(0.6),
+          unselectedLabelColor: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
           indicatorColor: colorScheme.primary,
           tabs: const [
             Tab(text: '전체', icon: Icon(Icons.list)),
@@ -133,7 +133,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
         color: colorScheme.surface,
         border: Border(
           bottom: BorderSide(
-            color: colorScheme.outline.withOpacity(0.2),
+            color: colorScheme.outline.withAlpha((255 * 0.2).round()),
           ),
         ),
       ),
@@ -141,7 +141,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
         controller: _searchController,
         decoration: InputDecoration(
           hintText: '심볼, 코인명으로 검색...',
-          prefixIcon: Icon(Icons.search, color: colorScheme.onSurface.withOpacity(0.6)),
+          prefixIcon: Icon(Icons.search, color: colorScheme.onSurface.withAlpha((255 * 0.6).round())),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
                   icon: const Icon(Icons.clear),
@@ -159,7 +159,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: colorScheme.outline.withOpacity(0.5)),
+            borderSide: BorderSide(color: colorScheme.outline.withAlpha((255 * 0.5).round())),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
@@ -221,14 +221,14 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
         });
       },
       backgroundColor: colorScheme.surface,
-      selectedColor: colorScheme.primary.withOpacity(0.2),
+      selectedColor: colorScheme.primary.withAlpha((255 * 0.2).round()),
       checkmarkColor: colorScheme.primary,
       labelStyle: TextStyle(
         color: isSelected ? colorScheme.primary : colorScheme.onSurface,
         fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
       ),
       side: BorderSide(
-        color: isSelected ? colorScheme.primary : colorScheme.outline.withOpacity(0.5),
+        color: isSelected ? colorScheme.primary : colorScheme.outline.withAlpha((255 * 0.5).round()),
       ),
     );
   }
@@ -339,7 +339,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
                           Text(
                             instrument.koreanName!,
                             style: theme.textTheme.bodyMedium?.copyWith(
-                              color: colorScheme.onSurface.withOpacity(0.7),
+                              color: colorScheme.onSurface.withAlpha((255 * 0.7).round()),
                             ),
                           ),
                       ],
@@ -374,9 +374,9 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withAlpha((255 * 0.1).round()),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha((255 * 0.3).round())),
       ),
       child: Text(
         exchange.toUpperCase(),
@@ -393,14 +393,14 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: colorScheme.primaryContainer.withOpacity(0.3),
+        color: colorScheme.primaryContainer.withAlpha((255 * 0.3).round()),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         text,
         style: TextStyle(
           fontSize: 12,
-          color: colorScheme.onSurface.withOpacity(0.8),
+          color: colorScheme.onSurface.withAlpha((255 * 0.8).round()),
         ),
       ),
     );
@@ -412,7 +412,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withAlpha((255 * 0.1).round()),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -430,7 +430,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: Colors.red.withOpacity(0.1),
+        color: Colors.red.withAlpha((255 * 0.1).round()),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -455,20 +455,20 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
           Icon(
             Icons.inbox_outlined,
             size: 64,
-            color: colorScheme.onSurface.withOpacity(0.4),
+            color: colorScheme.onSurface.withAlpha((255 * 0.4).round()),
           ),
           const SizedBox(height: 16),
           Text(
             '심볼 정보가 없습니다',
             style: theme.textTheme.titleMedium?.copyWith(
-              color: colorScheme.onSurface.withOpacity(0.6),
+              color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
             ),
           ),
           const SizedBox(height: 8),
           Text(
             '새로고침 버튼을 눌러 데이터를 불러오세요',
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: colorScheme.onSurface.withOpacity(0.5),
+              color: colorScheme.onSurface.withAlpha((255 * 0.5).round()),
             ),
           ),
           const SizedBox(height: 24),
@@ -508,7 +508,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
             Text(
               error,
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: colorScheme.onSurface.withOpacity(0.7),
+                color: colorScheme.onSurface.withAlpha((255 * 0.7).round()),
               ),
               textAlign: TextAlign.center,
             ),

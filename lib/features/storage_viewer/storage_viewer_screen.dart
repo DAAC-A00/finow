@@ -26,18 +26,22 @@ class StorageViewerScreen extends ConsumerStatefulWidget {
   ConsumerState<StorageViewerScreen> createState() => _StorageViewerScreenState();
 }
 
-class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with RouteAware {
+class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> 
+    with RouteAware, TickerProviderStateMixin {
   late final TextEditingController _controller;
+  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _controller = TextEditingController();
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -63,7 +67,6 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
 
   @override
   Widget build(BuildContext context) {
-    final asyncData = ref.watch(allStorageDataProvider);
     final asyncUsage = ref.watch(storageUsageProvider);
     final localStorageService = ref.watch(localStorageServiceProvider);
     final searchQuery = ref.watch(searchQueryProvider);
@@ -84,7 +87,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
             hintText: 'Search local storage...',
             border: InputBorder.none,
             hintStyle: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.7).round()), // withOpacity(0.7)
+              color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.7).round()),
               fontSize: 20,
             ),
           ),
@@ -100,6 +103,26 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
             onPressed: () => _showBoxListBottomSheet(context, ref),
           ),
         ],
+        bottom: TabBar(
+          controller: _tabController,
+          labelColor: Theme.of(context).colorScheme.primary,
+          unselectedLabelColor: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.6).round()),
+          indicatorColor: Theme.of(context).colorScheme.primary,
+          tabs: const [
+            Tab(
+              icon: Icon(Icons.settings),
+              text: 'Settings',
+            ),
+            Tab(
+              icon: Icon(Icons.attach_money),
+              text: 'Exchange Rates',
+            ),
+            Tab(
+              icon: Icon(Icons.currency_exchange),
+              text: 'Symbols',
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [
@@ -130,135 +153,15 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
             },
           ),
           const Divider(),
-          // 저장된 데이터 목록
+          // TabBarView로 각 Box 데이터 표시
           Expanded(
-            child: asyncData.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, stack) => Center(child: Text('Error: $err')),
-              data: (allBoxes) {
-                if (allBoxes.isEmpty) {
-                  return const Center(child: Text('No data in any box.'));
-                }
-
-                final List<Widget> allDisplayWidgets = [];
-
-                for (var boxEntry in allBoxes.entries) {
-                  final boxName = boxEntry.key;
-                  final boxData = boxEntry.value;
-                  List<Widget> boxContentWidgets = [];
-
-                  // Filter box data based on search query
-                  final filteredBoxData = boxData.entries.where((entry) {
-                    final key = entry.key.toString().toLowerCase();
-                    final value = entry.value;
-                    final query = searchQuery.toLowerCase();
-
-                    if (value is ExchangeRate) {
-                      final combinedCode = (value.baseCode + value.quoteCode).toLowerCase();
-                      final priceString = value.price.toString();
-                      final sourceString = value.source.toLowerCase();
-                      return key.contains(query) ||
-                          combinedCode.contains(query) ||
-                          priceString.contains(query) ||
-                          sourceString.contains(query);
-                    }
-
-                    final valueString = value.toString().toLowerCase();
-                    return key.contains(query) || valueString.contains(query);
-                  }).toList();
-
-                  // Only add box header if there's matching data or box name matches
-                  if (filteredBoxData.isNotEmpty || boxName.toLowerCase().contains(searchQuery.toLowerCase())) {
-                    boxContentWidgets.add(
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Box: $boxName (${filteredBoxData.length} items)', // 데이터 개수 표시
-                              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                            IconButton(
-                              icon: const ScaledIcon(Icons.clear_all, size: 24),
-                              onPressed: () => _clearBox(context, ref, localStorageService, boxName),
-                              tooltip: 'Clear all data in this box',
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-
-                    if (filteredBoxData.isEmpty) {
-                      boxContentWidgets.add(const Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                        child: Text('No matching data in this box.'),
-                      ));
-                    } else {
-                      for (var entry in filteredBoxData) {
-                        final key = entry.key;
-                        final value = entry.value;
-                        Widget subtitleWidget;
-
-                        if (value is ExchangeRate) {
-                          subtitleWidget = Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('base_code: ${value.baseCode}'),
-                              Text('quote_code: ${value.quoteCode}'),
-                              Text('price: ${value.price}'),
-                              Text('source: ${value.source}'), // source 정보 표시
-                              Text('time_last_update_unix: ${value.lastUpdatedUnix}'),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 8.0, top: 2.0),
-                                child: Text(
-                                  '└ Converted: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(value.lastUpdatedUnix * 1000).toLocal())} (KST)',
-                                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204), fontStyle: FontStyle.italic), // withOpacity(0.8)
-                                ),
-                              ),
-                            ],
-                          );
-                        } else {
-                          subtitleWidget = Text(value.toString());
-                        }
-
-                        boxContentWidgets.add(
-                          Card(
-                            margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
-                            elevation: 1.0,
-                            child: ListTile(
-                              title: Text(key.toString()),
-                              subtitle: subtitleWidget,
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    icon: const ScaledIcon(Icons.edit, size: 20),
-                                    onPressed: () => _showEditDialog(
-                                        context, ref, localStorageService, boxName, key, value),
-                                  ),
-                                  IconButton(
-                                    icon: const ScaledIcon(Icons.delete, size: 20),
-                                    onPressed: () => _confirmDelete(
-                                        context, ref, localStorageService, boxName, key),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        );
-                      }
-                    }
-                    boxContentWidgets.add(const Divider()); // Add a divider between boxes
-                    allDisplayWidgets.addAll(boxContentWidgets);
-                  }
-                }
-
-                if (allDisplayWidgets.isEmpty && searchQuery.isNotEmpty) {
-                  return const Center(child: Text('No matching data found.'));
-                }
-                return ListView(children: allDisplayWidgets);
-              },
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildBoxContent('settings', localStorageService, searchQuery),
+                _buildBoxContent('exchangeRates', localStorageService, searchQuery),
+                _buildBoxContent('integrated_instruments', localStorageService, searchQuery),
+              ],
             ),
           ),
         ],
@@ -474,7 +377,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                   height: 4,
                   margin: const EdgeInsets.only(bottom: 16),
                   decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
+                    color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.3).round()),
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -530,7 +433,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                             Icon(
                               Icons.inbox_outlined,
                               size: 48,
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                              color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
                             ),
                             const SizedBox(height: 16),
                             Text(
@@ -551,7 +454,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                           margin: const EdgeInsets.only(bottom: 8),
                           child: ListTile(
                             leading: CircleAvatar(
-                              backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                              backgroundColor: Theme.of(context).colorScheme.primary.withAlpha((255 * 0.1).round()),
                               child: Icon(
                                 Icons.storage,
                                 color: Theme.of(context).colorScheme.primary,
@@ -644,12 +547,12 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
         final box = Hive.box(boxName);
         return box.length;
       } else {
-        final box = await Hive.openBox(boxName);
-        final count = box.length;
-        await box.close();
-        return count;
+        // Box가 열려 있지 않으면 0을 반환하거나 오류를 던질 수 있습니다.
+        // 여기서는 0을 반환하여 UI가 깨지지 않도록 합니다.
+        return 0;
       }
     } catch (e) {
+      // 오류 발생 시 0을 반환
       return 0;
     }
   }
@@ -711,7 +614,8 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
       if (isOpen) {
         box = Hive.box(boxName);
       } else {
-        box = await Hive.openBox(boxName);
+        // Box가 열려 있지 않으면 정보를 가져올 수 없습니다.
+        return {'itemCount': 0, 'isOpen': false, 'path': 'Box not open'};
       }
       
       final details = {
@@ -719,10 +623,6 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
         'isOpen': isOpen,
         'path': box.path,
       };
-      
-      if (!isOpen) {
-        await box.close();
-      }
       
       return details;
     } catch (e) {
@@ -784,5 +684,194 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
   void _filterByBox(WidgetRef ref, String boxName) {
     // 검색어에 Box 이름을 설정하여 필터링 효과
     ref.read(searchQueryProvider.notifier).state = boxName;
+  }
+
+  // 각 Box의 데이터를 개별적으로 표시하는 메서드
+  Widget _buildBoxContent(String boxName, LocalStorageService localStorageService, String searchQuery) {
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _getBoxData(boxName),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        
+        if (snapshot.hasError) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 48,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Box 데이터 로드 오류',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  snapshot.error.toString(),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          );
+        }
+        
+        final boxData = snapshot.data ?? {};
+        
+        // 검색 쿼리로 필터링
+        final filteredData = boxData.entries.where((entry) {
+          final key = entry.key.toString().toLowerCase();
+          final value = entry.value;
+          final query = searchQuery.toLowerCase();
+          
+          if (value is ExchangeRate) {
+            final combinedCode = (value.baseCode + value.quoteCode).toLowerCase();
+            final priceString = value.price.toString();
+            final sourceString = value.source.toLowerCase();
+            return key.contains(query) ||
+                combinedCode.contains(query) ||
+                priceString.contains(query) ||
+                sourceString.contains(query);
+          }
+          
+          final valueString = value.toString().toLowerCase();
+          return key.contains(query) || valueString.contains(query);
+        }).toList();
+        
+        if (filteredData.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.inbox_outlined,
+                  size: 48,
+                  color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  searchQuery.isEmpty ? '$boxName Box가 비어있습니다' : '검색 결과가 없습니다',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ],
+            ),
+          );
+        }
+        
+        return Column(
+          children: [
+            // Box 헤더
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '$boxName (${filteredData.length} items)',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    icon: const ScaledIcon(Icons.clear_all, size: 24),
+                    onPressed: () => _clearBox(context, ref, localStorageService, boxName),
+                    tooltip: 'Clear all data in this box',
+                  ),
+                ],
+              ),
+            ),
+            const Divider(),
+            // 데이터 목록
+            Expanded(
+              child: ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                itemCount: filteredData.length,
+                itemBuilder: (context, index) {
+                  final entry = filteredData[index];
+                  final key = entry.key;
+                  final value = entry.value;
+                  
+                  Widget subtitleWidget;
+                  if (value is ExchangeRate) {
+                    subtitleWidget = Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('base_code: ${value.baseCode}'),
+                        Text('quote_code: ${value.quoteCode}'),
+                        Text('price: ${value.price}'),
+                        Text('source: ${value.source}'),
+                        Text('time_last_update_unix: ${value.lastUpdatedUnix}'),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 8.0, top: 2.0),
+                          child: Text(
+                            '└ Converted: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(value.lastUpdatedUnix * 1000).toLocal())} (KST)',
+                            style: TextStyle(
+                              color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204),
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    subtitleWidget = Text(value.toString());
+                  }
+                  
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 4.0),
+                    elevation: 1.0,
+                    child: ListTile(
+                      title: Text(key.toString()),
+                      subtitle: subtitleWidget,
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: const ScaledIcon(Icons.edit, size: 20),
+                            onPressed: () => _showEditDialog(
+                              context, ref, localStorageService, boxName, key, value),
+                          ),
+                          IconButton(
+                            icon: const ScaledIcon(Icons.delete, size: 20),
+                            onPressed: () => _confirmDelete(
+                              context, ref, localStorageService, boxName, key),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // 특정 Box의 데이터를 가져오는 헬퍼 메서드
+  Future<Map<String, dynamic>> _getBoxData(String boxName) async {
+    try {
+      if (!Hive.isBoxOpen(boxName)) {
+        // Box가 열려 있지 않으면 데이터를 가져올 수 없습니다.
+        return {};
+      }
+      
+      final box = Hive.box(boxName);
+      final Map<String, dynamic> data = {};
+      
+      for (var key in box.keys) {
+        data[key.toString()] = box.get(key);
+      }
+      
+      return data;
+    } catch (e) {
+      throw Exception('Failed to load $boxName box data: $e');
+    }
   }
 }

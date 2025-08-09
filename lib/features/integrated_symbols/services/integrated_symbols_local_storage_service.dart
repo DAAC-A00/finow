@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/integrated_instrument.dart';
+import 'package:flutter/foundation.dart';
 
 /// 통합 심볼 정보 로컬 스토리지 관리 서비스 (Hive 기반)
 class IntegratedSymbolsLocalStorageService {
@@ -28,7 +29,7 @@ class IntegratedSymbolsLocalStorageService {
       await box.put(_instrumentsKey, jsonString);
       await box.put(_lastUpdateKey, DateTime.now().toIso8601String());
       
-      print('통합 심볼 정보 저장 완료: ${instruments.length}개 항목');
+      debugPrint('통합 심볼 정보 저장 완료: ${instruments.length}개 항목');
     } catch (e) {
       throw Exception('통합 심볼 정보 저장 중 오류 발생: $e');
     }
@@ -49,10 +50,10 @@ class IntegratedSymbolsLocalStorageService {
           .map((json) => IntegratedInstrument.fromJson(json))
           .toList();
       
-      print('통합 심볼 정보 불러오기 완료: ${instruments.length}개 항목');
+      debugPrint('통합 심볼 정보 불러오기 완료: ${instruments.length}개 항목');
       return instruments;
     } catch (e) {
-      print('통합 심볼 정보 불러오기 중 오류 발생: $e');
+      debugPrint('통합 심볼 정보 불러오기 중 오류 발생: $e');
       return [];
     }
   }
@@ -69,7 +70,7 @@ class IntegratedSymbolsLocalStorageService {
       
       return null;
     } catch (e) {
-      print('마지막 업데이트 시간 조회 중 오류 발생: $e');
+      debugPrint('마지막 업데이트 시간 조회 중 오류 발생: $e');
       return null;
     }
   }
@@ -91,7 +92,7 @@ class IntegratedSymbolsLocalStorageService {
       final box = await _getBox();
       await box.delete(_instrumentsKey);
       await box.delete(_lastUpdateKey);
-      print('저장된 통합 심볼 정보 삭제 완료');
+      debugPrint('저장된 통합 심볼 정보 삭제 완료');
     } catch (e) {
       throw Exception('저장된 데이터 삭제 중 오류 발생: $e');
     }
@@ -103,7 +104,7 @@ class IntegratedSymbolsLocalStorageService {
       final allInstruments = await loadIntegratedInstruments();
       return allInstruments.where((instrument) => instrument.exchange == exchange).toList();
     } catch (e) {
-      print('거래소별 심볼 정보 필터링 중 오류 발생: $e');
+      debugPrint('거래소별 심볼 정보 필터링 중 오류 발생: $e');
       return [];
     }
   }
@@ -122,7 +123,7 @@ class IntegratedSymbolsLocalStorageService {
                (instrument.englishName?.toLowerCase().contains(lowerQuery) ?? false);
       }).toList();
     } catch (e) {
-      print('심볼 검색 중 오류 발생: $e');
+      debugPrint('심볼 검색 중 오류 발생: $e');
       return [];
     }
   }

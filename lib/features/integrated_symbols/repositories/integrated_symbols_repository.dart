@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/integrated_instrument.dart';
 import '../services/exchange_api_service.dart';
-import '../services/local_storage_service.dart';
+import '../services/integrated_symbols_local_storage_service.dart';
 
 /// 통합 심볼 관리 레포지토리 프로바이더
 final integratedSymbolsRepositoryProvider = Provider<IntegratedSymbolsRepository>((ref) {
