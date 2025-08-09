@@ -68,15 +68,8 @@ class MyApp extends ConsumerWidget {
 
     return MaterialApp.router(
       title: 'Finow',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        brightness: Brightness.light,
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.deepPurple, brightness: Brightness.dark),
-        brightness: Brightness.dark,
-      ),
+      theme: AppTheme.getLightTheme(fontSizeOption.scale),
+      darkTheme: AppTheme.getDarkTheme(fontSizeOption.scale),
       themeMode: themeMode,
       routerConfig: goRouter,
       builder: (context, child) {

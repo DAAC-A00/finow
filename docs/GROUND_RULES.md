@@ -103,9 +103,10 @@
 - [ ] 라우팅에 경로 추가 (ShellRoute vs GoRoute 구분)
 
 ### UI 컴포넌트 작업 시
-- [ ] ScaledIcon/ScaledAssetImage 사용 확인
-- [ ] 일반 Text 위젯 사용 (MediaQuery textScaler 적용됨)
-- [ ] const 생성자 사용
+- [ ] 하드코딩된 크기/간격이 없는지 확인 (패딩, 마진 등)
+- [ ] 모든 스타일이 `Theme.of(context)`를 통해 적용되었는지 확인
+- [ ] 아이콘/이미지에 `ScaledIcon`/`ScaledAssetImage` 사용 확인
+- [ ] `const` 생성자 사용
 - [ ] Admin Mode 체크 (개발자 도구인 경우)
 
 ### Admin 기능 개발 시

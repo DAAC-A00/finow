@@ -84,11 +84,15 @@ class ExchangeRateScreen extends ConsumerWidget {
     *   색상, 텍스트 스타일, 아이콘 크기 등 모든 UI 요소는 `Theme.of(context)`를 통해 접근하여 사용합니다. 하드코딩된 색상이나 스타일 사용을 **엄격히 금지**합니다.
     *   **`Theme.of(context).colorScheme`**: Material Design 3의 동적 색상 시스템을 활용하여 앱의 색상을 가져옵니다. (예: `colorScheme.primary`, `colorScheme.onSurface`, `colorScheme.surfaceContainerHighest`)
     *   **`Theme.of(context).textTheme`**: Material Design 3의 타이포그래피 스케일을 사용하여 텍스트 스타일을 가져옵니다. (예: `textTheme.bodyMedium`, `textTheme.titleLarge`)
-    *   **컴포넌트 테마**: `ThemeData`를 통해 `ElevatedButtonTheme`, `CardTheme`, `AppBarTheme` 등을 정의하여 앱 전체의 컴포넌트 스타일을 일관되게 관리합니다.
+    *   **컴포넌트 테마**: `ThemeData`를 통해 `ElevatedButtonTheme`, `CardTheme`, `AppBarTheme` 등을 정의하여 앱 전체의 컴포넌트 스타일을 일관되게 관리합니다. 개별 위젯에서 `copyWith`를 사용하여 스타일을 파생하거나 직접 테마를 재정의하는 것을 **엄격히 금지**합니다.
 
-*   **UI 스케일링:**
-    *   텍스트는 `MediaQuery.of(context).textScaler`를 통해 자동으로 스케일링됩니다.
-    *   아이콘은 `ScaledIcon` 위젯을 사용하고, 이미지는 `ScaledAssetImage` 위젯을 사용하여 UI 스케일링 시스템에 맞게 크기가 조정되도록 합니다. `Icon()`이나 `Image.asset()`을 직접 사용하는 것을 **금지**합니다.
+*   **통합 UI 스케일링 (엄격 준수):**
+    *   앱의 모든 UI 요소(텍스트, 아이콘, 버튼, 카드, 간격 등)는 사용자의 폰트 크기 설정에 따라 **자동으로 스케일링**됩니다.
+    *   이는 `theme_provider.dart`의 동적 `ThemeData`와 `ScaledIcon`/`ScaledAssetImage` 위젯을 통해 구현됩니다.
+    *   **하드코딩된 크기/간격 사용을 엄격히 금지합니다.** `SizedBox(height: 16)`, `Padding(all: 8)`와 같은 코드는 스케일링 시스템을 무시하므로 절대 사용해서는 안 됩니다.
+    *   모든 간격과 크기는 `Theme.of(context)`에 정의된 값을 사용해야 합니다. (예: `Theme.of(context).cardTheme.margin`)
+    *   아이콘과 이미지는 반드시 `ScaledIcon`, `ScaledAssetImage`를 사용해야 합니다.
+    *   👉 **상세 구현 및 사용법**: `docs/SCALING_GUIDE.md` 필수 참조
 
 ## Provider 작성 규칙
 

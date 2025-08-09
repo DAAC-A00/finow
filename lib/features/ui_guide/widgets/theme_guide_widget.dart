@@ -47,6 +47,13 @@ class ThemeGuideWidget extends ConsumerWidget {
           ),
         ),
 
+        // 핵심 원칙
+        _buildSectionCard(
+          context,
+          title: '핵심 원칙',
+          child: _buildCorePrinciples(context),
+        ),
+
         // 컬러 팔레트 가이드
         _buildSectionCard(
           context,
@@ -75,6 +82,46 @@ class ThemeGuideWidget extends ConsumerWidget {
           child: _buildDevelopmentGuidelines(context),
         ),
       ],
+    );
+  }
+
+  Widget _buildCorePrinciples(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    final principles = [
+      '1. 중앙 테마 우선: 모든 색상과 텍스트 스타일은 Theme.of(context)를 통해 제공되는 값을 최우선으로 사용합니다.',
+      '2. `copyWith` 남용 금지: 개별 위젯에서 스타일을 미세 조정하기 위해 `copyWith`를 사용하는 것을 지양합니다. 재사용이 필요한 스타일은 중앙 테마(ThemeData)에 정식으로 추가해야 합니다.',
+      '3. 하드코딩 금지: `Colors.blue` 또는 특정 `TextStyle`을 직접 생성하여 사용하는 것을 엄격히 금지합니다. 모든 UI 요소는 테마의 일부여야 합니다.',
+      '4. 컴포넌트 테마 활용: 버튼, 카드, 앱 바 등 공통 위젯의 스타일은 `ThemeData`의 `elevatedButtonTheme`, `cardTheme` 등으로 중앙에서 관리하여 일관성을 확보합니다.',
+    ];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: principles.map((principle) {
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ScaledText(
+                '✅',
+                style: textTheme.titleMedium?.copyWith(
+                  color: colorScheme.primary,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: ScaledText(
+                  principle,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 

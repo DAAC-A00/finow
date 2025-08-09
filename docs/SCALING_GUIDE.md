@@ -1,143 +1,111 @@
-# Finow 앱 스케일링 가이드
+# Finow 통합 UI 스케일링 가이드
 
-## 개요
-Finow 앱은 사용자가 Settings에서 설정한 폰트 크기에 따라 전체 UI가 반응형으로 스케일링됩니다.
+## 1. 개요
 
-## 스케일링 시스템 구조
+Finow 앱의 모든 UI는 사용자가 **Settings**에서 설정한 폰트 크기 옵션(Small, Medium, Large)에 따라 **통합적으로 스케일링**됩니다. 이 시스템은 단순히 텍스트 크기만 조절하는 것을 넘어, **아이콘, 버튼, 카드, 탭, 리스트 타일 등 대부분의 UI 요소 크기와 간격**까지 일관되게 변경하여 최적의 사용자 경험과 접근성을 제공합니다.
 
-### 1. FontSizeProvider (`lib/font_size_provider.dart`)
-- 사용자의 폰트 크기 설정을 관리 (Small: 0.9x, Medium: 1.0x, Large: 1.1x)
-- Hive를 통해 설정 값을 영구 저장
+## 2. 스케일링 시스템 구조
 
-### 2. UIScaleProvider (`lib/ui_scale_provider.dart`)
-- 앱 전체에서 스케일 값에 접근할 수 있도록 하는 InheritedWidget
-- 스케일링된 위젯들 제공: `ScaledText`, `ScaledIcon`, `ScaledImage`, `ScaledAssetImage`
+통합 스케일링 시스템은 다음 세 가지 핵심 요소로 구성됩니다.
+
+### 1. `FontSizeProvider` (`lib/font_size_provider.dart`)
+- 사용자의 폰트 크기 설정을 `FontSize` 열거형(Small, Medium, Large)으로 관리합니다.
+- 각 옵션에 맞는 `scaleFactor` (예: 0.9, 1.0, 1.2)를 제공합니다.
+- 이 `scaleFactor`가 모든 스케일링의 기준값이 됩니다.
+
+### 2. 동적 `AppTheme` (`lib/theme_provider.dart`)
+- `AppTheme.getLightTheme(scale)`와 `AppTheme.getDarkTheme(scale)` 함수를 통해 동적으로 `ThemeData`를 생성합니다.
+- `scale` 값을 인자로 받아, `CardTheme`, `ElevatedButtonTheme`, `ListTileTheme` 등 Material 위젯의 **패딩, 마진, 아이콘 크기, 테두리 반경** 등을 스케일에 맞춰 계산합니다.
+- **결과적으로, 테마를 따르는 모든 표준 위젯은 자동으로 스케일링됩니다.**
 
 ### 3. 전역 스케일링 적용 (`lib/main.dart`)
+- `main.dart`는 `FontSizeProvider`에서 `scale` 값을 가져옵니다.
+- 이 `scale` 값을 사용하여 다음 세 가지를 설정합니다.
+  1.  **`theme` / `darkTheme`**: `AppTheme.get...Theme(scale)`를 호출하여 스케일링된 테마를 앱에 적용합니다.
+  2.  **`MediaQuery.textScaler`**: 모든 `Text` 위젯이 스케일링되도록 설정합니다.
+  3.  **`UIScaleProvider`**: `ScaledIcon`, `ScaledAssetImage` 등 커스텀 스케일링 위젯이 `scale` 값을 사용할 수 있도록 제공합니다.
+
 ```dart
-// MediaQuery textScaler를 통해 모든 Text 위젯 자동 스케일링
-return MaterialApp.router(
-  builder: (context, child) {
-    return MediaQuery(
-      data: MediaQuery.of(context).copyWith(
-        textScaler: TextScaler.linear(fontSizeOption.scale),
-      ),
-      child: UIScaleProvider(
-        scale: fontSizeOption.scale,
-        child: child!,
-      ),
+// main.dart
+class MyApp extends ConsumerWidget {
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final fontSizeOption = ref.watch(fontSizeNotifierProvider);
+    final scale = fontSizeOption.scale; // 모든 스케일링의 기준값
+
+    return MaterialApp.router(
+      theme: AppTheme.getLightTheme(scale),
+      darkTheme: AppTheme.getDarkTheme(scale),
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(
+            textScaler: TextScaler.linear(scale),
+          ),
+          child: UIScaleProvider(
+            scale: scale,
+            child: child!,
+          ),
+        );
+      },
     );
-  },
-);
+  }
+}
 ```
 
-## 사용 가이드
+## 3. 사용 가이드
+
+### 표준 Material 위젯 (Button, Card, ListTile 등)
+- **별도의 작업 없이 자동으로 스케일링됩니다.**
+- `theme_provider.dart`에 정의된 `ThemeData`를 따르기만 하면 됩니다.
+- **절대로 위젯에 직접 크기나 패딩 값을 하드코딩하지 마세요.**
 
 ### 텍스트 위젯
-**✅ 권장 (자동 스케일링)**
+- 일반 `Text` 위젯을 사용하면 `MediaQuery.textScaler`에 의해 **자동으로 스케일링**됩니다.
+
+### 아이콘 및 이미지 위젯
+- `ThemeData`의 영향을 직접 받지 않는 아이콘과 이미지는 기존과 같이 `ScaledIcon`과 `ScaledAssetImage`를 사용해야 합니다.
+
+**✅ 아이콘 권장 사용법**
 ```dart
-Text('Hello World')  // MediaQuery textScaler에 의해 자동 스케일링
+// 기본 크기(24.0)에 스케일이 자동 적용됨
+ScaledIcon(Icons.home)
+
+// 다른 기본 크기를 지정해도 스케일이 적용됨
+ScaledIcon(Icons.settings, size: 32)
 ```
 
-**✅ 호환성을 위한 대안**
-```dart
-ScaledText('Hello World')  // 내부적으로 일반 Text와 동일
-```
-
-### 아이콘 위젯
-**✅ 권장**
-```dart
-ScaledIcon(Icons.home)  // 스케일링 적용
-ScaledIcon(Icons.settings, size: 24)  // 기본 크기 지정 + 스케일링
-```
-
-**❌ 피해야 할 방식**
-```dart
-Icon(Icons.home)  // 스케일링 미적용
-```
-
-### 이미지 위젯
-**✅ Asset 이미지**
+**✅ 이미지 권장 사용법**
 ```dart
 ScaledAssetImage(
   assetPath: 'images/logo.png',
-  baseWidth: 40,   // 기본 크기
+  baseWidth: 40,   // 기본 크기에 스케일이 자동 적용됨
   baseHeight: 40,
 )
 ```
 
-**✅ 일반 이미지**
+## 4. 새로운 화면/컴포넌트 추가 시
+
+### Best Practices
+1.  **Theme First**: 항상 `Theme.of(context)`를 통해 색상, 텍스트 스타일, 패딩 등 스타일 값을 가져오세요.
+2.  **하드코딩 금지**: `SizedBox(width: 16)`, `Padding(all: 8.0)` 등 크기 관련 상수를 코드에 직접 작성하는 것을 **엄격히 금지**합니다. 모든 크기는 테마에 정의되어야 합니다.
+3.  **새로운 컴포넌트 테마 추가**: 만약 새로운 종류의 위젯 스타일을 앱 전반에 일관되게 적용해야 한다면, `theme_provider.dart`의 `_getScaledTheme` 함수 내에 해당 위젯의 `...Theme`를 추가하여 스케일링이 적용되도록 만드세요.
+
 ```dart
-ScaledImage(
-  image: NetworkImage('https://example.com/image.png'),
-  baseWidth: 100,
-  baseHeight: 100,
-)
+// theme_provider.dart에 새로운 컴포넌트 테마 추가 예시
+static ThemeData _getScaledTheme(ThemeData baseTheme, double scale) {
+  return baseTheme.copyWith(
+    // ... 기존 테마들
+    dialogTheme: baseTheme.dialogTheme.copyWith(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0 * scale), // 스케일 적용
+      ),
+    ),
+  );
+}
 ```
 
-## 실제 적용 예시
-
-### Exchange Rate Screen
-```dart
-// 아이콘과 텍스트 모두 스케일링 적용
-ListTile(
-  leading: ScaledAssetImage(
-    assetPath: 'images/exconvert.png',
-    baseWidth: 20,
-    baseHeight: 20,
-  ),
-  title: Text('USD/KRW'),  // 자동 스케일링
-  trailing: Text('1,400.50'),  // 자동 스케일링
-)
-```
-
-### Settings Screen
-```dart
-// 모든 텍스트가 자동으로 스케일링됨
-RadioListTile<FontSizeOption>(
-  title: Text(fontSize.label),  // 자동 스케일링
-  value: fontSize,
-  groupValue: currentFontSize,
-  onChanged: (value) => updateFontSize(value),
-)
-```
-
-## 스케일링 값
-- **Small**: 0.9배 (90%)
-- **Medium**: 1.0배 (100% - 기본값)
-- **Large**: 1.1배 (110%)
-
-## 베스트 프랙티스
-
-### 1. 일관성 유지
-- 모든 아이콘에 `ScaledIcon` 사용
-- 이미지에는 `ScaledAssetImage` 또는 `ScaledImage` 사용
-- 텍스트는 일반 `Text` 위젯 사용 (자동 스케일링)
-
-### 2. 기본 크기 설정
-- 아이콘: 일반적으로 24dp (Material Design 기준)
-- 작은 아이콘: 16-20dp
-- 이미지: 용도에 맞는 적절한 기본 크기 설정
-
-### 3. 테스트
-- Settings에서 폰트 크기를 변경하여 모든 화면이 적절히 스케일링되는지 확인
-- 특히 작은 크기(Small)와 큰 크기(Large)에서 UI가 깨지지 않는지 확인
-
-## 새로운 화면/컴포넌트 추가 시 체크리스트
-
-- [ ] `ScaledIcon` 사용 (모든 아이콘)
-- [ ] `ScaledAssetImage` 또는 `ScaledImage` 사용 (모든 이미지)
-- [ ] `Text` 위젯 사용 (자동 스케일링)
-- [ ] Settings에서 폰트 크기 변경 테스트 완료
-- [ ] 모든 스케일링 옵션에서 UI 정상 동작 확인
-
-## 트러블슈팅
-
-### ParentDataWidget 오류
-- MediaQuery textScaler와 UIScaleProvider를 함께 사용하여 해결
-- `ScaledText`는 내부적으로 일반 `Text` 위젯 사용
-
-### 스케일링이 적용되지 않는 경우
-- `ScaledIcon`, `ScaledImage` 등 전용 위젯 사용 확인
-- `UIScaleProvider` import 여부 확인
-- `main.dart`의 스케일링 설정 확인
+### 체크리스트
+- [ ] UI에 사용된 모든 위젯이 `ThemeData`를 통해 스타일이 적용되었는가?
+- [ ] 아이콘은 `ScaledIcon`, 이미지는 `ScaledAssetImage`를 사용했는가?
+- [ ] 크기나 간격에 관련된 하드코딩된 상수는 없는가?
+- [ ] Settings에서 폰트 크기를 Small/Medium/Large로 변경하며 UI가 깨지지 않고 일관되게 조절되는지 테스트했는가?
