@@ -544,11 +544,16 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
   Future<int> _getBoxItemCount(String boxName) async {
     try {
       if (Hive.isBoxOpen(boxName)) {
-        final box = Hive.box(boxName);
-        return box.length;
+        // Box 타입에 따라 안전하게 접근
+        if (boxName == 'exchangeRates') {
+          final box = Hive.box<ExchangeRate>(boxName);
+          return box.length;
+        } else {
+          final box = Hive.box(boxName);
+          return box.length;
+        }
       } else {
-        // Box가 열려 있지 않으면 0을 반환하거나 오류를 던질 수 있습니다.
-        // 여기서는 0을 반환하여 UI가 깨지지 않도록 합니다.
+        // Box가 열려 있지 않으면 0을 반환
         return 0;
       }
     } catch (e) {
@@ -564,7 +569,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
       builder: (context) => AlertDialog(
         title: Text('Box 정보: $boxName'),
         content: FutureBuilder<Map<String, dynamic>>(
-          future: _getBoxDetails(boxName),
+          future: _getBoxInfo(boxName),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const SizedBox(
@@ -606,25 +611,31 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
   }
 
   /// Box 세부 정보 가져오기
-  Future<Map<String, dynamic>> _getBoxDetails(String boxName) async {
+  Future<Map<String, dynamic>> _getBoxInfo(String boxName) async {
     try {
       final isOpen = Hive.isBoxOpen(boxName);
-      Box? box;
       
-      if (isOpen) {
-        box = Hive.box(boxName);
-      } else {
+      if (!isOpen) {
         // Box가 열려 있지 않으면 정보를 가져올 수 없습니다.
         return {'itemCount': 0, 'isOpen': false, 'path': 'Box not open'};
       }
       
-      final details = {
-        'itemCount': box.length,
-        'isOpen': isOpen,
-        'path': box.path,
-      };
-      
-      return details;
+      // Box 타입에 따라 안전하게 접근
+      if (boxName == 'exchangeRates') {
+        final box = Hive.box<ExchangeRate>(boxName);
+        return {
+          'itemCount': box.length,
+          'isOpen': isOpen,
+          'path': box.path,
+        };
+      } else {
+        final box = Hive.box(boxName);
+        return {
+          'itemCount': box.length,
+          'isOpen': isOpen,
+          'path': box.path,
+        };
+      }
     } catch (e) {
       return {'error': e.toString()};
     }
@@ -862,11 +873,24 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
         return {};
       }
       
-      final box = Hive.box(boxName);
       final Map<String, dynamic> data = {};
       
-      for (var key in box.keys) {
-        data[key.toString()] = box.get(key);
+      // Box 타입에 따라 안전하게 데이터 접근
+      if (boxName == 'exchangeRates') {
+        // ExchangeRate 타입의 Box 처리
+        final box = Hive.box<ExchangeRate>(boxName);
+        for (var key in box.keys) {
+          final value = box.get(key);
+          if (value != null) {
+            data[key.toString()] = value;
+          }
+        }
+      } else {
+        // 일반 Box 처리
+        final box = Hive.box(boxName);
+        for (var key in box.keys) {
+          data[key.toString()] = box.get(key);
+        }
       }
       
       return data;
