@@ -1,7 +1,8 @@
+
+
 // 설계 원칙과 코딩 표준의 실제 적용 예시를 제공합니다.
 // docs에서 제거된 설계 원칙 관련 코드 예시들을 실제로 동작하는 형태로 구현합니다.
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:finow/ui_scale_provider.dart';
 
 class PrinciplesGuideWidget extends StatefulWidget {
@@ -60,37 +61,45 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
   }
 
   Widget _buildHeaderCard() {
-    return Card(
-      elevation: 4.0,
-      color: Colors.deepPurple.shade50,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const ScaledIcon(
-              Icons.rule,
-              size: 48,
-              color: Colors.deepPurple,
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
+        
+        return Card(
+          elevation: 4.0,
+          color: colorScheme.primaryContainer,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                ScaledIcon(
+                  Icons.rule,
+                  size: 48,
+                  color: colorScheme.primary,
+                ),
+                const SizedBox(height: 8),
+                ScaledText(
+                  'Finow 개발 원칙',
+                  style: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                ScaledText(
+                  '코드 품질과 유지보수성을 위한 핵심 개발 원칙들',
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onPrimaryContainer.withAlpha(204), // withOpacity(0.8)
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            const ScaledText(
-              'Finow 개발 원칙',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.deepPurple,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            const ScaledText(
-              '코드 품질과 유지보수성을 위한 핵심 개발 원칙들',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -99,46 +108,56 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
     required String subtitle,
     required Widget child,
   }) {
-    return Card(
-      elevation: 2.0,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
+        
+        return Card(
+          elevation: 2.0,
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          color: colorScheme.surface,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ScaledIcon(Icons.check_circle, color: Colors.green),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ScaledText(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                Row(
+                  children: [
+                    ScaledIcon(
+                      Icons.check_circle, 
+                      color: colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ScaledText(
+                            title,
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                          ScaledText(
+                            subtitle,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurface.withAlpha(178), // withOpacity(0.7)
+                            ),
+                          ),
+                        ],
                       ),
-                      ScaledText(
-                        subtitle,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+                const SizedBox(height: 12),
+                child,
               ],
             ),
-            const SizedBox(height: 12),
-            child,
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -208,7 +227,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.1),
+                color: color.withAlpha(25), // withOpacity(0.1)
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -552,7 +571,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
       margin: const EdgeInsets.symmetric(vertical: 4),
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withAlpha(25), // withOpacity(0.1)
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(

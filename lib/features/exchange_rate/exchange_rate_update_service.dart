@@ -39,10 +39,10 @@ class ExchangeRateUpdateService {
 
       if (ratesToSave.isNotEmpty) {
         await _localService.saveRates(ratesToSave);
-        print('Successfully supplemented ${ratesToSave.length} rates from v6.exchangerate-api.com');
+        
       }
     } catch (e) {
-      print('Failed to supplement rates from v6.exchangerate-api.com: $e');
+      
     }
   }
 }

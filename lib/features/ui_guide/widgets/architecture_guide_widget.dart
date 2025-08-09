@@ -1,3 +1,5 @@
+
+
 // 프로젝트 아키텍처 패턴들의 실제 구현 예시를 제공합니다.
 // docs에서 제거된 아키텍처 관련 코드 예시들을 실제로 동작하는 형태로 구현합니다.
 import 'package:flutter/material.dart';
@@ -57,37 +59,45 @@ class ArchitectureGuideWidget extends StatelessWidget {
   }
 
   Widget _buildHeaderCard() {
-    return Card(
-      elevation: 4.0,
-      color: Colors.indigo.shade50,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            const ScaledIcon(
-              Icons.architecture,
-              size: 48,
-              color: Colors.indigo,
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
+        
+        return Card(
+          elevation: 4.0,
+          color: colorScheme.primaryContainer,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                ScaledIcon(
+                  Icons.architecture,
+                  size: 48,
+                  color: colorScheme.primary,
+                ),
+                const SizedBox(height: 8),
+                ScaledText(
+                  'Finow 아키텍처 패턴',
+                  style: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                ScaledText(
+                  '실제 프로젝트에서 사용되는 아키텍처 패턴과 구조',
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: colorScheme.onPrimaryContainer.withAlpha(204), // withOpacity(0.8)
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            const ScaledText(
-              'Finow 아키텍처 패턴',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.indigo,
-              ),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 8),
-            const ScaledText(
-              '실제 프로젝트에서 사용되는 아키텍처 패턴과 구조',
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.grey),
-            ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -96,81 +106,102 @@ class ArchitectureGuideWidget extends StatelessWidget {
     required String subtitle,
     required Widget child,
   }) {
-    return Card(
-      elevation: 2.0,
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final textTheme = Theme.of(context).textTheme;
+        
+        return Card(
+          elevation: 2.0,
+          margin: const EdgeInsets.symmetric(vertical: 8.0),
+          color: colorScheme.surface,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const ScaledIcon(Icons.folder_open, color: Colors.blue),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ScaledText(
-                        title,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
+                Row(
+                  children: [
+                    ScaledIcon(
+                      Icons.folder_open, 
+                      color: colorScheme.primary,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ScaledText(
+                            title,
+                            style: textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
+                            ),
+                          ),
+                          ScaledText(
+                            subtitle,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurface.withAlpha(178), // withOpacity(0.7)
+                            ),
+                          ),
+                        ],
                       ),
-                      ScaledText(
-                        subtitle,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
+                const SizedBox(height: 12),
+                child,
               ],
             ),
-            const SizedBox(height: 12),
-            child,
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildFolderStructureExample() {
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const ScaledText(
-                '실제 프로젝트 폴더 구조',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              IconButton(
-                onPressed: () => _copyToClipboard(_getFolderStructureText()),
-                icon: const ScaledIcon(Icons.copy, size: 16),
-                tooltip: '복사',
-              ),
-            ],
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest, // surfaceVariant -> surfaceContainerHighest
+            borderRadius: BorderRadius.circular(8),
           ),
-          const SizedBox(height: 8),
-          Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.black87,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: const SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  ScaledText(
+                    '실제 프로젝트 폴더 구조',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => _copyToClipboard(_getFolderStructureText()),
+                    icon: ScaledIcon(
+                      Icons.copy, 
+                      size: 16,
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                    tooltip: '복사',
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: colorScheme.inverseSurface,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+            child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: ScaledText(
                 'features/\n'
@@ -182,16 +213,18 @@ class ArchitectureGuideWidget extends StatelessWidget {
                 '│   ├── [feature]_api_client.dart      # External API\n'
                 '│   ├── [feature]_update_service.dart  # Background Service\n'
                 '│   └── [feature].dart                 # Model/Entity',
-                style: TextStyle(
-                  fontFamily: 'monospace',
-                  color: Colors.green,
-                  fontSize: 12,
+                    style: TextStyle(
+                      fontFamily: 'monospace',
+                      color: colorScheme.onInverseSurface,
+                      fontSize: 12,
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 

@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/storage_viewer/local_storage_service.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +27,6 @@ class StorageViewerScreen extends ConsumerStatefulWidget {
 
 class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with RouteAware {
   late final TextEditingController _controller;
-  bool _initialized = false;
 
   @override
   void initState() {
@@ -70,7 +67,6 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
     final localStorageService = ref.watch(localStorageServiceProvider);
     final searchQuery = ref.watch(searchQueryProvider);
 
-    // local storage에서 검색어 불러오는 코드 제거
     if (_controller.text != searchQuery) {
       _controller.text = searchQuery;
     }
@@ -82,13 +78,12 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
           controller: _controller,
           onChanged: (value) {
             ref.read(searchQueryProvider.notifier).state = value;
-            // local storage 저장 코드 제거
           },
           decoration: InputDecoration(
             hintText: 'Search local storage...',
             border: InputBorder.none,
             hintStyle: TextStyle(
-              color: Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: Theme.of(context).colorScheme.onSurface.withAlpha(178), // withOpacity(0.7)
               fontSize: 20,
             ),
           ),
@@ -139,7 +134,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
 
                 final List<Widget> allDisplayWidgets = [];
 
-                allBoxes.entries.forEach((boxEntry) {
+                for (var boxEntry in allBoxes.entries) {
                   final boxName = boxEntry.key;
                   final boxData = boxEntry.value;
                   List<Widget> boxContentWidgets = [];
@@ -192,7 +187,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                         child: Text('No matching data in this box.'),
                       ));
                     } else {
-                      filteredBoxData.forEach((entry) {
+                      for (var entry in filteredBoxData) {
                         final key = entry.key;
                         final value = entry.value;
                         Widget subtitleWidget;
@@ -210,7 +205,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                                 padding: const EdgeInsets.only(left: 8.0, top: 2.0),
                                 child: Text(
                                   '└ Converted: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(value.lastUpdatedUnix * 1000).toLocal())} (KST)',
-                                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.8), fontStyle: FontStyle.italic),
+                                  style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204), fontStyle: FontStyle.italic), // withOpacity(0.8)
                                 ),
                               ),
                             ],
@@ -244,12 +239,12 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                             ),
                           ),
                         );
-                      });
+                      }
                     }
                     boxContentWidgets.add(const Divider()); // Add a divider between boxes
                     allDisplayWidgets.addAll(boxContentWidgets);
                   }
-                });
+                }
 
                 if (allDisplayWidgets.isEmpty && searchQuery.isNotEmpty) {
                   return const Center(child: Text('No matching data found.'));
@@ -421,11 +416,13 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> with 
                 }
 
                 if (newValue != null) {
+                  if (!context.mounted) return;
                   await localStorageService.updateEntry(boxName, key, newValue);
                   ref.invalidate(allStorageDataProvider);
                   ref.invalidate(storageUsageProvider);
                   Navigator.of(context).pop();
                 } else {
+                  if (!context.mounted) return;
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('유효하지 않은 값입니다.')),
                   );

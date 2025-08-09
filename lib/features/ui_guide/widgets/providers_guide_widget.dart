@@ -72,42 +72,49 @@ class ProvidersGuideWidget extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       children: [
-        _buildHeaderCard('Finow Provider 패턴 예시'),
+        _buildHeaderCard(context, 'Finow Provider 패턴 예시'),
         const SizedBox(height: 16),
         
         _buildProviderExampleCard(
+          context,
           title: '1. StateProvider',
           subtitle: '간단한 상태 관리 (예: 카운터, 검색어)',
           child: _buildStateProviderExample(ref),
         ),
         
         _buildProviderExampleCard(
+          context,
           title: '2. AsyncNotifier',
           subtitle: '비동기 데이터 관리 (예: 환율 데이터)',
           child: _buildAsyncNotifierExample(ref),
         ),
         
         _buildProviderExampleCard(
+          context,
           title: '3. StateNotifier',
           subtitle: '복잡한 상태 관리 (예: Admin Mode)',
           child: _buildStateNotifierExample(ref),
         ),
         
         _buildProviderExampleCard(
+          context,
           title: '4. FutureProvider',
           subtitle: '읽기 전용 비동기 데이터',
           child: _buildFutureProviderExample(ref),
         ),
         
-        _buildUsageGuideCard(),
+        _buildUsageGuideCard(context),
       ],
     );
   }
 
-  Widget _buildHeaderCard(String title) {
+  Widget _buildHeaderCard(BuildContext context, String title) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    
     return Card(
       elevation: 4.0,
-      color: Colors.blue.shade50,
+      color: colorScheme.primaryContainer,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -115,15 +122,13 @@ class ProvidersGuideWidget extends ConsumerWidget {
             const ScaledIcon(
               Icons.account_tree,
               size: 48,
-              color: Colors.blue,
             ),
             const SizedBox(height: 8),
             ScaledText(
               title,
-              style: const TextStyle(
-                fontSize: 20,
+              style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.blue,
+                color: colorScheme.onPrimaryContainer,
               ),
               textAlign: TextAlign.center,
             ),
@@ -139,7 +144,8 @@ class ProvidersGuideWidget extends ConsumerWidget {
     );
   }
 
-  Widget _buildProviderExampleCard({
+  Widget _buildProviderExampleCard(
+    BuildContext context, {
     required String title,
     required String subtitle,
     required Widget child,
@@ -169,10 +175,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
                       ),
                       ScaledText(
                         subtitle,
-                        style: const TextStyle(
-                          color: Colors.grey,
-                          fontSize: 12,
-                        ),
+                        style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant.withAlpha(204)), // withOpacity(0.8)
                       ),
                     ],
                   ),
@@ -190,187 +193,274 @@ class ProvidersGuideWidget extends ConsumerWidget {
   Widget _buildStateProviderExample(WidgetRef ref) {
     final counter = ref.watch(counterProvider);
     
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.green.shade50,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ScaledText('현재 값: $counter', style: const TextStyle(fontSize: 16)),
-          const SizedBox(height: 8),
-          Row(
-            mainAxisSize: MainAxisSize.min,
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colorScheme.secondaryContainer,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ElevatedButton(
-                onPressed: () => ref.read(counterProvider.notifier).state++,
-                child: const ScaledText('증가'),
+              ScaledText(
+                '카운터: $counter', 
+                style: TextStyle(
+                  fontSize: 16,
+                  color: colorScheme.onSecondaryContainer,
+                ),
               ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () => ref.read(counterProvider.notifier).state--,
-                child: const ScaledText('감소'),
-              ),
-              const SizedBox(width: 8),
-              ElevatedButton(
-                onPressed: () => ref.read(counterProvider.notifier).state = 0,
-                child: const ScaledText('리셋'),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  ElevatedButton(
+                    onPressed: () => ref.read(counterProvider.notifier).state++,
+                    child: const ScaledText('+'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () => ref.read(counterProvider.notifier).state--,
+                    child: const ScaledText('-'),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    onPressed: () => ref.read(counterProvider.notifier).state = 0,
+                    child: const ScaledText('리셋'),
+                  ),
+                ],
               ),
             ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   Widget _buildAsyncNotifierExample(WidgetRef ref) {
     final asyncCounter = ref.watch(asyncCounterProvider);
     
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.blue.shade50,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: asyncCounter.when(
-        loading: () => const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
-            SizedBox(width: 8),
-            ScaledText('로딩 중...'),
-          ],
-        ),
-        error: (error, stack) => ScaledText('오류: $error', style: const TextStyle(color: Colors.red)),
-        data: (value) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ScaledText('비동기 카운터: $value', style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () => ref.read(asyncCounterProvider.notifier).increment(),
-              child: const ScaledText('비동기 증가 (0.5초 딜레이)'),
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colorScheme.tertiaryContainer,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: asyncCounter.when(
+            loading: () => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                const SizedBox(width: 8),
+                ScaledText(
+                  '로딩 중...', 
+                  style: TextStyle(color: colorScheme.onTertiaryContainer),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+            error: (error, stack) => ScaledText(
+              '오류: $error', 
+              style: TextStyle(color: colorScheme.error),
+            ),
+            data: (data) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ScaledText(
+                  '비동기 카운터: $data', 
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: colorScheme.onTertiaryContainer,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () => ref.read(asyncCounterProvider.notifier).increment(),
+                  child: const ScaledText('비동기 증가'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
   Widget _buildStateNotifierExample(WidgetRef ref) {
     final exampleState = ref.watch(exampleStateNotifierProvider);
     
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.orange.shade50,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ScaledText('메시지: ${exampleState.message}', style: const TextStyle(fontSize: 16)),
-          const SizedBox(height: 8),
-          if (exampleState.isLoading)
-            const Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
-                SizedBox(width: 8),
-                ScaledText('업데이트 중...', style: TextStyle(color: Colors.orange)),
-              ],
-            )
-          else
-            ElevatedButton(
-              onPressed: () => ref
-                  .read(exampleStateNotifierProvider.notifier)
-                  .updateMessage('업데이트됨 ${DateTime.now().millisecondsSinceEpoch}'),
-              child: const ScaledText('메시지 업데이트'),
-            ),
-        ],
-      ),
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colorScheme.surfaceContainerHighest, // surfaceVariant -> surfaceContainerHighest
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ScaledText(
+                '메시지: ${exampleState.message}', 
+                style: TextStyle(
+                  fontSize: 16,
+                  color: colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 8),
+              if (exampleState.isLoading)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+                    const SizedBox(width: 8),
+                    ScaledText(
+                      '업데이트 중...', 
+                      style: TextStyle(color: colorScheme.onSurfaceVariant),
+                    ),
+                  ],
+                )
+              else
+                ElevatedButton(
+                  onPressed: () => ref
+                      .read(exampleStateNotifierProvider.notifier)
+                      .updateMessage('업데이트됨 ${DateTime.now().millisecondsSinceEpoch}'),
+                  child: const ScaledText('메시지 업데이트'),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 
   Widget _buildFutureProviderExample(WidgetRef ref) {
     final futureData = ref.watch(futureExampleProvider);
     
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Colors.purple.shade50,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: futureData.when(
-        loading: () => const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
-            SizedBox(width: 8),
-            ScaledText('데이터 로딩 중... (2초)'),
-          ],
-        ),
-        error: (error, stack) => ScaledText('오류: $error', style: const TextStyle(color: Colors.red)),
-        data: (data) => Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ScaledText('데이터: $data', style: const TextStyle(fontSize: 16)),
-            const SizedBox(height: 8),
-            ElevatedButton(
-              onPressed: () => ref.refresh(futureExampleProvider),
-              child: const ScaledText('데이터 새로고침'),
+    return Builder(
+      builder: (context) {
+        final colorScheme = Theme.of(context).colorScheme;
+        
+        return Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: colorScheme.primaryContainer.withAlpha(128), // withOpacity(0.5)
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: futureData.when(
+            loading: () => Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+                const SizedBox(width: 8),
+                ScaledText(
+                  '데이터 로딩 중... (2초)',
+                  style: TextStyle(color: colorScheme.onPrimaryContainer),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
+            error: (error, stack) => ScaledText(
+              '오류: $error', 
+              style: TextStyle(color: colorScheme.error),
+            ),
+            data: (data) => Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ScaledText(
+                  '데이터: $data', 
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () => ref.refresh(futureExampleProvider),
+                  child: const ScaledText('데이터 새로고침'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
-  Widget _buildUsageGuideCard() {
+  Widget _buildUsageGuideCard(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    
     return Card(
       elevation: 2.0,
-      color: Colors.grey.shade50,
+      color: colorScheme.surface,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                ScaledIcon(Icons.lightbulb, color: Colors.amber),
-                SizedBox(width: 8),
+                ScaledIcon(
+                  Icons.lightbulb, 
+                  color: colorScheme.secondary,
+                ),
+                const SizedBox(width: 8),
                 ScaledText(
                   '사용 가이드',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 12),
-            _buildGuideItem('StateProvider', '간단한 값 (int, String, bool) 저장'),
-            _buildGuideItem('AsyncNotifier', '비동기 데이터 로딩/업데이트'),
-            _buildGuideItem('StateNotifier', '복잡한 객체 상태 관리'),
-            _buildGuideItem('FutureProvider', '읽기 전용 비동기 데이터'),
-            _buildGuideItem('Provider', '서비스 인스턴스 제공'),
+            _buildGuideItem(context, 'StateProvider', '간단한 값 (int, String, bool) 저장'),
+            _buildGuideItem(context, 'AsyncNotifier', '비동기 데이터 로딩/업데이트'),
+            _buildGuideItem(context, 'StateNotifier', '복잡한 객체 상태 관리'),
+            _buildGuideItem(context, 'FutureProvider', '읽기 전용 비동기 데이터'),
+            _buildGuideItem(context, 'Provider', '서비스 인스턴스 제공'),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildGuideItem(String provider, String usage) {
+  Widget _buildGuideItem(BuildContext context, String provider, String usage) {
+    final colorScheme = Theme.of(context).colorScheme;
+    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const ScaledText('• ', style: TextStyle(fontWeight: FontWeight.bold)),
+          ScaledText(
+            '• ', 
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: colorScheme.onSurface,
+            ),
+          ),
           ScaledText(
             '$provider: ',
-            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.blue),
+            style: TextStyle(
+              fontWeight: FontWeight.bold, 
+              color: colorScheme.primary,
+            ),
           ),
-          Expanded(child: ScaledText(usage)),
+          Expanded(
+            child: ScaledText(
+              usage,
+              style: TextStyle(color: colorScheme.onSurface),
+            ),
+          ),
         ],
       ),
     );

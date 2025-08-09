@@ -38,6 +38,7 @@
    - [CODING_STANDARDS.md](docs/CODING_STANDARDS.md) - 상세 코딩 규칙
    - [TECH_STACK.md](docs/TECH_STACK.md) - 기술 스택 상세 정보 (v2.0 업데이트)
    - [SCALING_GUIDE.md](docs/SCALING_GUIDE.md) - UI 스케일링 구현 세부사항
+   - [DARK_LIGHT_MODE_GUIDE.md](docs/DARK_LIGHT_MODE_GUIDE.md) - 다크/라이트모드 개발 가이드라인
 
 4. **자동 업데이트 시스템** 🔄
    - [DYNAMIC_RULE_UPDATE_SYSTEM.md](docs/DYNAMIC_RULE_UPDATE_SYSTEM.md) - 동적 규칙 업데이트 시스템
@@ -66,6 +67,7 @@
 
 ### UI 시스템
 - **Material Design 3** - 디자인 시스템
+- **다크/라이트 테마** - 완전한 다크모드/라이트모드 지원
 - **커스텀 스케일링** - 사용자 설정 기반 폰트/이미지 크기 조절
 
 ## 프로젝트 구조
@@ -81,7 +83,8 @@ finow/
 │   ├── ARCHITECTURE.md          # 시스템 아키텍처 및 데이터 플로우
 │   ├── CODING_STANDARDS.md      # 코딩 표준 및 네이밍 규칙
 │   ├── TECH_STACK.md           # 기술 스택 상세 정보 (v2.0)
-│   └── SCALING_GUIDE.md        # UI 스케일링 시스템 가이드
+│   ├── SCALING_GUIDE.md        # UI 스케일링 시스템 가이드
+│   └── DARK_LIGHT_MODE_GUIDE.md # 다크/라이트모드 개발 가이드라인
 ├── lib/                        # 소스 코드
 │   ├── features/               # 기능별 모듈
 │   │   ├── exchange_rate/      # 환율 기능

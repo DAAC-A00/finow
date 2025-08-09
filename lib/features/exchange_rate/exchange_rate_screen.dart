@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:finow/features/storage_viewer/local_storage_service.dart';
+
 import 'package:finow/ui_scale_provider.dart';
 
 // 정렬 기준을 정의하는 Enum
@@ -60,7 +60,7 @@ class ExchangeRateScreen extends ConsumerStatefulWidget {
 
 class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
   late final TextEditingController _controller;
-  bool _initialized = false;
+  
 
   @override
   void initState() {

@@ -39,32 +39,27 @@ class ExConvertPeriodicUpdateService {
   /// 환율 정보를 업데이트하는 내부 로직
   Future<void> _updateRates() async {
     try {
-      print('Starting exchange rate collection...');
-      
       // 1단계: exconvert를 통해 환율 정보 수집
       await _collectFromExconvert();
       
       // 2단계: v6 exchange rate를 통해 보완 수집
       await _collectFromV6ExchangeRate();
       
-      print('Exchange rate collection completed successfully');
     } catch (e) {
-      print('Error during exchange rate collection: $e');
+      // 에러 처리
     }
   }
 
   /// exconvert API를 통한 환율 정보 수집
   Future<void> _collectFromExconvert() async {
     try {
-      print('Collecting rates from exconvert.com...');
       final exconvertRates = await _exconvertApiClient.getLatestRates('USD');
       
       if (exconvertRates.isNotEmpty) {
         await _localService.updateRates(exconvertRates);
-        print('Successfully saved ${exconvertRates.length} rates from exconvert.com');
       }
     } catch (e) {
-      print('Failed to collect rates from exconvert.com: $e');
+      // 에러 처리
     }
   }
 
@@ -77,11 +72,8 @@ class ExConvertPeriodicUpdateService {
       
       // 로컬에서 오늘 v6 데이터가 있는지 확인
       if (await _hasV6DataForToday(todayUtc)) {
-        print('V6 exchange rate data already collected for today (UTC), skipping API call');
         return;
       }
-      
-      print('Collecting supplementary rates from v6.exchangerate-api.com...');
       
       // 현재 로컬에 저장된 환율 정보 가져오기
       final localRates = await _localService.getRates();
@@ -103,12 +95,11 @@ class ExConvertPeriodicUpdateService {
 
       if (ratesToSave.isNotEmpty) {
         await _localService.updateRates(ratesToSave);
-        print('Successfully supplemented ${ratesToSave.length} rates from v6.exchangerate-api.com');
       } else {
-        print('No additional rates needed from v6.exchangerate-api.com');
+        // 추가할 데이터 없음
       }
     } catch (e) {
-      print('Failed to collect supplementary rates from v6.exchangerate-api.com: $e');
+      // 에러 처리
     }
   }
 
@@ -126,7 +117,6 @@ class ExConvertPeriodicUpdateService {
         rate.lastUpdatedUnix < todayEndUnix
       );
     } catch (e) {
-      print('Error checking v6 data for today: $e');
       return false;
     }
   }

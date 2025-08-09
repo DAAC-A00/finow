@@ -11,58 +11,181 @@ class GestureGuideWidget extends StatefulWidget {
 
 class _GestureGuideWidgetState extends State<GestureGuideWidget> {
   List<String> items = List.generate(5, (index) => 'Item ${index + 1}');
-  Color _dragColor = Colors.grey;
+  Color? _dragColor;
   String _lastEvent = 'None';
+  
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _dragColor ??= Theme.of(context).colorScheme.surfaceContainerHighest; // surfaceVariant -> surfaceContainerHighest
+  }
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+    
     return Column(
       children: [
-        const Text('Dismissible (Swipe to delete)'),
-        ...items.map((item) => Dismissible(
-          key: Key(item),
-          onDismissed: (direction) {
-            setState(() {
-              items.remove(item);
-            });
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$item dismissed')));
-          },
-          background: Container(color: Colors.red),
-          child: ListTile(title: Text(item)),
+        Text(
+          'Dismissible (Swipe to delete)',
+          style: textTheme.titleMedium?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ...items.map((item) => Card(
+          margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 16),
+          color: colorScheme.surface,
+          child: Dismissible(
+            key: Key(item),
+            onDismissed: (direction) {
+              setState(() {
+                items.remove(item);
+              });
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    '$item dismissed',
+                    style: TextStyle(color: colorScheme.onInverseSurface),
+                  ),
+                  backgroundColor: colorScheme.inverseSurface,
+                ),
+              );
+            },
+            background: Container(
+              color: colorScheme.error,
+              alignment: Alignment.centerRight,
+              padding: const EdgeInsets.only(right: 16),
+              child: Icon(
+                Icons.delete,
+                color: colorScheme.onError,
+              ),
+            ),
+            child: ListTile(
+              title: Text(
+                item,
+                style: TextStyle(color: colorScheme.onSurface),
+              ),
+              leading: Icon(
+                Icons.drag_handle,
+                color: colorScheme.onSurface.withAlpha(153), // withOpacity(0.6)
+              ),
+            ),
+          ),
         )),
         const SizedBox(height: 20),
-        const Text('Draggable & DragTarget'),
+        Text(
+          'Draggable & DragTarget',
+          style: textTheme.titleMedium?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            const Draggable<Color>(
-              data: Colors.blue,
-              feedback: CircleAvatar(backgroundColor: Colors.blue, radius: 25),
-              childWhenDragging: CircleAvatar(backgroundColor: Colors.grey, radius: 25),
-              child: CircleAvatar(backgroundColor: Colors.blue, radius: 25),
+            Draggable<Color>(
+              data: colorScheme.primary,
+              feedback: CircleAvatar(
+                backgroundColor: colorScheme.primary,
+                radius: 25,
+                child: Icon(
+                  Icons.touch_app,
+                  color: colorScheme.onPrimary,
+                ),
+              ),
+              childWhenDragging: CircleAvatar(
+                backgroundColor: colorScheme.surfaceContainerHighest, // surfaceVariant -> surfaceContainerHighest
+                radius: 25,
+                child: Icon(
+                  Icons.touch_app,
+                  color: colorScheme.onSurfaceVariant.withAlpha(128), // withOpacity(0.5)
+                ),
+              ),
+              child: CircleAvatar(
+                backgroundColor: colorScheme.primary,
+                radius: 25,
+                child: Icon(
+                  Icons.touch_app,
+                  color: colorScheme.onPrimary,
+                ),
+              ),
             ),
             DragTarget<Color>(
-              onAccept: (color) {
+              onAcceptWithDetails: (details) { // onAccept -> onAcceptWithDetails
                 setState(() {
-                  _dragColor = color;
+                  _dragColor = details.data;
                 });
               },
               builder: (context, candidateData, rejectedData) {
-                return CircleAvatar(backgroundColor: _dragColor, radius: 50);
+                final isHovering = candidateData.isNotEmpty;
+                return Container(
+                  width: 100,
+                  height: 100,
+                  decoration: BoxDecoration(
+                    color: _dragColor,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isHovering 
+                        ? colorScheme.primary 
+                        : colorScheme.outline.withAlpha(77), // withOpacity(0.3)
+                      width: isHovering ? 3 : 1,
+                    ),
+                  ),
+                  child: Icon(
+                    Icons.track_changes,
+                    color: colorScheme.onSurface,
+                    size: 40,
+                  ),
+                );
               },
             ),
           ],
         ),
         const SizedBox(height: 20),
-        const Text('Long Press & Double Tap'),
+        Text(
+          'Long Press & Double Tap',
+          style: textTheme.titleMedium?.copyWith(
+            color: colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 16),
         GestureDetector(
           onLongPress: () => setState(() => _lastEvent = 'Long Press'),
           onDoubleTap: () => setState(() => _lastEvent = 'Double Tap'),
           child: Container(
-            width: 100,
-            height: 50,
-            color: Colors.amber,
-            child: Center(child: Text(_lastEvent)),
+            width: 150,
+            height: 80,
+            decoration: BoxDecoration(
+              color: colorScheme.primaryContainer,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: colorScheme.outline.withAlpha(77), // withOpacity(0.3)
+              ),
+            ),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.touch_app,
+                    color: colorScheme.onPrimaryContainer,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _lastEvent,
+                    style: TextStyle(
+                      color: colorScheme.onPrimaryContainer,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
         ),
       ],

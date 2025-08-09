@@ -15,7 +15,7 @@ final adminModeProvider = StateNotifierProvider<AdminModeNotifier, bool>((ref) {
 class AdminModeNotifier extends StateNotifier<bool> {
   final LocalStorageService _localStorage;
 
-  AdminModeNotifier(bool state, this._localStorage) : super(state);
+  AdminModeNotifier(super.state, this._localStorage);
 
   // 어드민 모드 상태를 변경하고 Hive에 저장합니다.
   void setAdminMode(bool isAdmin) {
