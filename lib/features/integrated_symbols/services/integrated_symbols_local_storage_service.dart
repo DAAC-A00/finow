@@ -1,56 +1,76 @@
-import 'dart:convert';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../models/integrated_instrument.dart';
 import 'package:flutter/foundation.dart';
 
 /// 통합 심볼 정보 로컬 스토리지 관리 서비스 (Hive 기반)
+/// 각 심볼을 개별 키-값으로 저장하여 Storage Viewer에서 개별 관리 가능
 class IntegratedSymbolsLocalStorageService {
   static const String _boxName = 'integrated_instruments';
-  static const String _instrumentsKey = 'instruments_data';
-  static const String _lastUpdateKey = 'last_update_time';
+  static const String _settingsBoxName = 'settings';
+  static const String _lastUpdateKey = 'integrated_symbols_last_update';
 
   /// Hive Box 가져오기 (없으면 생성)
-  Future<Box> _getBox() async {
+  Future<Box<IntegratedInstrument>> _getBox() async {
     if (!Hive.isBoxOpen(_boxName)) {
-      return await Hive.openBox(_boxName);
+      return await Hive.openBox<IntegratedInstrument>(_boxName);
     }
-    return Hive.box(_boxName);
+    return Hive.box<IntegratedInstrument>(_boxName);
   }
 
-  /// 통합 심볼 정보를 Hive Box에 저장
+  /// Settings Box 가져오기 (마지막 업데이트 시간 저장용)
+  Future<Box> _getSettingsBox() async {
+    if (!Hive.isBoxOpen(_settingsBoxName)) {
+      return await Hive.openBox(_settingsBoxName);
+    }
+    return Hive.box(_settingsBoxName);
+  }
+
+  /// 심볼 키 생성 (예: "BTCUSDT_bybit", "BTCKRW_bithumb")
+  String _generateSymbolKey(IntegratedInstrument instrument) {
+    return '${instrument.symbol}_${instrument.exchange}';
+  }
+
+  /// 통합 심볼 정보를 Hive Box에 개별 저장
   Future<void> saveIntegratedInstruments(List<IntegratedInstrument> instruments) async {
     try {
       final box = await _getBox();
       
-      // 심볼 정보를 JSON 문자열로 변환하여 저장
-      final jsonList = instruments.map((instrument) => instrument.toJson()).toList();
-      final jsonString = json.encode(jsonList);
+      // 기존 데이터 삭제 (전체 동기화 시)
+      await box.clear();
       
-      await box.put(_instrumentsKey, jsonString);
-      await box.put(_lastUpdateKey, DateTime.now().toIso8601String());
+      // 각 심볼을 개별 키-값으로 저장
+      for (final instrument in instruments) {
+        final key = _generateSymbolKey(instrument);
+        await box.put(key, instrument);
+      }
       
-      debugPrint('통합 심볼 정보 저장 완료: ${instruments.length}개 항목');
+      // 마지막 업데이트 시간 저장 (settings Box에)
+      final settingsBox = await _getSettingsBox();
+      await settingsBox.put(_lastUpdateKey, DateTime.now().toIso8601String());
+      
+      debugPrint('통합 심볼 정보 개별 저장 완료: ${instruments.length}개 항목');
     } catch (e) {
       throw Exception('통합 심볼 정보 저장 중 오류 발생: $e');
     }
   }
 
-  /// Hive Box에서 통합 심볼 정보 불러오기
+  /// Hive Box에서 통합 심볼 정보 개별 불러오기
   Future<List<IntegratedInstrument>> loadIntegratedInstruments() async {
     try {
       final box = await _getBox();
-      final jsonString = box.get(_instrumentsKey) as String?;
+      final List<IntegratedInstrument> instruments = [];
       
-      if (jsonString == null || jsonString.isEmpty) {
-        return [];
+      // 모든 키를 순회하며 IntegratedInstrument 객체만 수집
+      for (final key in box.keys) {
+        if (key != _lastUpdateKey) { // 마지막 업데이트 시간 키는 제외
+          final instrument = box.get(key);
+          if (instrument != null) {
+            instruments.add(instrument);
+          }
+        }
       }
       
-      final List<dynamic> jsonList = json.decode(jsonString);
-      final instruments = jsonList
-          .map((json) => IntegratedInstrument.fromJson(json))
-          .toList();
-      
-      debugPrint('통합 심볼 정보 불러오기 완료: ${instruments.length}개 항목');
+      debugPrint('통합 심볼 정보 개별 불러오기 완료: ${instruments.length}개 항목');
       return instruments;
     } catch (e) {
       debugPrint('통합 심볼 정보 불러오기 중 오류 발생: $e');
@@ -58,11 +78,11 @@ class IntegratedSymbolsLocalStorageService {
     }
   }
 
-  /// 마지막 업데이트 시간 조회
+  /// 마지막 업데이트 시간 조회 (settings Box에서)
   Future<DateTime?> getLastUpdateTime() async {
     try {
-      final box = await _getBox();
-      final lastUpdateString = box.get(_lastUpdateKey) as String?;
+      final settingsBox = await _getSettingsBox();
+      final lastUpdateString = settingsBox.get(_lastUpdateKey) as String?;
       
       if (lastUpdateString != null) {
         return DateTime.parse(lastUpdateString);
@@ -75,27 +95,106 @@ class IntegratedSymbolsLocalStorageService {
     }
   }
 
-  /// 저장된 데이터가 있는지 확인
+  /// 저장된 데이터가 있는지 확인 (개별 심볼 기준)
   Future<bool> hasStoredData() async {
     try {
       final box = await _getBox();
-      final jsonString = box.get(_instrumentsKey) as String?;
-      return jsonString != null && jsonString.isNotEmpty;
+      // IntegratedInstrument Box에 데이터가 있는지 확인
+      return box.isNotEmpty;
     } catch (e) {
       return false;
     }
   }
 
-  /// 저장된 데이터 삭제
+  /// 저장된 데이터 삭제 (모든 개별 심볼 삭제)
   Future<void> clearStoredData() async {
     try {
       final box = await _getBox();
-      await box.delete(_instrumentsKey);
-      await box.delete(_lastUpdateKey);
-      debugPrint('저장된 통합 심볼 정보 삭제 완료');
+      await box.clear(); // 모든 데이터 삭제
+      debugPrint('저장된 통합 심볼 정보 전체 삭제 완료');
     } catch (e) {
       throw Exception('저장된 데이터 삭제 중 오류 발생: $e');
     }
+  }
+
+  /// 개별 심볼 저장
+  Future<void> saveInstrument(IntegratedInstrument instrument) async {
+    try {
+      final box = await _getBox();
+      final key = _generateSymbolKey(instrument);
+      await box.put(key, instrument);
+      debugPrint('개별 심볼 저장 완료: ${instrument.symbol} (${instrument.exchange})');
+    } catch (e) {
+      throw Exception('개별 심볼 저장 중 오류 발생: $e');
+    }
+  }
+
+  /// 개별 심볼 삭제
+  Future<void> deleteInstrument(String symbol, String exchange) async {
+    try {
+      final box = await _getBox();
+      final key = '${symbol}_$exchange';
+      await box.delete(key);
+      debugPrint('개별 심볼 삭제 완료: $symbol ($exchange)');
+    } catch (e) {
+      throw Exception('개별 심볼 삭제 중 오류 발생: $e');
+    }
+  }
+
+  /// 개별 심볼 조회
+  Future<IntegratedInstrument?> getInstrument(String symbol, String exchange) async {
+    try {
+      final box = await _getBox();
+      final key = '${symbol}_$exchange';
+      return box.get(key);
+    } catch (e) {
+      debugPrint('개별 심볼 조회 중 오류 발생: $e');
+      return null;
+    }
+  }
+
+  /// 저장된 모든 심볼 키 목록 조회
+  Future<List<String>> getAllSymbolKeys() async {
+    try {
+      final box = await _getBox();
+      return box.keys.cast<String>().toList();
+    } catch (e) {
+      debugPrint('심볼 키 목록 조회 중 오류 발생: $e');
+      return [];
+    }
+  }
+
+  /// 필터링된 통합 심볼 정보 가져오기 (개별 저장 구조 기반)
+  Future<List<IntegratedInstrument>> getFilteredInstruments({
+    String? exchange,
+    String? status,
+    String? searchQuery,
+  }) async {
+    final allInstruments = await loadIntegratedInstruments();
+    
+    return allInstruments.where((instrument) {
+      // 거래소 필터
+      if (exchange != null && instrument.exchange != exchange) {
+        return false;
+      }
+      
+      // 상태 필터
+      if (status != null && instrument.status != status) {
+        return false;
+      }
+      
+      // 검색 쿼리 필터
+      if (searchQuery != null && searchQuery.isNotEmpty) {
+        final query = searchQuery.toLowerCase();
+        return instrument.symbol.toLowerCase().contains(query) ||
+               instrument.baseCoin.toLowerCase().contains(query) ||
+               instrument.quoteCoin.toLowerCase().contains(query) ||
+               (instrument.koreanName?.toLowerCase().contains(query) ?? false) ||
+               (instrument.englishName?.toLowerCase().contains(query) ?? false);
+      }
+      
+      return true;
+    }).toList();
   }
 
   /// 특정 거래소의 심볼만 필터링하여 조회

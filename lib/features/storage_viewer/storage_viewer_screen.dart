@@ -1,4 +1,5 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
+import 'package:finow/features/integrated_symbols/models/integrated_instrument.dart';
 import 'package:finow/features/storage_viewer/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -744,6 +745,25 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 sourceString.contains(query);
           }
           
+          if (value is IntegratedInstrument) {
+            final symbolString = value.symbol.toLowerCase();
+            final baseCoinString = value.baseCoin.toLowerCase();
+            final quoteCoinString = value.quoteCoin.toLowerCase();
+            final exchangeString = value.exchange.toLowerCase();
+            final statusString = value.status.toLowerCase();
+            final koreanNameString = (value.koreanName ?? '').toLowerCase();
+            final englishNameString = (value.englishName ?? '').toLowerCase();
+            
+            return key.contains(query) ||
+                symbolString.contains(query) ||
+                baseCoinString.contains(query) ||
+                quoteCoinString.contains(query) ||
+                exchangeString.contains(query) ||
+                statusString.contains(query) ||
+                koreanNameString.contains(query) ||
+                englishNameString.contains(query);
+          }
+          
           final valueString = value.toString().toLowerCase();
           return key.contains(query) || valueString.contains(query);
         }).toList();
@@ -823,6 +843,83 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                         ),
                       ],
                     );
+                  } else if (value is IntegratedInstrument) {
+                    subtitleWidget = Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: value.exchange == 'bybit' 
+                                    ? Colors.orange.withAlpha(51)
+                                    : Colors.blue.withAlpha(51),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                value.exchange.toUpperCase(),
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: value.exchange == 'bybit' ? Colors.orange : Colors.blue,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: value.status == 'Trading' 
+                                    ? Colors.green.withAlpha(51)
+                                    : Colors.grey.withAlpha(51),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                value.status,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: value.status == 'Trading' ? Colors.green : Colors.grey,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text('Base: ${value.baseCoin} | Quote: ${value.quoteCoin}'),
+                        if (value.koreanName != null) Text('한국명: ${value.koreanName}'),
+                        if (value.englishName != null) Text('영문명: ${value.englishName}'),
+                        if (value.marketWarning != null) 
+                          Container(
+                            margin: const EdgeInsets.only(top: 4),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withAlpha(51),
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              '⚠️ ${value.marketWarning}',
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: Text(
+                            'Updated: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(value.lastUpdated.toLocal())} (KST)',
+                            style: TextStyle(
+                              color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204),
+                              fontStyle: FontStyle.italic,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
                   } else {
                     subtitleWidget = Text(value.toString());
                   }
@@ -873,6 +970,15 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
       if (boxName == 'exchangeRates') {
         // ExchangeRate 타입의 Box 처리
         final box = Hive.box<ExchangeRate>(boxName);
+        for (var key in box.keys) {
+          final value = box.get(key);
+          if (value != null) {
+            data[key.toString()] = value;
+          }
+        }
+      } else if (boxName == 'integrated_instruments') {
+        // IntegratedInstrument 타입의 Box 처리
+        final box = Hive.box<IntegratedInstrument>(boxName);
         for (var key in box.keys) {
           final value = box.get(key);
           if (value != null) {

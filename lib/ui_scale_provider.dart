@@ -234,14 +234,14 @@ class ScaledPadding extends StatelessWidget {
   });
 
   /// 모든 방향에 동일한 패딩 적용
-  const ScaledPadding.all({
+  ScaledPadding.all({
     super.key,
     required double baseValue,
     required this.child,
   }) : basePadding = EdgeInsets.all(baseValue);
 
   /// 대칭 패딩 적용
-  const ScaledPadding.symmetric({
+  ScaledPadding.symmetric({
     super.key,
     double baseVertical = 0.0,
     double baseHorizontal = 0.0,
@@ -252,7 +252,7 @@ class ScaledPadding extends StatelessWidget {
        );
 
   /// 개별 방향 패딩 적용
-  const ScaledPadding.only({
+  ScaledPadding.only({
     super.key,
     double baseLeft = 0.0,
     double baseTop = 0.0,

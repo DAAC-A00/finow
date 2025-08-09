@@ -2,6 +2,7 @@ import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_update_service.dart';
 import 'package:finow/features/exchange_rate/exconvert_periodic_update_service.dart';
 import 'package:finow/features/integrated_symbols/services/integrated_symbols_sync_service.dart';
+import 'package:finow/features/integrated_symbols/models/integrated_instrument.dart';
 import 'package:finow/routing/app_router.dart';
 import 'package:finow/theme_provider.dart';
 import 'package:finow/font_size_provider.dart';
@@ -17,11 +18,14 @@ void main() async {
 
   // Hive 어댑터 등록
   Hive.registerAdapter(ExchangeRateAdapter());
+  Hive.registerAdapter(IntegratedInstrumentAdapter());
+  Hive.registerAdapter(InstrumentPriceFilterAdapter());
+  Hive.registerAdapter(InstrumentLotSizeFilterAdapter());
 
   // 사용할 Box들 미리 열기
   await Hive.openBox('settings');
   await Hive.openBox<ExchangeRate>('exchangeRates');
-  await Hive.openBox('integrated_instruments');
+  await Hive.openBox<IntegratedInstrument>('integrated_instruments');
 
   runApp(const ProviderScope(child: _AppInitializer()));
 }

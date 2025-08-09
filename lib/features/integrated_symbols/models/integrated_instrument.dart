@@ -1,15 +1,41 @@
+import 'package:hive/hive.dart';
+
+part 'integrated_instrument.g.dart';
+
 /// 통합 거래소 심볼 정보 모델
+@HiveType(typeId: 2)
 class IntegratedInstrument {
+  @HiveField(0)
   final String symbol;
+  
+  @HiveField(1)
   final String baseCoin;
+  
+  @HiveField(2)
   final String quoteCoin;
+  
+  @HiveField(3)
   final String exchange; // 'bybit' 또는 'bithumb'
+  
+  @HiveField(4)
   final String status;
+  
+  @HiveField(5)
   final String? koreanName;
+  
+  @HiveField(6)
   final String? englishName;
+  
+  @HiveField(7)
   final String? marketWarning;
+  
+  @HiveField(8)
   final InstrumentPriceFilter? priceFilter;
+  
+  @HiveField(9)
   final InstrumentLotSizeFilter? lotSizeFilter;
+  
+  @HiveField(10)
   final DateTime lastUpdated;
 
   const IntegratedInstrument({
@@ -103,7 +129,9 @@ class IntegratedInstrument {
 }
 
 /// 가격 필터 정보
+@HiveType(typeId: 3)
 class InstrumentPriceFilter {
+  @HiveField(0)
   final String tickSize;
 
   const InstrumentPriceFilter({
@@ -124,12 +152,24 @@ class InstrumentPriceFilter {
 }
 
 /// 로트 사이즈 필터 정보
+@HiveType(typeId: 4)
 class InstrumentLotSizeFilter {
+  @HiveField(0)
   final String basePrecision;
+  
+  @HiveField(1)
   final String quotePrecision;
+  
+  @HiveField(2)
   final String minOrderQty;
+  
+  @HiveField(3)
   final String maxOrderQty;
+  
+  @HiveField(4)
   final String minOrderAmt;
+  
+  @HiveField(5)
   final String maxOrderAmt;
 
   const InstrumentLotSizeFilter({
