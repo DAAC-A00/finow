@@ -847,74 +847,67 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                     subtitleWidget = Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: value.exchange == 'bybit' 
-                                    ? Colors.orange.withAlpha(51)
-                                    : Colors.blue.withAlpha(51),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                value.exchange.toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: value.exchange == 'bybit' ? Colors.orange : Colors.blue,
+                        // 기본 정보
+                        Text('symbol: ${value.symbol}'),
+                        Text('baseCoin: ${value.baseCoin}'),
+                        Text('quoteCoin: ${value.quoteCoin}'),
+                        Text('exchange: ${value.exchange}'),
+                        Text('status: ${value.status}'),
+                        if (value.koreanName != null) Text('koreanName: ${value.koreanName}'),
+                        if (value.englishName != null) Text('englishName: ${value.englishName}'),
+                        if (value.marketWarning != null) Text('marketWarning: ${value.marketWarning}'),
+                        
+                        // Price Filter 정보
+                        if (value.priceFilter != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('priceFilter:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Text('tickSize: ${value.priceFilter!.tickSize}'),
                                 ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                              decoration: BoxDecoration(
-                                color: value.status == 'Trading' 
-                                    ? Colors.green.withAlpha(51)
-                                    : Colors.grey.withAlpha(51),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                value.status,
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: value.status == 'Trading' ? Colors.green : Colors.grey,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text('Base: ${value.baseCoin} | Quote: ${value.quoteCoin}'),
-                        if (value.koreanName != null) Text('한국명: ${value.koreanName}'),
-                        if (value.englishName != null) Text('영문명: ${value.englishName}'),
-                        if (value.marketWarning != null) 
-                          Container(
-                            margin: const EdgeInsets.only(top: 4),
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.red.withAlpha(51),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              '⚠️ ${value.marketWarning}',
-                              style: const TextStyle(
-                                fontSize: 12,
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
+                              ],
                             ),
                           ),
+
+                        // Lot Size Filter 정보
+                        if (value.lotSizeFilter != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text('lotSizeFilter:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('basePrecision: ${value.lotSizeFilter!.basePrecision}'),
+                                      Text('quotePrecision: ${value.lotSizeFilter!.quotePrecision}'),
+                                      Text('minOrderQty: ${value.lotSizeFilter!.minOrderQty}'),
+                                      Text('maxOrderQty: ${value.lotSizeFilter!.maxOrderQty}'),
+                                      Text('minOrderAmt: ${value.lotSizeFilter!.minOrderAmt}'),
+                                      Text('maxOrderAmt: ${value.lotSizeFilter!.maxOrderAmt}'),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        // 마지막 업데이트 시간
+                        Text('lastUpdated: ${value.lastUpdated.toIso8601String()}'),
                         Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
+                          padding: const EdgeInsets.only(left: 8.0, top: 2.0),
                           child: Text(
-                            'Updated: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(value.lastUpdated.toLocal())} (KST)',
+                            '└ Converted: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(value.lastUpdated.toLocal())} (KST)',
                             style: TextStyle(
                               color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204),
                               fontStyle: FontStyle.italic,
-                              fontSize: 12,
                             ),
                           ),
                         ),

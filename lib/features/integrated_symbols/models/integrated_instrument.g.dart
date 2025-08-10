@@ -17,92 +17,45 @@ class IntegratedInstrumentAdapter extends TypeAdapter<IntegratedInstrument> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return IntegratedInstrument(
-      integratedSymbol: fields[0] as String,
+      symbol: fields[0] as String,
       baseCoin: fields[1] as String,
       quoteCoin: fields[2] as String,
-      exchanges: (fields[3] as Map).cast<String, ExchangeInstrumentData>(),
-      koreanName: fields[4] as String?,
-      englishName: fields[5] as String?,
-      lastUpdated: fields[6] as DateTime,
-      createdAt: fields[7] as DateTime,
+      exchange: fields[3] as String,
+      status: fields[4] as String,
+      koreanName: fields[5] as String?,
+      englishName: fields[6] as String?,
+      marketWarning: fields[7] as String?,
+      priceFilter: fields[8] as InstrumentPriceFilter?,
+      lotSizeFilter: fields[9] as InstrumentLotSizeFilter?,
+      lastUpdated: fields[10] as DateTime,
     );
   }
 
   @override
   void write(BinaryWriter writer, IntegratedInstrument obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(11)
       ..writeByte(0)
-      ..write(obj.integratedSymbol)
+      ..write(obj.symbol)
       ..writeByte(1)
       ..write(obj.baseCoin)
       ..writeByte(2)
       ..write(obj.quoteCoin)
       ..writeByte(3)
-      ..write(obj.exchanges)
+      ..write(obj.exchange)
       ..writeByte(4)
-      ..write(obj.koreanName)
-      ..writeByte(5)
-      ..write(obj.englishName)
-      ..writeByte(6)
-      ..write(obj.lastUpdated)
-      ..writeByte(7)
-      ..write(obj.createdAt);
-  }
-
-  @override
-  int get hashCode => typeId.hashCode;
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is IntegratedInstrumentAdapter &&
-          runtimeType == other.runtimeType &&
-          typeId == other.typeId;
-}
-
-class ExchangeInstrumentDataAdapter
-    extends TypeAdapter<ExchangeInstrumentData> {
-  @override
-  final int typeId = 5;
-
-  @override
-  ExchangeInstrumentData read(BinaryReader reader) {
-    final numOfFields = reader.readByte();
-    final fields = <int, dynamic>{
-      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
-    };
-    return ExchangeInstrumentData(
-      originalSymbol: fields[0] as String,
-      status: fields[1] as String,
-      koreanName: fields[2] as String?,
-      englishName: fields[3] as String?,
-      marketWarning: fields[4] as String?,
-      priceFilter: fields[5] as InstrumentPriceFilter?,
-      lotSizeFilter: fields[6] as InstrumentLotSizeFilter?,
-      lastUpdated: fields[7] as DateTime,
-    );
-  }
-
-  @override
-  void write(BinaryWriter writer, ExchangeInstrumentData obj) {
-    writer
-      ..writeByte(8)
-      ..writeByte(0)
-      ..write(obj.originalSymbol)
-      ..writeByte(1)
       ..write(obj.status)
-      ..writeByte(2)
-      ..write(obj.koreanName)
-      ..writeByte(3)
-      ..write(obj.englishName)
-      ..writeByte(4)
-      ..write(obj.marketWarning)
       ..writeByte(5)
-      ..write(obj.priceFilter)
+      ..write(obj.koreanName)
       ..writeByte(6)
-      ..write(obj.lotSizeFilter)
+      ..write(obj.englishName)
       ..writeByte(7)
+      ..write(obj.marketWarning)
+      ..writeByte(8)
+      ..write(obj.priceFilter)
+      ..writeByte(9)
+      ..write(obj.lotSizeFilter)
+      ..writeByte(10)
       ..write(obj.lastUpdated);
   }
 
@@ -112,7 +65,7 @@ class ExchangeInstrumentDataAdapter
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is ExchangeInstrumentDataAdapter &&
+      other is IntegratedInstrumentAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
