@@ -3,6 +3,7 @@ import 'package:finow/features/exchange_rate/exchange_rate_detail_screen.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_screen.dart';
 import 'package:finow/features/integrated_symbols/screens/integrated_symbols_screen.dart';
 import 'package:finow/features/menu/menu_screen.dart';
+import 'package:finow/features/settings/api_settings_screen.dart';
 import 'package:finow/features/settings/settings_screen.dart';
 import 'package:finow/features/storage_viewer/storage_viewer_screen.dart';
 import 'package:flutter/material.dart';
@@ -77,6 +78,9 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
           break;
         case '/settings':
           screen = const SettingsScreen();
+          break;
+        case '/api-settings':
+          screen = const ApiSettingsScreen();
           break;
         case '/storage':
           screen = const StorageViewerScreen();

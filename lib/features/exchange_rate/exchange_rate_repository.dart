@@ -1,23 +1,26 @@
 import 'package:dio/dio.dart';
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
+import 'package:finow/features/settings/api_key_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final exchangeRateRepositoryProvider = Provider<ExchangeRateRepository>((ref) {
   final dio = Dio();
-  return ExchangeRateRepository(dio);
+  final apiKeyService = ref.watch(apiKeyServiceProvider);
+  return ExchangeRateRepository(dio, apiKeyService);
 });
 
 class ExchangeRateRepository {
   final Dio _dio;
-  final String _apiKey = '842f9ce049b12b202bc6932f';
+  final ApiKeyService _apiKeyService;
   final String _baseUrl =
       'https://v6.exchangerate-api.com/v6';
 
-  ExchangeRateRepository(this._dio);
+  ExchangeRateRepository(this._dio, this._apiKeyService);
 
   Future<List<ExchangeRate>> getLatestRates(String baseCurrency) async {
     try {
-      final response = await _dio.get('$_baseUrl/$_apiKey/latest/$baseCurrency');
+      final apiKey = _apiKeyService.getRandomApiKey();
+      final response = await _dio.get('$_baseUrl/$apiKey/latest/$baseCurrency');
       if (response.statusCode == 200 && response.data['result'] == 'success') {
         final ratesData = response.data['conversion_rates'] as Map<String, dynamic>;
         final lastUpdatedUnix = response.data['time_last_update_unix'] as int;

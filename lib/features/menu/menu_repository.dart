@@ -22,6 +22,7 @@ class MenuRepository {
   ];
 
   final List<Menu> _adminMenus = const [
+    Menu(name: 'API Settings', path: '/api-settings', icon: Icons.vpn_key, showInBottomNav: false),
     Menu(name: 'Storage', path: '/storage', icon: Icons.storage, showInBottomNav: false),
     Menu(name: 'UI & Code Guide', path: '/ui_guide', icon: Icons.science, showInBottomNav: false),
   ];
