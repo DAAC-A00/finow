@@ -79,7 +79,7 @@ class ApiKeyService {
     if (index != -1) {
       final updatedData = apiKeyDataList[index].copyWith(
         status: status,
-        lastValidated: DateTime.now(),
+        lastValidated: DateTime.now().millisecondsSinceEpoch,
       );
       await _box.putAt(index, updatedData);
     }

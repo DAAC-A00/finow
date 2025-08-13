@@ -51,7 +51,17 @@ class ApiKeysStorageView extends ConsumerWidget {
                       ),
                     ),
                     Text(
-                      'Last Validated: ${apiKey.lastValidated != null ? DateFormat('yyyy-MM-dd HH:mm').format(apiKey.lastValidated!) : 'N/A'}',
+                      'Last Validated (Unix): ${apiKey.lastValidated ?? 'N/A'}',
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0, top: 2.0),
+                      child: Text(
+                        '└ Converted: ${apiKey.lastValidated != null ? DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(apiKey.lastValidated!).toLocal()) : 'N/A'} (KST)',
+                        style: TextStyle(
+                          color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204),
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
                     ),
                   ],
                 ),

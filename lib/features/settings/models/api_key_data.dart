@@ -14,7 +14,7 @@ class ApiKeyData extends HiveObject {
   final ApiKeyStatus status;
 
   @HiveField(2)
-  final DateTime? lastValidated;
+  final int? lastValidated; // Unix timestamp (milliseconds since epoch)
 
   ApiKeyData({
     required this.key,
@@ -25,7 +25,7 @@ class ApiKeyData extends HiveObject {
   ApiKeyData copyWith({
     String? key,
     ApiKeyStatus? status,
-    DateTime? lastValidated,
+    int? lastValidated,
   }) {
     return ApiKeyData(
       key: key ?? this.key,

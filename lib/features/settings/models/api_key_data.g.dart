@@ -19,7 +19,7 @@ class ApiKeyDataAdapter extends TypeAdapter<ApiKeyData> {
     return ApiKeyData(
       key: fields[0] as String,
       status: fields[1] as ApiKeyStatus,
-      lastValidated: fields[2] as DateTime?,
+      lastValidated: fields[2] as int?,
     );
   }
 
@@ -53,16 +53,14 @@ class ApiKeyDataAdapter extends TypeAdapter<ApiKeyData> {
 ApiKeyData _$ApiKeyDataFromJson(Map<String, dynamic> json) => ApiKeyData(
       key: json['key'] as String,
       status: $enumDecode(_$ApiKeyStatusEnumMap, json['status']),
-      lastValidated: json['lastValidated'] == null
-          ? null
-          : DateTime.parse(json['lastValidated'] as String),
+      lastValidated: (json['lastValidated'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$ApiKeyDataToJson(ApiKeyData instance) =>
     <String, dynamic>{
       'key': instance.key,
       'status': _$ApiKeyStatusEnumMap[instance.status]!,
-      'lastValidated': instance.lastValidated?.toIso8601String(),
+      'lastValidated': instance.lastValidated,
     };
 
 const _$ApiKeyStatusEnumMap = {
