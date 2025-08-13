@@ -34,15 +34,25 @@ class ApiKeysStorageView extends ConsumerWidget {
                     Row(
                       children: [
                         const Text('Status: '),
-                        Icon(status.icon, color: status.color, size: 16),
-                        const SizedBox(width: 4),
-                        Text(status.label, style: TextStyle(color: status.color)),
+                        Text(status.name),
                       ],
                     ),
-                    Text(
-                      'Last Validated: ${apiKey.lastValidated != null ? DateFormat('yyyy-MM-dd HH:mm').format(apiKey.lastValidated!) : 'N/A'}'
+                    Padding(
+                      padding: const EdgeInsets.only(left: 16.0),
+                      child: Row(
+                        children: [
+                          const Text('└ '),
+                          Icon(status.icon, color: status.color, size: 16),
+                          const SizedBox(width: 4),
+                          Text(status.label, style: TextStyle(color: status.color, fontStyle: FontStyle.italic)),
+                          const SizedBox(width: 8),
+                          Text('(Priority: ${apiKey.priority})', style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic)),
+                        ],
+                      ),
                     ),
-                    Text('Priority: ${apiKey.priority}'),
+                    Text(
+                      'Last Validated: ${apiKey.lastValidated != null ? DateFormat('yyyy-MM-dd HH:mm').format(apiKey.lastValidated!) : 'N/A'}',
+                    ),
                   ],
                 ),
                 trailing: Row(
@@ -90,7 +100,7 @@ class ApiKeysStorageView extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: ScaledText('Delete API Key'),
+          title: const ScaledText('Delete API Key'),
           content: ScaledText('Are you sure you want to delete \'${_maskApiKey(apiKey.key)}\'?'),
           actions: <Widget>[
             TextButton(
