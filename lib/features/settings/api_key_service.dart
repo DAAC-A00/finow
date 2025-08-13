@@ -100,6 +100,10 @@ class ApiKeyService {
     }
   }
 
+  Future<void> clearAllApiKeys() async {
+    await _box.clear();
+  }
+
   /// 우선순위에 따라 API 키를 선택합니다.
   /// 동일한 우선순위 내에서는 랜덤하게 선택됩니다.
   String getApiKeyByPriority() {

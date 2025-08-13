@@ -6,6 +6,7 @@ import 'package:finow/ui_scale_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:finow/features/storage_viewer/storage_viewer_screen.dart'; // For searchQueryProvider
 
 class ApiKeysStorageView extends ConsumerWidget {
   const ApiKeysStorageView({super.key});
@@ -16,80 +17,179 @@ class ApiKeysStorageView extends ConsumerWidget {
     final apiKeyStatusMap = ref.watch(apiKeyStatusProvider);
 
     return Scaffold(
-      body: apiKeysAsync.when(
-        data: (apiKeys) => ListView.builder(
-          itemCount: apiKeys.length,
-          itemBuilder: (context, index) {
-            final apiKey = apiKeys[index];
-            final status = apiKeyStatusMap[apiKey.key] ?? apiKey.status;
+      body: Column(
+        children: [
+          apiKeysAsync.when(
+            data: (apiKeys) {
+              final searchQuery = ref.watch(searchQueryProvider);
+              final filteredApiKeys = apiKeys.where((apiKey) {
+                final query = searchQuery.toLowerCase();
+                return apiKey.key.toLowerCase().contains(query) ||
+                       apiKey.status.name.toLowerCase().contains(query) ||
+                       (apiKey.lastValidated?.toString().toLowerCase().contains(query) ?? false);
+              }).toList();
 
-            return Card(
-              margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: ListTile(
-                title: Text('Key: ${_maskApiKey(apiKey.key)}'),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+              return Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Full Key: ${apiKey.key}'),
-                    Row(
-                      children: [
-                        const Text('Status: '),
-                        Text(status.name),
-                      ],
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 16.0),
-                      child: Row(
-                        children: [
-                          const Text('└ '),
-                          Icon(status.icon, color: status.color, size: 16),
-                          const SizedBox(width: 4),
-                          Text(status.label, style: TextStyle(color: status.color, fontStyle: FontStyle.italic)),
-                          const SizedBox(width: 8),
-                          Text('(Priority: ${apiKey.priority})', style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic)),
-                        ],
+                    Text(
+                      'API Keys',
+                      style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      'Last Validated (Unix): ${apiKey.lastValidated ?? 'N/A'}',
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 8.0, top: 2.0),
-                      child: Text(
-                        '└ Converted: ${apiKey.lastValidated != null ? DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(apiKey.lastValidated!).toLocal()) : 'N/A'} (KST)',
-                        style: TextStyle(
-                          color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204),
-                          fontStyle: FontStyle.italic,
-                        ),
+                      '${NumberFormat('#,###').format(filteredApiKeys.length)} items',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                     ),
-                  ],
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
                     IconButton(
-                      icon: const Icon(Icons.sync),
-                      onPressed: () {
-                        ref.read(apiKeyStatusProvider.notifier).validateKey(apiKey.key);
+                      icon: const ScaledIcon(Icons.clear_all, size: 24),
+                      onPressed: () async {
+                        final bool? confirm = await showDialog<bool>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Clear All API Keys'),
+                              content: const Text('Are you sure you want to delete all API keys? This action cannot be undone.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(false),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(true),
+                                  child: const Text('Clear All'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        if (confirm == true) {
+                          await ref.read(apiKeyServiceProvider).clearAllApiKeys();
+                        }
                       },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () => _showApiKeyDialog(context, ref, existingKey: apiKey, index: index),
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () => _confirmDelete(context, ref, apiKey),
+                      tooltip: 'Clear all API keys',
                     ),
                   ],
                 ),
-              ),
-            );
-          },
-        ),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, stack) => Center(child: Text('Error: $err')),
+              );
+            },
+            loading: () => const SizedBox.shrink(), // Hide during loading
+            error: (err, stack) => const SizedBox.shrink(), // Hide during error
+          ),
+          const Divider(),
+          Expanded(
+            child: apiKeysAsync.when(
+              data: (apiKeys) {
+                final searchQuery = ref.watch(searchQueryProvider);
+                final filteredApiKeys = apiKeys.where((apiKey) {
+                  final query = searchQuery.toLowerCase();
+                  return apiKey.key.toLowerCase().contains(query) ||
+                         apiKey.status.name.toLowerCase().contains(query) ||
+                         (apiKey.lastValidated?.toString().toLowerCase().contains(query) ?? false);
+                }).toList();
+
+                if (filteredApiKeys.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.inbox_outlined,
+                          size: 48,
+                          color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          searchQuery.isEmpty ? 'API Keys Box가 비어있습니다' : '검색 결과가 없습니다',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                return ListView.builder(
+                  itemCount: filteredApiKeys.length,
+                  itemBuilder: (context, index) {
+                    final apiKey = filteredApiKeys[index];
+                    final status = apiKeyStatusMap[apiKey.key] ?? apiKey.status;
+
+                    return Card(
+                      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                      child: ListTile(
+                        title: Text('Key: ${_maskApiKey(apiKey.key)}'),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Full Key: ${apiKey.key}'),
+                            Row(
+                              children: [
+                                const Text('Status: '),
+                                Text(status.name),
+                              ],
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Row(
+                                children: [
+                                  const Text('└ '),
+                                  Icon(status.icon, color: status.color, size: 16),
+                                  const SizedBox(width: 4),
+                                  Text(status.label, style: TextStyle(color: status.color, fontStyle: FontStyle.italic)),
+                                  const SizedBox(width: 8),
+                                  Text('(Priority: ${apiKey.priority})', style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic)),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              'Last Validated (Unix): ${apiKey.lastValidated ?? 'N/A'}',
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 8.0, top: 2.0),
+                              child: Text(
+                                '└ Converted: ${apiKey.lastValidated != null ? DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(apiKey.lastValidated!).toLocal()) : 'N/A'} (KST)',
+                                style: TextStyle(
+                                  color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204),
+                                  fontStyle: FontStyle.italic,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.sync),
+                              onPressed: () {
+                                ref.read(apiKeyStatusProvider.notifier).validateKey(apiKey.key);
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.edit),
+                              onPressed: () => _showApiKeyDialog(context, ref, existingKey: apiKey, index: index),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete),
+                              onPressed: () => _confirmDelete(context, ref, apiKey),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Error: $err')),
+            ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showApiKeyDialog(context, ref),

@@ -1,6 +1,7 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/integrated_symbols/models/integrated_instrument.dart';
 import 'package:finow/features/storage_viewer/local_storage_service.dart';
+import 'package:finow/features/settings/api_key_service.dart';
 import 'package:finow/features/storage_viewer/api_keys_storage_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,6 +20,90 @@ final allStorageDataProvider = FutureProvider<Map<String, Map>>((ref) {
 // 총 스토리지 사용량을 비동기적으로 가져오는 FutureProvider
 final storageUsageProvider = FutureProvider<int>((ref) {
   return ref.watch(localStorageServiceProvider).getTotalStorageUsage();
+});
+
+// 각 탭의 아이템 수를 제공하는 Provider
+final settingsItemCountProvider = Provider<AsyncValue<int>>((ref) {
+  final allData = ref.watch(allStorageDataProvider);
+  final searchQuery = ref.watch(searchQueryProvider);
+
+  return allData.whenData((data) {
+    final boxData = data['settings'] ?? {};
+    final filteredData = boxData.entries.where((entry) {
+      final key = entry.key.toString().toLowerCase();
+      final value = entry.value;
+      final query = searchQuery.toLowerCase();
+      final valueString = value.toString().toLowerCase();
+      return key.contains(query) || valueString.contains(query);
+    }).toList();
+    return filteredData.length;
+  });
+});
+
+final exchangeRatesItemCountProvider = Provider<AsyncValue<int>>((ref) {
+  final allData = ref.watch(allStorageDataProvider);
+  final searchQuery = ref.watch(searchQueryProvider);
+
+  return allData.whenData((data) {
+    final boxData = data['exchangeRates'] ?? {};
+    final filteredData = boxData.entries.where((entry) {
+      final key = entry.key.toString().toLowerCase();
+      final value = entry.value;
+      final query = searchQuery.toLowerCase();
+      if (value is ExchangeRate) {
+        final combinedCode = (value.baseCode + value.quoteCode).toLowerCase();
+        final priceString = value.price.toString();
+        final sourceString = value.source.toLowerCase();
+        return key.contains(query) ||
+            combinedCode.contains(query) ||
+            priceString.contains(query) ||
+            sourceString.contains(query);
+      }
+      final valueString = value.toString().toLowerCase();
+      return key.contains(query) || valueString.contains(query);
+    }).toList();
+    return filteredData.length;
+  });
+});
+
+final symbolsItemCountProvider = Provider<AsyncValue<int>>((ref) {
+  final allData = ref.watch(allStorageDataProvider);
+  final searchQuery = ref.watch(searchQueryProvider);
+
+  return allData.whenData((data) {
+    final boxData = data['integrated_instruments'] ?? {};
+    final filteredData = boxData.entries.where((entry) {
+      final key = entry.key.toString().toLowerCase();
+      final value = entry.value;
+      final query = searchQuery.toLowerCase();
+      if (value is IntegratedInstrument) {
+        final symbolString = value.symbol.toLowerCase();
+        final baseCoinString = value.baseCoin.toLowerCase();
+        final quoteCoinString = value.quoteCoin.toLowerCase();
+        final exchangeString = value.exchange.toLowerCase();
+        final statusString = value.status.toLowerCase();
+        final koreanNameString = (value.koreanName ?? '').toLowerCase();
+        final englishNameString = (value.englishName ?? '').toLowerCase();
+
+        return key.contains(query) ||
+            symbolString.contains(query) ||
+            baseCoinString.contains(query) ||
+            quoteCoinString.contains(query) ||
+            exchangeString.contains(query) ||
+            statusString.contains(query) ||
+            koreanNameString.contains(query) ||
+            englishNameString.contains(query);
+      }
+      final valueString = value.toString().toLowerCase();
+      return key.contains(query) || valueString.contains(query);
+    }).toList();
+    return filteredData.length;
+  });
+});
+
+final apiKeysItemCountProvider = Provider<AsyncValue<int>>((ref) {
+  final apiKeysAsync = ref.watch(apiKeyListProvider);
+  return apiKeysAsync.whenData((apiKeys) => apiKeys.length);
 });
 
 class StorageViewerScreen extends ConsumerStatefulWidget {
@@ -130,29 +215,38 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
             },
           ),
           const Divider(height: 1),
-          TabBar(
-            controller: _tabController,
-            labelColor: Theme.of(context).colorScheme.primary,
-            unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
-            indicatorColor: Theme.of(context).colorScheme.primary,
-            tabs: const [
-              Tab(
-                icon: Icon(Icons.settings),
-                text: 'Settings',
-              ),
-              Tab(
-                icon: Icon(Icons.attach_money),
-                text: 'Exchange Rates',
-              ),
-              Tab(
-                icon: Icon(Icons.currency_exchange),
-                text: 'Symbols',
-              ),
-              Tab(
-                icon: Icon(Icons.vpn_key),
-                text: 'API Keys',
-              ),
-            ],
+          Consumer(
+            builder: (context, ref, child) {
+              final settingsCount = ref.watch(settingsItemCountProvider);
+              final exchangeRatesCount = ref.watch(exchangeRatesItemCountProvider);
+              final symbolsCount = ref.watch(symbolsItemCountProvider);
+              final apiKeysCount = ref.watch(apiKeysItemCountProvider);
+
+              return TabBar(
+                controller: _tabController,
+                labelColor: Theme.of(context).colorScheme.primary,
+                unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                indicatorColor: Theme.of(context).colorScheme.primary,
+                tabs: [
+                  Tab(
+                    icon: const Icon(Icons.settings),
+                    text: 'Settings',
+                  ),
+                  Tab(
+                    icon: const Icon(Icons.attach_money),
+                    text: 'Exchange Rates',
+                  ),
+                  Tab(
+                    icon: const Icon(Icons.currency_exchange),
+                    text: 'Symbols',
+                  ),
+                  Tab(
+                    icon: const Icon(Icons.vpn_key),
+                    text: 'API Keys',
+                  ),
+                ],
+              );
+            },
           ),
           Expanded(
             child: TabBarView(
@@ -774,26 +868,6 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
           return key.contains(query) || valueString.contains(query);
         }).toList();
         
-        if (filteredData.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.inbox_outlined,
-                  size: 48,
-                  color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  searchQuery.isEmpty ? '$boxName Box가 비어있습니다' : '검색 결과가 없습니다',
-                  style: Theme.of(context).textTheme.titleMedium,
-                ),
-              ],
-            ),
-          );
-        }
-        
         return Column(
           children: [
             // Box 헤더
@@ -803,9 +877,15 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    '$boxName (${filteredData.length} items)',
+                    '$boxName',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    '${NumberFormat('#,###').format(filteredData.length)} items',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   IconButton(
@@ -817,137 +897,155 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
               ),
             ),
             const Divider(),
-            // 데이터 목록
+            // 데이터 목록 또는 검색 결과 없음 메시지
             Expanded(
-              child: ListView.builder(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                itemCount: filteredData.length,
-                itemBuilder: (context, index) {
-                  final entry = filteredData[index];
-                  final key = entry.key;
-                  final value = entry.value;
-                  
-                  Widget subtitleWidget;
-                  if (value is ExchangeRate) {
-                    subtitleWidget = Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('base_code: ${value.baseCode}'),
-                        Text('quote_code: ${value.quoteCode}'),
-                        Text('price: ${value.price}'),
-                        Text('source: ${value.source}'),
-                        Text('time_last_update_unix: ${value.lastUpdatedUnix}'),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0, top: 2.0),
-                          child: Text(
-                            '└ Converted: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(value.lastUpdatedUnix * 1000).toLocal())} (KST)',
-                            style: TextStyle(
-                              color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204),
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  } else if (value is IntegratedInstrument) {
-                    subtitleWidget = Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // 기본 정보
-                        Text('symbol: ${value.symbol}'),
-                        Text('baseCoin: ${value.baseCoin}'),
-                        Text('quoteCoin: ${value.quoteCoin}'),
-                        Text('exchange: ${value.exchange}'),
-                        Text('status: ${value.status}'),
-                        if (value.koreanName != null) Text('koreanName: ${value.koreanName}'),
-                        if (value.englishName != null) Text('englishName: ${value.englishName}'),
-                        if (value.marketWarning != null) Text('marketWarning: ${value.marketWarning}'),
-                        
-                        // Price Filter 정보
-                        if (value.priceFilter != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0, left: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('priceFilter:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: Text('tickSize: ${value.priceFilter!.tickSize}'),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                        // Lot Size Filter 정보
-                        if (value.lotSizeFilter != null)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 4.0, left: 8.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text('lotSizeFilter:', style: TextStyle(fontWeight: FontWeight.bold)),
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 8.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text('basePrecision: ${value.lotSizeFilter!.basePrecision}'),
-                                      Text('quotePrecision: ${value.lotSizeFilter!.quotePrecision}'),
-                                      Text('minOrderQty: ${value.lotSizeFilter!.minOrderQty}'),
-                                      Text('maxOrderQty: ${value.lotSizeFilter!.maxOrderQty}'),
-                                      Text('minOrderAmt: ${value.lotSizeFilter!.minOrderAmt}'),
-                                      Text('maxOrderAmt: ${value.lotSizeFilter!.maxOrderAmt}'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                        // 마지막 업데이트 시간
-                        Text('lastUpdated: ${value.lastUpdated.toIso8601String()}'),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 8.0, top: 2.0),
-                          child: Text(
-                            '└ Converted: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(value.lastUpdated.toLocal())} (KST)',
-                            style: TextStyle(
-                              color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204),
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  } else {
-                    subtitleWidget = Text(value.toString());
-                  }
-                  
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 4.0),
-                    elevation: 1.0,
-                    child: ListTile(
-                      title: Text(key.toString()),
-                      subtitle: subtitleWidget,
-                      trailing: Row(
-                        mainAxisSize: MainAxisSize.min,
+              child: filteredData.isEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          IconButton(
-                            icon: const ScaledIcon(Icons.edit, size: 20),
-                            onPressed: () => _showEditDialog(
-                              context, ref, localStorageService, boxName, key, value),
+                          Icon(
+                            Icons.inbox_outlined,
+                            size: 48,
+                            color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
                           ),
-                          IconButton(
-                            icon: const ScaledIcon(Icons.delete, size: 20),
-                            onPressed: () => _confirmDelete(
-                              context, ref, localStorageService, boxName, key),
+                          const SizedBox(height: 16),
+                          Text(
+                            searchQuery.isEmpty ? '$boxName Box가 비어있습니다' : '검색 결과가 없습니다',
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
                         ],
                       ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      itemCount: filteredData.length,
+                      itemBuilder: (context, index) {
+                        final entry = filteredData[index];
+                        final key = entry.key;
+                        final value = entry.value;
+                        
+                        Widget subtitleWidget;
+                        if (value is ExchangeRate) {
+                          subtitleWidget = Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('base_code: ${value.baseCode}'),
+                              Text('quote_code: ${value.quoteCode}'),
+                              Text('price: ${value.price}'),
+                              Text('source: ${value.source}'),
+                              Text('time_last_update_unix: ${value.lastUpdatedUnix}'),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0, top: 2.0),
+                                child: Text(
+                                  '└ Converted: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(value.lastUpdatedUnix * 1000).toLocal())} (KST)',
+                                  style: TextStyle(
+                                    color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204),
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        } else if (value is IntegratedInstrument) {
+                          subtitleWidget = Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // 기본 정보
+                              Text('symbol: ${value.symbol}'),
+                              Text('baseCoin: ${value.baseCoin}'),
+                              Text('quoteCoin: ${value.quoteCoin}'),
+                              Text('exchange: ${value.exchange}'),
+                              Text('status: ${value.status}'),
+                              if (value.koreanName != null) Text('koreanName: ${value.koreanName}'),
+                              if (value.englishName != null) Text('englishName: ${value.englishName}'),
+                              if (value.marketWarning != null) Text('marketWarning: ${value.marketWarning}'),
+                              
+                              // Price Filter 정보
+                              if (value.priceFilter != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('priceFilter:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 8.0),
+                                        child: Text('tickSize: ${value.priceFilter!.tickSize}'),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                              // Lot Size Filter 정보
+                              if (value.lotSizeFilter != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('lotSizeFilter:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('basePrecision: ${value.lotSizeFilter!.basePrecision}'),
+                                            Text('quotePrecision: ${value.lotSizeFilter!.quotePrecision}'),
+                                            Text('minOrderQty: ${value.lotSizeFilter!.minOrderQty}'),
+                                            Text('maxOrderQty: ${value.lotSizeFilter!.maxOrderQty}'),
+                                            Text('minOrderAmt: ${value.lotSizeFilter!.minOrderAmt}'),
+                                            Text('maxOrderAmt: ${value.lotSizeFilter!.maxOrderAmt}'),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                              // 마지막 업데이트 시간
+                              Text('lastUpdated: ${value.lastUpdated.toIso8601String()}'),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 8.0, top: 2.0),
+                                child: Text(
+                                  '└ Converted: ${DateFormat('yyyy-MM-dd HH:mm:ss').format(value.lastUpdated.toLocal())} (KST)',
+                                  style: TextStyle(
+                                    color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204),
+                                    fontStyle: FontStyle.italic,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        } else {
+                          subtitleWidget = Text(value.toString());
+                        }
+                        
+                        return Card(
+                          margin: const EdgeInsets.symmetric(vertical: 4.0),
+                          elevation: 1.0,
+                          child: ListTile(
+                            title: Text(key.toString()),
+                            subtitle: subtitleWidget,
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const ScaledIcon(Icons.edit, size: 20),
+                                  onPressed: () => _showEditDialog(
+                                    context, ref, localStorageService, boxName, key, value),
+                                ),
+                                IconButton(
+                                  icon: const ScaledIcon(Icons.delete, size: 20),
+                                  onPressed: () => _confirmDelete(
+                                    context, ref, localStorageService, boxName, key),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
             ),
           ],
         );
