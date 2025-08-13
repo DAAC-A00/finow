@@ -85,17 +85,9 @@ class ApiKeyService {
     }
   }
 
-  Future<void> updateApiKey(int index, String newKey) async {
+  Future<void> updateApiKey(int index, ApiKeyData updatedApiKeyData) async {
     if (index >= 0 && index < _box.length) {
-      final existingData = _box.getAt(index);
-      if (existingData != null) {
-        final updatedData = existingData.copyWith(
-          key: newKey,
-          status: ApiKeyStatus.unknown, // 새 키는 다시 검증 필요
-          lastValidated: null,
-        );
-        await _box.putAt(index, updatedData);
-      }
+      await _box.putAt(index, updatedApiKeyData);
     }
   }
 
