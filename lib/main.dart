@@ -3,6 +3,8 @@ import 'package:finow/features/exchange_rate/exchange_rate_update_service.dart';
 import 'package:finow/features/exchange_rate/exconvert_periodic_update_service.dart';
 import 'package:finow/features/integrated_symbols/services/integrated_symbols_sync_service.dart';
 import 'package:finow/features/integrated_symbols/models/integrated_instrument.dart';
+import 'package:finow/features/settings/models/api_key_data.dart';
+import 'package:finow/features/settings/api_key_status.dart';
 import 'package:finow/routing/app_router.dart';
 import 'package:finow/theme_provider.dart';
 import 'package:finow/font_size_provider.dart';
@@ -21,11 +23,14 @@ void main() async {
   Hive.registerAdapter(IntegratedInstrumentAdapter());
   Hive.registerAdapter(InstrumentPriceFilterAdapter());
   Hive.registerAdapter(InstrumentLotSizeFilterAdapter());
+  Hive.registerAdapter(ApiKeyDataAdapter());
+  Hive.registerAdapter(ApiKeyStatusAdapter());
 
   // 사용할 Box들 미리 열기
   await Hive.openBox('settings');
   await Hive.openBox<ExchangeRate>('exchangeRates');
   await Hive.openBox<IntegratedInstrument>('integrated_instruments');
+  await Hive.openBox<ApiKeyData>('api_keys');
 
   runApp(const ProviderScope(child: _AppInitializer()));
 }

@@ -1,6 +1,7 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/integrated_symbols/models/integrated_instrument.dart';
 import 'package:finow/features/storage_viewer/local_storage_service.dart';
+import 'package:finow/features/storage_viewer/api_keys_storage_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -36,7 +37,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
   void initState() {
     super.initState();
     _controller = TextEditingController();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -147,6 +148,10 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 icon: Icon(Icons.currency_exchange),
                 text: 'Symbols',
               ),
+              Tab(
+                icon: Icon(Icons.vpn_key),
+                text: 'API Keys',
+              ),
             ],
           ),
           Expanded(
@@ -156,6 +161,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 _buildBoxContent('settings', localStorageService, searchQuery),
                 _buildBoxContent('exchangeRates', localStorageService, searchQuery),
                 _buildBoxContent('integrated_instruments', localStorageService, searchQuery),
+                const ApiKeysStorageView(),
               ],
             ),
           ),

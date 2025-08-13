@@ -1,0 +1,77 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'api_key_data.dart';
+
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class ApiKeyDataAdapter extends TypeAdapter<ApiKeyData> {
+  @override
+  final int typeId = 5;
+
+  @override
+  ApiKeyData read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return ApiKeyData(
+      key: fields[0] as String,
+      status: fields[1] as ApiKeyStatus,
+      lastValidated: fields[2] as DateTime?,
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, ApiKeyData obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(0)
+      ..write(obj.key)
+      ..writeByte(1)
+      ..write(obj.status)
+      ..writeByte(2)
+      ..write(obj.lastValidated);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is ApiKeyDataAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+ApiKeyData _$ApiKeyDataFromJson(Map<String, dynamic> json) => ApiKeyData(
+      key: json['key'] as String,
+      status: $enumDecode(_$ApiKeyStatusEnumMap, json['status']),
+      lastValidated: json['lastValidated'] == null
+          ? null
+          : DateTime.parse(json['lastValidated'] as String),
+    );
+
+Map<String, dynamic> _$ApiKeyDataToJson(ApiKeyData instance) =>
+    <String, dynamic>{
+      'key': instance.key,
+      'status': _$ApiKeyStatusEnumMap[instance.status]!,
+      'lastValidated': instance.lastValidated?.toIso8601String(),
+    };
+
+const _$ApiKeyStatusEnumMap = {
+  ApiKeyStatus.valid: 'valid',
+  ApiKeyStatus.invalidKey: 'invalidKey',
+  ApiKeyStatus.inactiveAccount: 'inactiveAccount',
+  ApiKeyStatus.quotaReached: 'quotaReached',
+  ApiKeyStatus.unsupportedCode: 'unsupportedCode',
+  ApiKeyStatus.malformedRequest: 'malformedRequest',
+  ApiKeyStatus.unknown: 'unknown',
+  ApiKeyStatus.validating: 'validating',
+};

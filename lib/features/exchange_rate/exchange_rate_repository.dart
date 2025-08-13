@@ -19,7 +19,7 @@ class ExchangeRateRepository {
 
   Future<List<ExchangeRate>> getLatestRates(String baseCurrency) async {
     try {
-      final apiKey = _apiKeyService.getRandomApiKey();
+      final apiKey = _apiKeyService.getApiKeyByPriority();
       final response = await _dio.get('$_baseUrl/$apiKey/latest/$baseCurrency');
       if (response.statusCode == 200 && response.data['result'] == 'success') {
         final ratesData = response.data['conversion_rates'] as Map<String, dynamic>;

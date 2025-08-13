@@ -1,23 +1,7 @@
-
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-enum ApiKeyStatus {
-  valid('Valid', icon: Icons.check_circle, color: Colors.green),
-  invalidKey('Invalid Key', icon: Icons.error, color: Colors.red),
-  inactiveAccount('Inactive Account', icon: Icons.account_circle_outlined, color: Colors.orange),
-  quotaReached('Quota Reached', icon: Icons.block, color: Colors.amber),
-  unsupportedCode('Unsupported Currency', icon: Icons.money_off, color: Colors.grey),
-  malformedRequest('Malformed Request', icon: Icons.warning, color: Colors.yellow),
-  unknown('Unknown Status', icon: Icons.help_outline, color: Colors.grey),
-  validating('Validating...', icon: Icons.sync, color: Colors.blue);
-
-  const ApiKeyStatus(this.label, {required this.icon, required this.color});
-  final String label;
-  final IconData icon;
-  final Color color;
-}
+import 'package:finow/features/settings/api_key_service.dart';
+import 'package:finow/features/settings/api_key_status.dart';
 
 final apiKeyValidationServiceProvider = Provider<ApiKeyValidationService>((ref) {
   return ApiKeyValidationService(Dio());
@@ -35,7 +19,7 @@ class ApiKeyValidationService {
       if (response.statusCode == 200 && response.data['result'] == 'success') {
         return ApiKeyStatus.valid;
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       if (e.response != null && e.response?.data['result'] == 'error') {
         final errorType = e.response?.data['error-type'];
         switch (errorType) {
@@ -58,17 +42,37 @@ class ApiKeyValidationService {
 
 final apiKeyStatusProvider = StateNotifierProvider<ApiKeyStatusNotifier, Map<String, ApiKeyStatus>>((ref) {
   final validationService = ref.watch(apiKeyValidationServiceProvider);
-  return ApiKeyStatusNotifier(validationService);
+  final apiKeyService = ref.watch(apiKeyServiceProvider);
+  return ApiKeyStatusNotifier(validationService, apiKeyService);
 });
 
 class ApiKeyStatusNotifier extends StateNotifier<Map<String, ApiKeyStatus>> {
   final ApiKeyValidationService _validationService;
+  final ApiKeyService _apiKeyService;
 
-  ApiKeyStatusNotifier(this._validationService) : super({});
+  ApiKeyStatusNotifier(this._validationService, this._apiKeyService) : super({}) {
+    _loadStoredStatuses();
+  }
+
+  /// 저장된 API 키 상태들을 로드합니다.
+  void _loadStoredStatuses() {
+    final apiKeys = _apiKeyService.getApiKeys();
+    final statusMap = <String, ApiKeyStatus>{};
+    
+    for (final keyData in apiKeys) {
+      statusMap[keyData.key] = keyData.status;
+    }
+    
+    state = statusMap;
+  }
 
   Future<void> validateKey(String apiKey) async {
     state = {...state, apiKey: ApiKeyStatus.validating};
     final status = await _validationService.validateKey(apiKey);
+    
+    // 검증 결과를 API key 전용 box에 저장
+    await _apiKeyService.updateApiKeyStatus(apiKey, status);
+    
     state = {...state, apiKey: status};
   }
 
@@ -80,5 +84,10 @@ class ApiKeyStatusNotifier extends StateNotifier<Map<String, ApiKeyStatus>> {
 
   void clearAllStatuses() {
     state = {};
+  }
+
+  /// API 키 목록이 변경될 때 상태를 새로고침합니다.
+  void refreshStatuses() {
+    _loadStoredStatuses();
   }
 }
