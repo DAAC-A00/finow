@@ -170,9 +170,18 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
           onChanged: (value) {
             ref.read(searchQueryProvider.notifier).state = value;
           },
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'Search local storage...',
             border: InputBorder.none,
+            suffixIcon: searchQuery.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      ref.read(searchQueryProvider.notifier).state = '';
+                      _controller.clear();
+                    },
+                  )
+                : null,
           ),
         ),
         actions: [
