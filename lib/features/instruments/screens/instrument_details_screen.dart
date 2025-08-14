@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/instrument.dart';
+import 'package:finow/ui_scale_provider.dart';
 
 class InstrumentDetailsScreen extends StatelessWidget {
   final Instrument instrument;
@@ -197,7 +198,7 @@ class InstrumentDetailsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 20, color: isWarning ? colorScheme.error : colorScheme.onSurfaceVariant),
+            ScaledIcon(icon, size: 20, color: isWarning ? colorScheme.error : colorScheme.onSurfaceVariant),
             const SizedBox(width: 12),
           ],
           SizedBox(

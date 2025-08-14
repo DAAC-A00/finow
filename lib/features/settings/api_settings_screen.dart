@@ -71,7 +71,7 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
                   title: ScaledText(apiKeyData.key, maxLines: 1, overflow: TextOverflow.ellipsis),
                   subtitle: Row(
                     children: [
-                      Icon(status.icon, color: status.color, size: 16),
+                      ScaledIcon(status.icon, color: status.color, size: 16),
                       const SizedBox(width: 4),
                       ScaledText(status.label, style: TextStyle(color: status.color)),
                     ],
@@ -80,17 +80,17 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const Icon(Icons.sync),
+                        icon: const ScaledIcon(Icons.sync),
                         onPressed: () {
                           ref.read(apiKeyStatusProvider.notifier).validateKey(apiKeyData.key);
                         },
                       ),
                       IconButton(
-                        icon: const Icon(Icons.edit),
+                        icon: const ScaledIcon(Icons.edit),
                         onPressed: () => _showApiKeyDialog(context, ref, existingKey: apiKeyData, index: index),
                       ),
                       IconButton(
-                        icon: const Icon(Icons.delete),
+                        icon: const ScaledIcon(Icons.delete),
                         onPressed: () {
                           ref.read(apiKeyServiceProvider).deleteApiKey(apiKeyData.key);
                         },
@@ -101,7 +101,7 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
               }),
               ListTile(
                 title: const ScaledText('Add API Key'),
-                trailing: const Icon(Icons.add),
+                trailing: const ScaledIcon(Icons.add),
                 onTap: () => _showApiKeyDialog(context, ref),
               ),
             ],

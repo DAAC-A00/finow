@@ -98,7 +98,7 @@ class ApiKeysStorageView extends ConsumerWidget {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(
+                        ScaledIcon(
                           Icons.inbox_outlined,
                           size: 48,
                           color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
@@ -138,7 +138,7 @@ class ApiKeysStorageView extends ConsumerWidget {
                               child: Row(
                                 children: [
                                   const Text('└ '),
-                                  Icon(status.icon, color: status.color, size: 16),
+                                  ScaledIcon(status.icon, color: status.color, size: 16),
                                   const SizedBox(width: 4),
                                   Text(status.label, style: TextStyle(color: status.color, fontStyle: FontStyle.italic)),
                                   const SizedBox(width: 8),
@@ -165,17 +165,17 @@ class ApiKeysStorageView extends ConsumerWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.sync),
+                              icon: const ScaledIcon(Icons.sync),
                               onPressed: () {
                                 ref.read(apiKeyStatusProvider.notifier).validateKey(apiKey.key);
                               },
                             ),
                             IconButton(
-                              icon: const Icon(Icons.edit),
+                              icon: const ScaledIcon(Icons.edit),
                               onPressed: () => _showApiKeyDialog(context, ref, existingKey: apiKey, index: index),
                             ),
                             IconButton(
-                              icon: const Icon(Icons.delete),
+                              icon: const ScaledIcon(Icons.delete),
                               onPressed: () => _confirmDelete(context, ref, apiKey),
                             ),
                           ],
@@ -193,7 +193,7 @@ class ApiKeysStorageView extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showApiKeyDialog(context, ref),
-        child: const Icon(Icons.add),
+        child: const ScaledIcon(Icons.add),
       ),
     );
   }

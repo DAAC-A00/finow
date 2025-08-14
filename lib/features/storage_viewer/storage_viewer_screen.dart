@@ -168,7 +168,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 title: const Text('Local Storage Viewer'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.info_outline),
+            icon: const ScaledIcon(Icons.info_outline),
             tooltip: 'Local Storage Viewer Information',
             onPressed: () => _showInfoBottomSheet(context),
           ),
@@ -188,7 +188,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 border: const OutlineInputBorder(),
                 suffixIcon: searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const Icon(Icons.clear),
+                        icon: const ScaledIcon(Icons.clear),
                         onPressed: () {
                           ref.read(searchQueryProvider.notifier).state = '';
                           _controller.clear();
@@ -242,19 +242,19 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 indicatorColor: Theme.of(context).colorScheme.primary,
                 tabs: [
                   Tab(
-                    icon: const Icon(Icons.settings),
+                    icon: const ScaledIcon(Icons.settings),
                     text: 'Settings',
                   ),
                   Tab(
-                    icon: const Icon(Icons.attach_money),
+                    icon: const ScaledIcon(Icons.attach_money),
                     text: 'Exchange Rates',
                   ),
                   Tab(
-                    icon: const Icon(Icons.currency_exchange),
+                    icon: const ScaledIcon(Icons.currency_exchange),
                     text: 'Instruments',
                   ),
                   Tab(
-                    icon: const Icon(Icons.vpn_key),
+                    icon: const ScaledIcon(Icons.vpn_key),
                     text: 'API Keys',
                   ),
                 ],
@@ -510,7 +510,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            ScaledIcon(
                               Icons.error_outline,
                               size: 48,
                               color: Theme.of(context).colorScheme.error,
@@ -538,7 +538,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(
+                            ScaledIcon(
                               Icons.inbox_outlined,
                               size: 48,
                               color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
@@ -563,7 +563,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                           child: ListTile(
                             leading: CircleAvatar(
                               backgroundColor: Theme.of(context).colorScheme.primary.withAlpha((255 * 0.1).round()),
-                              child: Icon(
+                              child: ScaledIcon(
                                 Icons.storage,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
@@ -585,12 +585,12 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: const Icon(Icons.info_outline),
+                                  icon: const ScaledIcon(Icons.info_outline),
                                   onPressed: () => _showBoxInfo(context, boxName),
                                   tooltip: 'Box 정보',
                                 ),
                                 IconButton(
-                                  icon: const Icon(Icons.delete_outline),
+                                  icon: const ScaledIcon(Icons.delete_outline),
                                   onPressed: () => _confirmDeleteBox(context, ref, boxName),
                                   tooltip: 'Box 삭제',
                                 ),
@@ -990,7 +990,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                     ),
                   ),
                   IconButton(
-                    icon: const ScaledIcon(Icons.clear_all, size: 24),
+                    icon: const ScaledIcon(Icons.delete_forever, size: 24),
                     onPressed: () => _clearBox(context, ref, localStorageService, boxName),
                     tooltip: 'Clear all data in this box',
                   ),
@@ -1005,7 +1005,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
+                          ScaledIcon(
                             Icons.inbox_outlined,
                             size: 48,
                             color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
