@@ -247,7 +247,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                   ),
                   Tab(
                     icon: const Icon(Icons.currency_exchange),
-                    text: 'Symbols',
+                    text: 'Instruments',
                   ),
                   Tab(
                     icon: const Icon(Icons.vpn_key),

@@ -18,35 +18,78 @@ class ExchangeApiService {
     ));
   }
 
-  /// Bybit 스팟 거래 심볼 정보 조회
-  Future<List<Instrument>> fetchBybitInstruments() async {
+  /// Bybit 특정 카테고리 거래 심볼 정보 조회 (모든 페이지)
+  Future<List<Instrument>> fetchBybitInstrumentsByCategory(String category) async {
     try {
-      final response = await _dio.get(
-        '$_bybitBaseUrl/market/instruments-info',
-        queryParameters: {'category': 'spot'},
-      );
-
-      if (response.statusCode == 200) {
-        final data = response.data;
-        
-        if (data['retCode'] == 0 && data['result'] != null) {
-          final List<dynamic> instruments = data['result']['list'] ?? [];
-          
-          return instruments
-              .map((item) => Instrument.fromBybit(item))
-              .toList();
-        } else {
-          throw Exception('Bybit API 오류: ${data['retMsg']}');
+      final List<Instrument> allInstruments = [];
+      String? nextCursor;
+      
+      do {
+        final queryParams = {'category': category};
+        if (nextCursor != null) {
+          queryParams['cursor'] = nextCursor;
         }
-      } else {
-        throw Exception('Bybit API 호출 실패: ${response.statusCode}');
-      }
+        
+        final response = await _dio.get(
+          '$_bybitBaseUrl/market/instruments-info',
+          queryParameters: queryParams,
+        );
+
+        if (response.statusCode == 200) {
+          final data = response.data;
+          
+          if (data['retCode'] == 0 && data['result'] != null) {
+            final List<dynamic> instruments = data['result']['list'] ?? [];
+            final resultCategory = data['result']['category'] ?? category; // API에서 반환하는 category 사용
+            nextCursor = data['result']['nextPageCursor'];
+            
+            // 빈 커서면 null로 처리
+            if (nextCursor != null && nextCursor.isEmpty) {
+              nextCursor = null;
+            }
+            
+            final mappedInstruments = instruments
+                .map((item) => Instrument.fromBybit(item, category: resultCategory))
+                .toList();
+                
+            // 디버깅: category 정보가 제대로 설정되었는지 확인
+            if (mappedInstruments.isNotEmpty) {
+              print('📊 ${category.toUpperCase()} 카테고리: ${mappedInstruments.length}개 심볼 조회 완료');
+              print('🏷️  첫 번째 심볼 category 확인: ${mappedInstruments.first.category}');
+            }
+            
+            allInstruments.addAll(mappedInstruments);
+          } else {
+            throw Exception('Bybit API 오류: ${data['retMsg']}');
+          }
+        } else {
+          throw Exception('Bybit API 호출 실패: ${response.statusCode}');
+        }
+      } while (nextCursor != null);
+      
+      print('✅ ${category.toUpperCase()} 카테고리 총 ${allInstruments.length}개 심볼 조회 완료');
+      return allInstruments;
     } catch (e) {
       if (e is DioException) {
         throw Exception('Bybit API 호출 중 네트워크 오류: ${e.message}');
       }
       throw Exception('Bybit 데이터 조회 중 오류 발생: $e');
     }
+  }
+
+  /// Bybit 스팟 거래 심볼 정보 조회 (하위 호환성)
+  Future<List<Instrument>> fetchBybitInstruments() async {
+    return await fetchBybitInstrumentsByCategory('spot');
+  }
+
+  /// Bybit 선물 거래 심볼 정보 조회 (Linear)
+  Future<List<Instrument>> fetchBybitLinearInstruments() async {
+    return await fetchBybitInstrumentsByCategory('linear');
+  }
+
+  /// Bybit 역선물 거래 심볼 정보 조회 (Inverse)
+  Future<List<Instrument>> fetchBybitInverseInstruments() async {
+    return await fetchBybitInstrumentsByCategory('inverse');
   }
 
   /// Bithumb 마켓 정보 조회
@@ -128,7 +171,9 @@ class ExchangeApiService {
   Future<List<Instrument>> fetchAllInstruments() async {
     try {
       final futures = await Future.wait([
-        fetchBybitInstruments(),
+        fetchBybitInstruments(), // spot
+        fetchBybitLinearInstruments(), // linear
+        fetchBybitInverseInstruments(), // inverse
         fetchBithumbInstruments(),
       ]);
 
@@ -141,6 +186,27 @@ class ExchangeApiService {
       return allInstruments;
     } catch (e) {
       throw Exception('통합 심볼 정보 조회 중 오류 발생: $e');
+    }
+  }
+
+  /// 모든 Bybit category 심볼 정보 조회
+  Future<List<Instrument>> fetchAllBybitInstruments() async {
+    try {
+      final futures = await Future.wait([
+        fetchBybitInstruments(), // spot
+        fetchBybitLinearInstruments(), // linear
+        fetchBybitInverseInstruments(), // inverse
+      ]);
+
+      final List<Instrument> allInstruments = [];
+      
+      for (final instruments in futures) {
+        allInstruments.addAll(instruments);
+      }
+
+      return allInstruments;
+    } catch (e) {
+      throw Exception('Bybit 통합 심볼 정보 조회 중 오류 발생: $e');
     }
   }
 }

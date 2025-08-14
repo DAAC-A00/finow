@@ -19,11 +19,21 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _selectedExchange = 'all';
+  String _selectedCategory = 'all'; // spot, linear, inverse, all
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
+    
+    // 탭 변경 시 카테고리 필터 초기화
+    _tabController.addListener(() {
+      if (mounted) {
+        setState(() {
+          _selectedCategory = 'all';
+        });
+      }
+    });
     
     // Load stored data on screen entry
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -123,12 +133,39 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
             unselectedLabelColor: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
             indicatorColor: colorScheme.primary,
             tabs: const [
-              Tab(text: 'All', icon: Icon(Icons.list)),
-              Tab(text: 'Bybit', icon: Icon(Icons.currency_bitcoin)),
-              Tab(text: 'Bithumb', icon: Icon(Icons.account_balance)),
+              Tab(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.list),
+                    Text('All'),
+                  ],
+                ),
+              ),
+              Tab(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.currency_bitcoin),
+                    Text('Bybit'),
+                  ],
+                ),
+              ),
+              Tab(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.account_balance),
+                    Text('Bithumb'),
+                  ],
+                ),
+              ),
             ],
           ),
           _buildFilterChips(colorScheme),
+          // All 탭 또는 Bybit 탭일 때 카테고리 필터 표시 (Bithumb은 spot만이므로 제외)
+          if (_tabController.index == 0 || _tabController.index == 1) 
+            _buildCategoryFilterChips(colorScheme),
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -208,6 +245,64 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
     );
   }
 
+  Widget _buildCategoryFilterChips(ColorScheme colorScheme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: Row(
+        children: [
+          Text(
+            'Category:',
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              color: colorScheme.onSurface,
+            ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                children: [
+                  _buildCategoryFilterChip('All', 'all', colorScheme),
+                  const SizedBox(width: 8),
+                  _buildCategoryFilterChip('Spot', 'spot', colorScheme),
+                  const SizedBox(width: 8),
+                  _buildCategoryFilterChip('Linear', 'linear', colorScheme),
+                  const SizedBox(width: 8),
+                  _buildCategoryFilterChip('Inverse', 'inverse', colorScheme),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCategoryFilterChip(String label, String value, ColorScheme colorScheme) {
+    final isSelected = _selectedCategory == value;
+    
+    return FilterChip(
+      label: Text(label),
+      selected: isSelected,
+      onSelected: (selected) {
+        setState(() {
+          _selectedCategory = selected ? value : 'all';
+        });
+      },
+      backgroundColor: colorScheme.surface,
+      selectedColor: colorScheme.secondary.withAlpha((255 * 0.2).round()),
+      checkmarkColor: colorScheme.secondary,
+      labelStyle: TextStyle(
+        color: isSelected ? colorScheme.secondary : colorScheme.onSurface,
+        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+      ),
+      side: BorderSide(
+        color: isSelected ? colorScheme.secondary : colorScheme.outline.withAlpha((255 * 0.5).round()),
+      ),
+    );
+  }
+
   Widget _buildInstrumentsList(String exchange) {
     return Consumer(
       builder: (context, ref, child) {
@@ -255,6 +350,17 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
     // Exchange filtering
     if (exchange != 'all') {
       filtered = filtered.where((instrument) => instrument.exchange == exchange).toList();
+    }
+    
+    // Category filtering (All 탭과 Bybit 탭에서만 적용)
+    if (_selectedCategory != 'all') {
+      if (exchange == 'all') {
+        // All 탭에서는 모든 거래소의 해당 카테고리 표시
+        filtered = filtered.where((instrument) => instrument.category == _selectedCategory).toList();
+      } else if (exchange == 'bybit') {
+        // Bybit 탭에서는 Bybit의 해당 카테고리만 표시
+        filtered = filtered.where((instrument) => instrument.category == _selectedCategory).toList();
+      }
     }
     
     // Search query filtering
@@ -329,6 +435,17 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                   _buildInfoChip('${instrument.baseCoin}/${instrument.quoteCoin}', colorScheme),
                   const SizedBox(width: 8),
                   _buildStatusChip(instrument.status, colorScheme),
+                  // Bithumb은 spot만 지원하므로 카테고리 칩 생략
+                  if (instrument.category != null && instrument.exchange != 'bithumb')
+                    ...[
+                      const SizedBox(width: 8),
+                      _buildCategoryChip(instrument.category!, colorScheme),
+                    ],
+                  if (instrument.contractType != null)
+                    ...[
+                      const SizedBox(width: 8),
+                      _buildContractTypeChip(instrument.contractType!, colorScheme),
+                    ],
                   if (instrument.marketWarning != null && instrument.marketWarning != 'NONE')
                     ...[
                       const SizedBox(width: 8),
@@ -414,6 +531,57 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
           fontSize: 12,
           color: Colors.red,
           fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryChip(String category, ColorScheme colorScheme) {
+    Color chipColor;
+    switch (category.toLowerCase()) {
+      case 'spot':
+        chipColor = Colors.green;
+        break;
+      case 'linear':
+        chipColor = Colors.blue;
+        break;
+      case 'inverse':
+        chipColor = Colors.purple;
+        break;
+      default:
+        chipColor = Colors.grey;
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: chipColor.withAlpha((255 * 0.1).round()),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        category.toUpperCase(),
+        style: TextStyle(
+          fontSize: 12,
+          color: chipColor,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildContractTypeChip(String contractType, ColorScheme colorScheme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withAlpha((255 * 0.5).round()),
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Text(
+        contractType,
+        style: TextStyle(
+          fontSize: 10,
+          color: colorScheme.onSurface.withAlpha((255 * 0.7).round()),
+          fontWeight: FontWeight.w400,
         ),
       ),
     );
@@ -569,23 +737,38 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
+        title: const Text('거래소별 지원 카테고리'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('• Provides instrument information from Bybit and Bithumb'),
+            Text('📊 지원 거래소 및 카테고리:', 
+                style: TextStyle(fontWeight: FontWeight.bold)),
+            SizedBox(height: 12),
+            Text('🟠 Bybit (바이비트):'),
+            Text('  • Spot (현물 거래)', style: TextStyle(fontSize: 14)),
+            Text('  • Linear (선물 거래)', style: TextStyle(fontSize: 14)),
+            Text('  • Inverse (역선물 거래)', style: TextStyle(fontSize: 14)),
+            SizedBox(height: 12),
+            Text('🔵 Bithumb (빗썸):'),
+            Text('  • Spot Only (현물 거래만)', style: TextStyle(fontSize: 14)),
+            SizedBox(height: 16),
+            Text('💾 주요 기능:', 
+                style: TextStyle(fontWeight: FontWeight.bold)),
             SizedBox(height: 8),
-            Text('• Data is stored in local storage and can be viewed offline'),
-            SizedBox(height: 8),
-            Text('• You can update to the latest data by refreshing'),
-            SizedBox(height: 8),
-            Text('• Provides search and filtering functions'),
+            Text('• 로컬 저장소에 데이터 저장 (오프라인 조회 가능)'),
+            SizedBox(height: 4),
+            Text('• 새로고침으로 최신 데이터 업데이트'),
+            SizedBox(height: 4),
+            Text('• 검색 및 카테고리별 필터링 기능'),
+            SizedBox(height: 4),
+            Text('• 실시간 거래 상태 및 계약 유형 표시'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('OK'),
+            child: const Text('확인'),
           ),
         ],
       ),

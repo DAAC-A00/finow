@@ -68,6 +68,33 @@ class InstrumentsRepository {
     return await getInstrumentsByExchange('bithumb');
   }
 
+  /// 특정 카테고리의 심볼만 조회
+  Future<List<Instrument>> getInstrumentsByCategory(String category) async {
+    return await _storageService.loadInstrumentsByCategory(category);
+  }
+
+  /// Bybit 특정 카테고리 심볼만 조회
+  Future<List<Instrument>> getBybitInstrumentsByCategory(String category) async {
+    final instruments = await _storageService.loadInstruments();
+    return instruments.where((instrument) => 
+        instrument.exchange == 'bybit' && instrument.category == category).toList();
+  }
+
+  /// Bybit Spot 심볼만 조회
+  Future<List<Instrument>> getBybitSpotInstruments() async {
+    return await getBybitInstrumentsByCategory('spot');
+  }
+
+  /// Bybit Linear 심볼만 조회
+  Future<List<Instrument>> getBybitLinearInstruments() async {
+    return await getBybitInstrumentsByCategory('linear');
+  }
+
+  /// Bybit Inverse 심볼만 조회
+  Future<List<Instrument>> getBybitInverseInstruments() async {
+    return await getBybitInstrumentsByCategory('inverse');
+  }
+
   /// 데이터 새로고침 (API 재조회 후 저장)
   Future<List<Instrument>> refreshInstruments() async {
     return await fetchAndSaveInstruments();

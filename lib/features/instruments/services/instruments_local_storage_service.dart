@@ -38,17 +38,34 @@ class InstrumentsLocalStorageService {
       // 기존 데이터 삭제 (전체 동기화 시)
       await box.clear();
       
+      // 카테고리별 통계
+      final categoryStats = <String, int>{};
+      
       // 각 심볼을 개별 키-값으로 저장
       for (final instrument in instruments) {
         final key = _generateSymbolKey(instrument);
         await box.put(key, instrument);
+        
+        // 카테고리 통계 업데이트
+        final category = instrument.category ?? 'unknown';
+        categoryStats[category] = (categoryStats[category] ?? 0) + 1;
       }
       
       // 마지막 업데이트 시간 저장 (settings Box에)
       final settingsBox = await _getSettingsBox();
       await settingsBox.put(_lastUpdateKey, DateTime.now().toIso8601String());
       
-      debugPrint('통합 심볼 정보 개별 저장 완료: ${instruments.length}개 항목');
+      debugPrint('💾 통합 심볼 정보 저장 완료: ${instruments.length}개 항목');
+      debugPrint('📊 카테고리별 저장 통계: $categoryStats');
+      
+      // 몇 개 샘플의 category 정보 확인
+      if (instruments.isNotEmpty) {
+        final samples = instruments.take(5);
+        debugPrint('🔍 저장된 샘플 데이터 category 확인:');
+        for (final sample in samples) {
+          debugPrint('   ${sample.symbol} (${sample.exchange}): category=${sample.category}');
+        }
+      }
     } catch (e) {
       throw Exception('통합 심볼 정보 저장 중 오류 발생: $e');
     }
@@ -223,6 +240,29 @@ class InstrumentsLocalStorageService {
       }).toList();
     } catch (e) {
       debugPrint('심볼 검색 중 오류 발생: $e');
+      return [];
+    }
+  }
+
+  /// 특정 카테고리의 심볼만 필터링하여 조회
+  Future<List<Instrument>> loadInstrumentsByCategory(String category) async {
+    try {
+      final allInstruments = await loadInstruments();
+      return allInstruments.where((instrument) => instrument.category == category).toList();
+    } catch (e) {
+      debugPrint('카테고리별 심볼 정보 필터링 중 오류 발생: $e');
+      return [];
+    }
+  }
+
+  /// 특정 거래소와 카테고리의 심볼만 필터링하여 조회
+  Future<List<Instrument>> loadInstrumentsByExchangeAndCategory(String exchange, String category) async {
+    try {
+      final allInstruments = await loadInstruments();
+      return allInstruments.where((instrument) => 
+          instrument.exchange == exchange && instrument.category == category).toList();
+    } catch (e) {
+      debugPrint('거래소&카테고리별 심볼 정보 필터링 중 오류 발생: $e');
       return [];
     }
   }

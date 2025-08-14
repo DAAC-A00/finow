@@ -23,6 +23,8 @@ void main() async {
   Hive.registerAdapter(InstrumentAdapter());
   Hive.registerAdapter(InstrumentPriceFilterAdapter());
   Hive.registerAdapter(InstrumentLotSizeFilterAdapter());
+  Hive.registerAdapter(InstrumentLeverageFilterAdapter());
+  Hive.registerAdapter(InstrumentRiskParametersAdapter());
   Hive.registerAdapter(ApiKeyDataAdapter());
   Hive.registerAdapter(ApiKeyStatusAdapter());
 

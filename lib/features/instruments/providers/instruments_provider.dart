@@ -100,3 +100,33 @@ final bithumbInstrumentsProvider = FutureProvider<List<Instrument>>((ref) async 
   final repository = ref.watch(instrumentsRepositoryProvider);
   return await repository.getBithumbInstruments();
 });
+
+/// 카테고리별 심볼 조회 프로바이더
+final instrumentsByCategoryProvider = FutureProvider.family<List<Instrument>, String>((ref, category) async {
+  final repository = ref.watch(instrumentsRepositoryProvider);
+  return await repository.getInstrumentsByCategory(category);
+});
+
+/// Bybit 카테고리별 심볼 조회 프로바이더
+final bybitInstrumentsByCategoryProvider = FutureProvider.family<List<Instrument>, String>((ref, category) async {
+  final repository = ref.watch(instrumentsRepositoryProvider);
+  return await repository.getBybitInstrumentsByCategory(category);
+});
+
+/// Bybit Spot 심볼만 조회하는 프로바이더
+final bybitSpotInstrumentsProvider = FutureProvider<List<Instrument>>((ref) async {
+  final repository = ref.watch(instrumentsRepositoryProvider);
+  return await repository.getBybitSpotInstruments();
+});
+
+/// Bybit Linear 심볼만 조회하는 프로바이더
+final bybitLinearInstrumentsProvider = FutureProvider<List<Instrument>>((ref) async {
+  final repository = ref.watch(instrumentsRepositoryProvider);
+  return await repository.getBybitLinearInstruments();
+});
+
+/// Bybit Inverse 심볼만 조회하는 프로바이더
+final bybitInverseInstrumentsProvider = FutureProvider<List<Instrument>>((ref) async {
+  final repository = ref.watch(instrumentsRepositoryProvider);
+  return await repository.getBybitInverseInstruments();
+});

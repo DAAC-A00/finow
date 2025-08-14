@@ -1,4 +1,5 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
+import 'package:finow/features/instruments/models/instrument.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -11,10 +12,12 @@ class LocalStorageService {
   Future<Map<String, Map>> getAllBoxes() async {
     final settingsBox = Hive.box('settings');
     final exchangeRatesBox = Hive.box<ExchangeRate>('exchangeRates');
+    final instrumentsBox = Hive.box<Instrument>('instruments');
 
     return {
       'settings': settingsBox.toMap(),
       'exchangeRates': exchangeRatesBox.toMap(),
+      'instruments': instrumentsBox.toMap(),
     };
   }
 
@@ -23,6 +26,8 @@ class LocalStorageService {
     dynamic box;
     if (boxName == 'exchangeRates') {
       box = Hive.box<ExchangeRate>(boxName);
+    } else if (boxName == 'instruments') {
+      box = Hive.box<Instrument>(boxName);
     } else {
       box = Hive.box(boxName);
     }
@@ -34,6 +39,8 @@ class LocalStorageService {
     dynamic box;
     if (boxName == 'exchangeRates') {
       box = Hive.box<ExchangeRate>(boxName);
+    } else if (boxName == 'instruments') {
+      box = Hive.box<Instrument>(boxName);
     } else {
       box = Hive.box(boxName);
     }
@@ -45,6 +52,8 @@ class LocalStorageService {
     dynamic box;
     if (boxName == 'exchangeRates') {
       box = Hive.box<ExchangeRate>(boxName);
+    } else if (boxName == 'instruments') {
+      box = Hive.box<Instrument>(boxName);
     } else {
       box = Hive.box(boxName);
     }
@@ -55,6 +64,7 @@ class LocalStorageService {
   Future<int> getTotalStorageUsage() async {
     final settingsBox = Hive.box('settings');
     final exchangeRatesBox = Hive.box<ExchangeRate>('exchangeRates');
+    final instrumentsBox = Hive.box<Instrument>('instruments');
 
     // 각 Box의 사용량을 바이트 단위로 추정 (실제와 다를 수 있음)
     int totalSize = 0;
@@ -62,6 +72,9 @@ class LocalStorageService {
       totalSize += key.toString().length + value.toString().length;
     });
     exchangeRatesBox.toMap().forEach((key, value) {
+      totalSize += key.toString().length + value.toJson().toString().length;
+    });
+    instrumentsBox.toMap().forEach((key, value) {
       totalSize += key.toString().length + value.toJson().toString().length;
     });
 
