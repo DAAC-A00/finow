@@ -168,9 +168,9 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 title: const Text('Local Storage Viewer'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.list_alt),
-            tooltip: 'Box 목록 보기',
-            onPressed: () => _showBoxListBottomSheet(context, ref),
+            icon: const Icon(Icons.info_outline),
+            tooltip: 'Local Storage Viewer Information',
+            onPressed: () => _showInfoBottomSheet(context),
           ),
         ],
       ),
@@ -803,6 +803,94 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
   void _filterByBox(WidgetRef ref, String boxName) {
     // 검색어에 Box 이름을 설정하여 필터링 효과
     ref.read(searchQueryProvider.notifier).state = boxName;
+  }
+
+  void _showInfoBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.3,
+        maxChildSize: 0.9,
+        expand: false,
+        builder: (context, scrollController) => Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Handle bar
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 16),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.3).round()),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              Text(
+                'Local Storage Viewer Information',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "This screen allows you to view and manage data stored in the application's local storage (Hive boxes).",
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Key features:',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildInfoPoint('Search: Filter data by key or value.'),
+                      _buildInfoPoint('Storage Usage: Monitor the total storage used by Hive boxes.'),
+                      _buildInfoPoint('Box-specific views: View data for different categories (Settings, Exchange Rates, Instruments, API Keys).'),
+                      _buildInfoPoint('Data Management: Edit or delete individual entries, or clear all data within a specific box.'),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoPoint(String text) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('• ', style: Theme.of(context).textTheme.bodyLarge),
+          Expanded(
+            child: Text(
+              text,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   // 각 Box의 데이터를 개별적으로 표시하는 메서드
