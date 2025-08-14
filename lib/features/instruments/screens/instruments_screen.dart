@@ -45,19 +45,32 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
     
     return Scaffold(
       appBar: AppBar(
+        leading: const BackButton(),
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
         elevation: 0,
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: colorScheme.primary,
-          unselectedLabelColor: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
-          indicatorColor: colorScheme.primary,
-          tabs: const [
-            Tab(text: 'All', icon: Icon(Icons.list)),
-            Tab(text: 'Bybit', icon: Icon(Icons.currency_bitcoin)),
-            Tab(text: 'Bithumb', icon: Icon(Icons.account_balance)),
-          ],
+        title: TextField(
+          controller: _searchController,
+          onChanged: (value) {
+            setState(() {
+              _searchQuery = value;
+            });
+          },
+          decoration: InputDecoration(
+            hintText: 'Search by symbol, coin name...',
+            border: InputBorder.none,
+            suffixIcon: _searchQuery.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      _searchController.clear();
+                      setState(() {
+                        _searchQuery = '';
+                      });
+                    },
+                  )
+                : null,
+          ),
         ),
         actions: [
           IconButton(
@@ -104,7 +117,17 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
       ),
       body: Column(
         children: [
-          _buildSearchBar(colorScheme),
+          TabBar(
+            controller: _tabController,
+            labelColor: colorScheme.primary,
+            unselectedLabelColor: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
+            indicatorColor: colorScheme.primary,
+            tabs: const [
+              Tab(text: 'All', icon: Icon(Icons.list)),
+              Tab(text: 'Bybit', icon: Icon(Icons.currency_bitcoin)),
+              Tab(text: 'Bithumb', icon: Icon(Icons.account_balance)),
+            ],
+          ),
           _buildFilterChips(colorScheme),
           Expanded(
             child: TabBarView(
@@ -127,56 +150,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
     );
   }
 
-  Widget _buildSearchBar(ColorScheme colorScheme) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        border: Border(
-          bottom: BorderSide(
-            color: colorScheme.outline.withAlpha((255 * 0.2).round()),
-          ),
-        ),
-      ),
-      child: TextField(
-        controller: _searchController,
-        decoration: InputDecoration(
-          hintText: 'Search by symbol, coin name...',
-          prefixIcon: Icon(Icons.search, color: colorScheme.onSurface.withAlpha((255 * 0.6).round())),
-          suffixIcon: _searchQuery.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: () {
-                    _searchController.clear();
-                    setState(() {
-                      _searchQuery = '';
-                    });
-                  },
-                )
-              : null,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: colorScheme.outline),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: colorScheme.outline.withAlpha((255 * 0.5).round())),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: colorScheme.primary),
-          ),
-          filled: true,
-          fillColor: colorScheme.surface,
-        ),
-        onChanged: (value) {
-          setState(() {
-            _searchQuery = value;
-          });
-        },
-      ),
-    );
-  }
+  
 
   Widget _buildFilterChips(ColorScheme colorScheme) {
     return Container(
@@ -595,7 +569,6 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Instruments'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

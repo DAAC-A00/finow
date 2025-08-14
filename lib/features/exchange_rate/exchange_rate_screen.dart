@@ -101,9 +101,18 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
           onChanged: (value) {
             ref.read(searchQueryProvider.notifier).state = value;
           },
-          decoration: const InputDecoration(
+          decoration: InputDecoration(
             hintText: 'Search by currency code (e.g., KRW, JPY)',
             border: InputBorder.none,
+            suffixIcon: searchQuery.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.clear),
+                    onPressed: () {
+                      ref.read(searchQueryProvider.notifier).state = '';
+                      _controller.clear();
+                    },
+                  )
+                : null,
           ),
         ),
         actions: [
