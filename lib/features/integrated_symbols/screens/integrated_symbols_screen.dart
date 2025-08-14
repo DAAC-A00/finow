@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/integrated_instrument.dart';
 import '../providers/integrated_symbols_provider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:finow/features/integrated_symbols/screens/instrument_details_screen.dart';
 
-/// 통합 심볼 정보 조회 화면
+/// Integrated Symbol Information Screen
 class IntegratedSymbolsScreen extends ConsumerStatefulWidget {
   const IntegratedSymbolsScreen({super.key});
 
@@ -23,7 +25,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     super.initState();
     _tabController = TabController(length: 3, vsync: this);
     
-    // 화면 진입 시 저장된 데이터 로드
+    // Load stored data on screen entry
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(integratedSymbolsProvider.notifier).loadStoredInstruments();
     });
@@ -43,7 +45,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('통합 심볼 정보'),
+        title: const Text('Integrated Symbols'),
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
         elevation: 0,
@@ -53,7 +55,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
           unselectedLabelColor: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
           indicatorColor: colorScheme.primary,
           tabs: const [
-            Tab(text: '전체', icon: Icon(Icons.list)),
+            Tab(text: 'All', icon: Icon(Icons.list)),
             Tab(text: 'Bybit', icon: Icon(Icons.currency_bitcoin)),
             Tab(text: 'Bithumb', icon: Icon(Icons.account_balance)),
           ],
@@ -62,7 +64,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () => _refreshData(),
-            tooltip: '데이터 새로고침',
+            tooltip: 'Refresh Data',
           ),
           PopupMenuButton<String>(
             icon: const Icon(Icons.more_vert),
@@ -83,7 +85,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
                   children: [
                     Icon(Icons.delete_outline),
                     SizedBox(width: 8),
-                    Text('저장된 데이터 삭제'),
+                    Text('Clear Stored Data'),
                   ],
                 ),
               ),
@@ -93,7 +95,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
                   children: [
                     Icon(Icons.info_outline),
                     SizedBox(width: 8),
-                    Text('정보'),
+                    Text('Info'),
                   ],
                 ),
               ),
@@ -140,7 +142,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
       child: TextField(
         controller: _searchController,
         decoration: InputDecoration(
-          hintText: '심볼, 코인명으로 검색...',
+          hintText: 'Search by symbol, coin name...',
           prefixIcon: Icon(Icons.search, color: colorScheme.onSurface.withAlpha((255 * 0.6).round())),
           suffixIcon: _searchQuery.isNotEmpty
               ? IconButton(
@@ -183,7 +185,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
       child: Row(
         children: [
           Text(
-            '상태 필터:',
+            'Status Filter:',
             style: TextStyle(
               fontWeight: FontWeight.w500,
               color: colorScheme.onSurface,
@@ -195,11 +197,11 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  _buildFilterChip('전체', 'all', colorScheme),
+                  _buildFilterChip('All', 'all', colorScheme),
                   const SizedBox(width: 8),
-                  _buildFilterChip('거래중', 'Trading', colorScheme),
+                  _buildFilterChip('Trading', 'Trading', colorScheme),
                   const SizedBox(width: 8),
-                  _buildFilterChip('경고', 'Warning', colorScheme),
+                  _buildFilterChip('Warning', 'Warning', colorScheme),
                 ],
               ),
             ),
@@ -264,7 +266,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
               children: [
                 CircularProgressIndicator(),
                 SizedBox(height: 16),
-                Text('심볼 정보를 불러오는 중...'),
+                Text('Loading symbol information...'),
               ],
             ),
           ),
@@ -277,12 +279,12 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
   List<IntegratedInstrument> _filterInstruments(List<IntegratedInstrument> instruments, String exchange) {
     var filtered = instruments;
     
-    // 거래소 필터링
+    // Exchange filtering
     if (exchange != 'all') {
       filtered = filtered.where((instrument) => instrument.exchange == exchange).toList();
     }
     
-    // 검색어 필터링
+    // Search query filtering
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
       filtered = filtered.where((instrument) {
@@ -294,7 +296,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
       }).toList();
     }
     
-    // 상태 필터링
+    // Status filtering
     if (_selectedExchange == 'Trading') {
       filtered = filtered.where((instrument) => instrument.status == 'Trading').toList();
     } else if (_selectedExchange == 'Warning') {
@@ -434,7 +436,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        '경고',
+        'Warning',
         style: const TextStyle(
           fontSize: 12,
           color: Colors.red,
@@ -459,14 +461,14 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
           ),
           const SizedBox(height: 16),
           Text(
-            '심볼 정보가 없습니다',
+            'No symbol information available',
             style: theme.textTheme.titleMedium?.copyWith(
               color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            '새로고침 버튼을 눌러 데이터를 불러오세요',
+            'Press the refresh button to load data',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: colorScheme.onSurface.withAlpha((255 * 0.5).round()),
             ),
@@ -475,7 +477,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
           ElevatedButton.icon(
             onPressed: () => _refreshData(),
             icon: const Icon(Icons.refresh),
-            label: const Text('데이터 불러오기'),
+            label: const Text('Load Data'),
           ),
         ],
       ),
@@ -499,7 +501,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
             ),
             const SizedBox(height: 16),
             Text(
-              '오류가 발생했습니다',
+              'An error occurred',
               style: theme.textTheme.titleMedium?.copyWith(
                 color: colorScheme.error,
               ),
@@ -516,7 +518,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
             ElevatedButton.icon(
               onPressed: () => _refreshData(),
               icon: const Icon(Icons.refresh),
-              label: const Text('다시 시도'),
+              label: const Text('Retry'),
             ),
           ],
         ),
@@ -530,7 +532,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('데이터를 성공적으로 업데이트했습니다'),
+            content: Text('Data updated successfully'),
             backgroundColor: Colors.green,
           ),
         );
@@ -539,7 +541,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('데이터 업데이트 중 오류가 발생했습니다: $e'),
+            content: Text('Error updating data: $e'),
             backgroundColor: Colors.red,
           ),
         );
@@ -551,16 +553,16 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('데이터 삭제'),
-        content: const Text('저장된 모든 심볼 정보를 삭제하시겠습니까?'),
+        title: const Text('Delete Data'),
+        content: const Text('Are you sure you want to delete all stored symbol information?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('취소'),
+            child: const Text('Cancel'),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('삭제'),
+            child: const Text('Delete'),
           ),
         ],
       ),
@@ -572,7 +574,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('저장된 데이터를 삭제했습니다'),
+              content: Text('Stored data has been deleted'),
               backgroundColor: Colors.green,
             ),
           );
@@ -581,7 +583,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('데이터 삭제 중 오류가 발생했습니다: $e'),
+              content: Text('Error deleting data: $e'),
               backgroundColor: Colors.red,
             ),
           );
@@ -594,24 +596,24 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('통합 심볼 정보'),
+        title: const Text('Integrated Symbols'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('• Bybit과 Bithumb의 심볼 정보를 통합하여 제공합니다'),
+            Text('• Provides integrated symbol information from Bybit and Bithumb'),
             SizedBox(height: 8),
-            Text('• 데이터는 로컬 스토리지에 저장되어 오프라인에서도 조회 가능합니다'),
+            Text('• Data is stored in local storage and can be viewed offline'),
             SizedBox(height: 8),
-            Text('• 새로고침을 통해 최신 데이터로 업데이트할 수 있습니다'),
+            Text('• You can update to the latest data by refreshing'),
             SizedBox(height: 8),
-            Text('• 검색 및 필터링 기능을 제공합니다'),
+            Text('• Provides search and filtering functions'),
           ],
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const Text('확인'),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -619,46 +621,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
   }
 
   void _showInstrumentDetails(IntegratedInstrument instrument) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(instrument.symbol),
-        content: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildDetailRow('거래소', instrument.exchange.toUpperCase()),
-              _buildDetailRow('기본 코인', instrument.baseCoin),
-              _buildDetailRow('견적 코인', instrument.quoteCoin),
-              _buildDetailRow('상태', instrument.status),
-              if (instrument.koreanName != null)
-                _buildDetailRow('한국어명', instrument.koreanName!),
-              if (instrument.englishName != null)
-                _buildDetailRow('영어명', instrument.englishName!),
-              if (instrument.marketWarning != null)
-                _buildDetailRow('경고', instrument.marketWarning!),
-              if (instrument.priceFilter != null)
-                _buildDetailRow('틱 사이즈', instrument.priceFilter!.tickSize),
-              if (instrument.lotSizeFilter != null) ...[
-                _buildDetailRow('최소 주문량', instrument.lotSizeFilter!.minOrderQty),
-                _buildDetailRow('최대 주문량', instrument.lotSizeFilter!.maxOrderQty),
-                _buildDetailRow('최소 주문금액', instrument.lotSizeFilter!.minOrderAmt),
-                _buildDetailRow('최대 주문금액', instrument.lotSizeFilter!.maxOrderAmt),
-              ],
-              _buildDetailRow('업데이트 시간', 
-                  '${instrument.lastUpdated.year}-${instrument.lastUpdated.month.toString().padLeft(2, '0')}-${instrument.lastUpdated.day.toString().padLeft(2, '0')} ${instrument.lastUpdated.hour.toString().padLeft(2, '0')}:${instrument.lastUpdated.minute.toString().padLeft(2, '0')}'),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text('닫기'),
-          ),
-        ],
-      ),
-    );
+    context.push('/integrated_symbols/details', extra: instrument);
   }
 
   Widget _buildDetailRow(String label, String value) {
