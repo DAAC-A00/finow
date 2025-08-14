@@ -57,14 +57,6 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
           const Divider(),
-          SwitchListTile(
-            title: const ScaledText('Admin Mode'),
-            value: isAdminMode,
-            onChanged: (bool value) {
-              ref.read(adminModeProvider.notifier).setAdminMode(value);
-            },
-          ),
-          const Divider(),
           const ListTile(
             title: ScaledText('Font Size Settings', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
@@ -78,6 +70,14 @@ class SettingsScreen extends ConsumerWidget {
               }
             },
           )),
+          const Divider(),
+          SwitchListTile(
+            title: const ScaledText('Admin Mode'),
+            value: isAdminMode,
+            onChanged: (bool value) {
+              ref.read(adminModeProvider.notifier).setAdminMode(value);
+            },
+          ),
         ],
       ),
     );

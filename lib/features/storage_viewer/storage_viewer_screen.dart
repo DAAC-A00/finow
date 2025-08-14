@@ -165,25 +165,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
-        title: TextField(
-          controller: _controller,
-          onChanged: (value) {
-            ref.read(searchQueryProvider.notifier).state = value;
-          },
-          decoration: InputDecoration(
-            hintText: 'Search local storage...',
-            border: InputBorder.none,
-            suffixIcon: searchQuery.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      ref.read(searchQueryProvider.notifier).state = '';
-                      _controller.clear();
-                    },
-                  )
-                : null,
-          ),
-        ),
+                title: const Text('Local Storage Viewer'),
         actions: [
           IconButton(
             icon: const Icon(Icons.list_alt),
@@ -194,6 +176,28 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _controller,
+              onChanged: (value) {
+                ref.read(searchQueryProvider.notifier).state = value;
+              },
+              decoration: InputDecoration(
+                hintText: 'Search local storage...',
+                border: const OutlineInputBorder(),
+                suffixIcon: searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          ref.read(searchQueryProvider.notifier).state = '';
+                          _controller.clear();
+                        },
+                      )
+                    : null,
+              ),
+            ),
+          ),
           asyncUsage.when(
             loading: () => const LinearProgressIndicator(),
             error: (err, stack) => Padding(

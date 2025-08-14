@@ -59,29 +59,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
         elevation: 0,
-        title: TextField(
-          controller: _searchController,
-          onChanged: (value) {
-            setState(() {
-              _searchQuery = value;
-            });
-          },
-          decoration: InputDecoration(
-            hintText: 'Search by symbol, coin name...',
-            border: InputBorder.none,
-            suffixIcon: _searchQuery.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      _searchController.clear();
-                      setState(() {
-                        _searchQuery = '';
-                      });
-                    },
-                  )
-                : null,
-          ),
-        ),
+        title: const Text('Instruments'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -127,6 +105,32 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: 'Search by symbol, coin name...',
+                border: const OutlineInputBorder(),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {
+                            _searchQuery = '';
+                          });
+                        },
+                      )
+                    : null,
+              ),
+            ),
+          ),
           TabBar(
             controller: _tabController,
             labelColor: colorScheme.primary,
