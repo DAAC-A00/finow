@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/integrated_instrument.dart';
-import '../providers/integrated_symbols_provider.dart';
+import '../models/instrument.dart';
+import '../providers/instruments_provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:finow/features/integrated_symbols/screens/instrument_details_screen.dart';
+import 'package:finow/features/instruments/screens/instrument_details_screen.dart';
 
-/// Integrated Symbol Information Screen
-class IntegratedSymbolsScreen extends ConsumerStatefulWidget {
-  const IntegratedSymbolsScreen({super.key});
+/// Instrument Information Screen
+class InstrumentsScreen extends ConsumerStatefulWidget {
+  const InstrumentsScreen({super.key});
 
   @override
-  ConsumerState<IntegratedSymbolsScreen> createState() => _IntegratedSymbolsScreenState();
+  ConsumerState<InstrumentsScreen> createState() => _InstrumentsScreenState();
 }
 
-class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScreen>
+class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
@@ -27,7 +27,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     
     // Load stored data on screen entry
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(integratedSymbolsProvider.notifier).loadStoredInstruments();
+      ref.read(instrumentsProvider.notifier).loadStoredInstruments();
     });
   }
 
@@ -45,7 +45,6 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Integrated Symbols'),
         backgroundColor: colorScheme.surface,
         foregroundColor: colorScheme.onSurface,
         elevation: 0,
@@ -238,7 +237,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
   Widget _buildInstrumentsList(String exchange) {
     return Consumer(
       builder: (context, ref, child) {
-        final symbolsState = ref.watch(integratedSymbolsProvider);
+        final symbolsState = ref.watch(instrumentsProvider);
         
         return symbolsState.when(
           data: (instruments) {
@@ -276,7 +275,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     );
   }
 
-  List<IntegratedInstrument> _filterInstruments(List<IntegratedInstrument> instruments, String exchange) {
+  List<Instrument> _filterInstruments(List<Instrument> instruments, String exchange) {
     var filtered = instruments;
     
     // Exchange filtering
@@ -308,7 +307,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     return filtered;
   }
 
-  Widget _buildInstrumentCard(IntegratedInstrument instrument) {
+  Widget _buildInstrumentCard(Instrument instrument) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     
@@ -528,7 +527,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
 
   Future<void> _refreshData() async {
     try {
-      await ref.read(integratedSymbolsProvider.notifier).fetchAndSaveInstruments();
+      await ref.read(instrumentsProvider.notifier).fetchAndSaveInstruments();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -570,7 +569,7 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
 
     if (confirmed == true) {
       try {
-        await ref.read(integratedSymbolsProvider.notifier).clearStoredData();
+        await ref.read(instrumentsProvider.notifier).clearStoredData();
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -596,12 +595,12 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Integrated Symbols'),
+        title: const Text('Instruments'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('• Provides integrated symbol information from Bybit and Bithumb'),
+            Text('• Provides instrument information from Bybit and Bithumb'),
             SizedBox(height: 8),
             Text('• Data is stored in local storage and can be viewed offline'),
             SizedBox(height: 8),
@@ -620,8 +619,8 @@ class _IntegratedSymbolsScreenState extends ConsumerState<IntegratedSymbolsScree
     );
   }
 
-  void _showInstrumentDetails(IntegratedInstrument instrument) {
-    context.push('/integrated_symbols/details', extra: instrument);
+  void _showInstrumentDetails(Instrument instrument) {
+    context.push('/instruments/details', extra: instrument);
   }
 
   Widget _buildDetailRow(String label, String value) {

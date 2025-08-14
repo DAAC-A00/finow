@@ -1,10 +1,10 @@
 import 'package:hive/hive.dart';
 
-part 'integrated_instrument.g.dart';
+part 'instrument.g.dart';
 
 /// 통합 거래소 심볼 정보 모델
 @HiveType(typeId: 2)
-class IntegratedInstrument {
+class Instrument {
   @HiveField(0)
   final String symbol;
   
@@ -38,7 +38,7 @@ class IntegratedInstrument {
   @HiveField(10)
   final DateTime lastUpdated;
 
-  const IntegratedInstrument({
+  const Instrument({
     required this.symbol,
     required this.baseCoin,
     required this.quoteCoin,
@@ -52,8 +52,8 @@ class IntegratedInstrument {
     required this.lastUpdated,
   });
 
-  factory IntegratedInstrument.fromBybit(Map<String, dynamic> json) {
-    return IntegratedInstrument(
+  factory Instrument.fromBybit(Map<String, dynamic> json) {
+    return Instrument(
       symbol: json['symbol'] ?? '',
       baseCoin: json['baseCoin'] ?? '',
       quoteCoin: json['quoteCoin'] ?? '',
@@ -69,11 +69,11 @@ class IntegratedInstrument {
     );
   }
 
-  factory IntegratedInstrument.fromBithumb(Map<String, dynamic> json) {
+  factory Instrument.fromBithumb(Map<String, dynamic> json) {
     final market = json['market'] ?? '';
     final parts = market.split('-');
     
-    return IntegratedInstrument(
+    return Instrument(
       symbol: market,
       baseCoin: parts.length > 1 ? parts[1] : '',
       quoteCoin: parts.isNotEmpty ? parts[0] : '',
@@ -102,8 +102,8 @@ class IntegratedInstrument {
     };
   }
 
-  factory IntegratedInstrument.fromJson(Map<String, dynamic> json) {
-    return IntegratedInstrument(
+  factory Instrument.fromJson(Map<String, dynamic> json) {
+    return Instrument(
       symbol: json['symbol'] ?? '',
       baseCoin: json['baseCoin'] ?? '',
       quoteCoin: json['quoteCoin'] ?? '',
@@ -124,7 +124,7 @@ class IntegratedInstrument {
 
   @override
   String toString() {
-    return 'IntegratedInstrument(symbol: $symbol, exchange: $exchange, status: $status)';
+    return 'Instrument(symbol: $symbol, exchange: $exchange, status: $status)';
   }
 }
 

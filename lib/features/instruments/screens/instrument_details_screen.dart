@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/integrated_instrument.dart';
+import '../models/instrument.dart';
 
 class InstrumentDetailsScreen extends StatelessWidget {
-  final IntegratedInstrument instrument;
+  final Instrument instrument;
 
   const InstrumentDetailsScreen({super.key, required this.instrument});
 

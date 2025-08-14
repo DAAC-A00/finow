@@ -1,9 +1,10 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_detail_screen.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_screen.dart';
-import 'package:finow/features/integrated_symbols/screens/integrated_symbols_screen.dart';
-import 'package:finow/features/integrated_symbols/screens/instrument_details_screen.dart';
-import 'package:finow/features/integrated_symbols/models/integrated_instrument.dart';
+import 'package:finow/features/instruments/models/instrument.dart';
+import 'package:finow/features/instruments/screens/instrument_details_screen.dart';
+import 'package:finow/features/instruments/screens/instruments_screen.dart';
+
 import 'package:finow/features/menu/menu_screen.dart';
 import 'package:finow/features/settings/api_settings_screen.dart';
 import 'package:finow/features/settings/settings_screen.dart';
@@ -60,9 +61,9 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       ),
       // New route for InstrumentDetailsScreen
       GoRoute(
-        path: '/integrated_symbols/details',
+        path: '/instruments/details',
         pageBuilder: (context, state) {
-          final instrument = state.extra as IntegratedInstrument;
+          final instrument = state.extra as Instrument;
           return NoTransitionPage(
             child: InstrumentDetailsScreen(instrument: instrument),
           );
@@ -85,8 +86,8 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
         case '/exchange':
           screen = const ExchangeRateScreen();
           break;
-        case '/integrated_symbols':
-          screen = const IntegratedSymbolsScreen();
+        case '/instruments':
+          screen = const InstrumentsScreen();
           break;
         case '/settings':
           screen = const SettingsScreen();

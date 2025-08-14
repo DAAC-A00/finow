@@ -1,18 +1,18 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/integrated_instrument.dart';
-import '../repositories/integrated_symbols_repository.dart';
+import '../models/instrument.dart';
+import '../repositories/instruments_repository.dart';
 
 /// 통합 심볼 상태 관리 프로바이더
-final integratedSymbolsProvider = StateNotifierProvider<IntegratedSymbolsNotifier, AsyncValue<List<IntegratedInstrument>>>((ref) {
-  final repository = ref.watch(integratedSymbolsRepositoryProvider);
-  return IntegratedSymbolsNotifier(repository);
+final instrumentsProvider = StateNotifierProvider<InstrumentsNotifier, AsyncValue<List<Instrument>>>((ref) {
+  final repository = ref.watch(instrumentsRepositoryProvider);
+  return InstrumentsNotifier(repository);
 });
 
 /// 통합 심볼 상태 관리 노티파이어
-class IntegratedSymbolsNotifier extends StateNotifier<AsyncValue<List<IntegratedInstrument>>> {
-  final IntegratedSymbolsRepository _repository;
+class InstrumentsNotifier extends StateNotifier<AsyncValue<List<Instrument>>> {
+  final InstrumentsRepository _repository;
 
-  IntegratedSymbolsNotifier(this._repository) : super(const AsyncValue.loading()) {
+  InstrumentsNotifier(this._repository) : super(const AsyncValue.loading()) {
     // 초기화 시 저장된 데이터 로드
     loadStoredInstruments();
   }
@@ -79,24 +79,24 @@ class IntegratedSymbolsNotifier extends StateNotifier<AsyncValue<List<Integrated
 
 /// 마지막 업데이트 시간 프로바이더
 final lastUpdateTimeProvider = FutureProvider<DateTime?>((ref) async {
-  final repository = ref.watch(integratedSymbolsRepositoryProvider);
+  final repository = ref.watch(instrumentsRepositoryProvider);
   return await repository.getLastUpdateTime();
 });
 
 /// 저장된 데이터 존재 여부 프로바이더
 final hasStoredDataProvider = FutureProvider<bool>((ref) async {
-  final repository = ref.watch(integratedSymbolsRepositoryProvider);
+  final repository = ref.watch(instrumentsRepositoryProvider);
   return await repository.hasStoredData();
 });
 
 /// Bybit 심볼만 조회하는 프로바이더
-final bybitInstrumentsProvider = FutureProvider<List<IntegratedInstrument>>((ref) async {
-  final repository = ref.watch(integratedSymbolsRepositoryProvider);
+final bybitInstrumentsProvider = FutureProvider<List<Instrument>>((ref) async {
+  final repository = ref.watch(instrumentsRepositoryProvider);
   return await repository.getBybitInstruments();
 });
 
 /// Bithumb 심볼만 조회하는 프로바이더
-final bithumbInstrumentsProvider = FutureProvider<List<IntegratedInstrument>>((ref) async {
-  final repository = ref.watch(integratedSymbolsRepositoryProvider);
+final bithumbInstrumentsProvider = FutureProvider<List<Instrument>>((ref) async {
+  final repository = ref.watch(instrumentsRepositoryProvider);
   return await repository.getBithumbInstruments();
 });

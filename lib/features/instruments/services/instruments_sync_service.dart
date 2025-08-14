@@ -1,22 +1,22 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/integrated_instrument.dart';
-import '../repositories/integrated_symbols_repository.dart';
+import '../models/instrument.dart';
+import '../repositories/instruments_repository.dart';
 import 'package:flutter/foundation.dart';
 
 /// 통합 심볼 정보 동기화 서비스 프로바이더
-final integratedSymbolsSyncServiceProvider = Provider<IntegratedSymbolsSyncService>((ref) {
-  final repository = ref.watch(integratedSymbolsRepositoryProvider);
-  return IntegratedSymbolsSyncService(repository);
+final instrumentsSyncServiceProvider = Provider<InstrumentsSyncService>((ref) {
+  final repository = ref.watch(instrumentsRepositoryProvider);
+  return InstrumentsSyncService(repository);
 });
 
 /// 통합 심볼 정보 동기화 서비스
-class IntegratedSymbolsSyncService {
-  final IntegratedSymbolsRepository _repository;
+class InstrumentsSyncService {
+  final InstrumentsRepository _repository;
   Timer? _warningUpdateTimer;
   bool _isInitialSyncCompleted = false;
 
-  IntegratedSymbolsSyncService(this._repository);
+  InstrumentsSyncService(this._repository);
 
   /// 앱 시작 시 초기 동기화 (한 번만 실행)
   Future<void> performInitialSync() async {
@@ -104,7 +104,7 @@ class IntegratedSymbolsSyncService {
           .fetchBithumbInstruments();
 
       // 경고 정보만 업데이트된 심볼들로 교체
-      final updatedInstruments = <IntegratedInstrument>[];
+      final updatedInstruments = <Instrument>[];
       
       for (final currentInstrument in currentInstruments) {
         if (currentInstrument.exchange == 'bithumb') {
@@ -121,7 +121,7 @@ class IntegratedSymbolsSyncService {
       }
 
       // 업데이트된 정보 저장
-      await _repository.storageService.saveIntegratedInstruments(updatedInstruments);
+      await _repository.storageService.saveInstruments(updatedInstruments);
       
       debugPrint('Bithumb 경고 정보 업데이트 완료 (${bithumbInstruments.length}개 심볼)');
       

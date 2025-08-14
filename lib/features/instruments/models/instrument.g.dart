@@ -1,22 +1,22 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'integrated_instrument.dart';
+part of 'instrument.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class IntegratedInstrumentAdapter extends TypeAdapter<IntegratedInstrument> {
+class InstrumentAdapter extends TypeAdapter<Instrument> {
   @override
   final int typeId = 2;
 
   @override
-  IntegratedInstrument read(BinaryReader reader) {
+  Instrument read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return IntegratedInstrument(
+    return Instrument(
       symbol: fields[0] as String,
       baseCoin: fields[1] as String,
       quoteCoin: fields[2] as String,
@@ -32,7 +32,7 @@ class IntegratedInstrumentAdapter extends TypeAdapter<IntegratedInstrument> {
   }
 
   @override
-  void write(BinaryWriter writer, IntegratedInstrument obj) {
+  void write(BinaryWriter writer, Instrument obj) {
     writer
       ..writeByte(11)
       ..writeByte(0)
@@ -65,7 +65,7 @@ class IntegratedInstrumentAdapter extends TypeAdapter<IntegratedInstrument> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is IntegratedInstrumentAdapter &&
+      other is InstrumentAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

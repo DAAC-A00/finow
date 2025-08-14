@@ -1,26 +1,26 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/integrated_instrument.dart';
+import '../models/instrument.dart';
 import '../services/exchange_api_service.dart';
-import '../services/integrated_symbols_local_storage_service.dart';
+import '../services/instruments_local_storage_service.dart';
 
 /// 통합 심볼 관리 레포지토리 프로바이더
-final integratedSymbolsRepositoryProvider = Provider<IntegratedSymbolsRepository>((ref) {
-  return IntegratedSymbolsRepository();
+final instrumentsRepositoryProvider = Provider<InstrumentsRepository>((ref) {
+  return InstrumentsRepository();
 });
 
 /// 통합 심볼 관리 레포지토리
-class IntegratedSymbolsRepository {
+class InstrumentsRepository {
   final ExchangeApiService _apiService = ExchangeApiService();
-  final IntegratedSymbolsLocalStorageService _storageService = IntegratedSymbolsLocalStorageService();
+  final InstrumentsLocalStorageService _storageService = InstrumentsLocalStorageService();
 
   /// API에서 최신 심볼 정보를 가져와 로컬 스토리지에 저장
-  Future<List<IntegratedInstrument>> fetchAndSaveInstruments() async {
+  Future<List<Instrument>> fetchAndSaveInstruments() async {
     try {
       // API에서 최신 데이터 조회
       final instruments = await _apiService.fetchAllInstruments();
       
       // 로컬 스토리지에 저장
-      await _storageService.saveIntegratedInstruments(instruments);
+      await _storageService.saveInstruments(instruments);
       
       return instruments;
     } catch (e) {
@@ -29,17 +29,17 @@ class IntegratedSymbolsRepository {
   }
 
   /// 로컬 스토리지에서 심볼 정보 불러오기
-  Future<List<IntegratedInstrument>> getStoredInstruments() async {
-    return await _storageService.loadIntegratedInstruments();
+  Future<List<Instrument>> getStoredInstruments() async {
+    return await _storageService.loadInstruments();
   }
 
   /// 특정 거래소의 심볼만 조회
-  Future<List<IntegratedInstrument>> getInstrumentsByExchange(String exchange) async {
+  Future<List<Instrument>> getInstrumentsByExchange(String exchange) async {
     return await _storageService.loadInstrumentsByExchange(exchange);
   }
 
   /// 심볼 검색
-  Future<List<IntegratedInstrument>> searchInstruments(String query) async {
+  Future<List<Instrument>> searchInstruments(String query) async {
     return await _storageService.searchInstruments(query);
   }
 
@@ -59,17 +59,17 @@ class IntegratedSymbolsRepository {
   }
 
   /// Bybit 심볼만 조회
-  Future<List<IntegratedInstrument>> getBybitInstruments() async {
+  Future<List<Instrument>> getBybitInstruments() async {
     return await getInstrumentsByExchange('bybit');
   }
 
   /// Bithumb 심볼만 조회
-  Future<List<IntegratedInstrument>> getBithumbInstruments() async {
+  Future<List<Instrument>> getBithumbInstruments() async {
     return await getInstrumentsByExchange('bithumb');
   }
 
   /// 데이터 새로고침 (API 재조회 후 저장)
-  Future<List<IntegratedInstrument>> refreshInstruments() async {
+  Future<List<Instrument>> refreshInstruments() async {
     return await fetchAndSaveInstruments();
   }
 
@@ -77,5 +77,5 @@ class IntegratedSymbolsRepository {
   ExchangeApiService get apiService => _apiService;
 
   /// 스토리지 서비스에 접근 (동기화 서비스에서 사용)
-  IntegratedSymbolsLocalStorageService get storageService => _storageService;
+  InstrumentsLocalStorageService get storageService => _storageService;
 }

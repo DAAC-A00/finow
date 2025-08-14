@@ -1,20 +1,20 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import '../models/integrated_instrument.dart';
+import '../models/instrument.dart';
 import 'package:flutter/foundation.dart';
 
 /// 통합 심볼 정보 로컬 스토리지 관리 서비스 (Hive 기반)
 /// 각 심볼을 개별 키-값으로 저장하여 Storage Viewer에서 개별 관리 가능
-class IntegratedSymbolsLocalStorageService {
-  static const String _boxName = 'integrated_instruments';
+class InstrumentsLocalStorageService {
+  static const String _boxName = 'instruments';
   static const String _settingsBoxName = 'settings';
-  static const String _lastUpdateKey = 'integrated_symbols_last_update';
+  static const String _lastUpdateKey = 'instruments_last_update';
 
   /// Hive Box 가져오기 (없으면 생성)
-  Future<Box<IntegratedInstrument>> _getBox() async {
+  Future<Box<Instrument>> _getBox() async {
     if (!Hive.isBoxOpen(_boxName)) {
-      return await Hive.openBox<IntegratedInstrument>(_boxName);
+      return await Hive.openBox<Instrument>(_boxName);
     }
-    return Hive.box<IntegratedInstrument>(_boxName);
+    return Hive.box<Instrument>(_boxName);
   }
 
   /// Settings Box 가져오기 (마지막 업데이트 시간 저장용)
@@ -26,12 +26,12 @@ class IntegratedSymbolsLocalStorageService {
   }
 
   /// 심볼 키 생성 (예: "BTCUSDT_bybit", "BTCKRW_bithumb")
-  String _generateSymbolKey(IntegratedInstrument instrument) {
+  String _generateSymbolKey(Instrument instrument) {
     return '${instrument.symbol}_${instrument.exchange}';
   }
 
   /// 통합 심볼 정보를 Hive Box에 개별 저장
-  Future<void> saveIntegratedInstruments(List<IntegratedInstrument> instruments) async {
+  Future<void> saveInstruments(List<Instrument> instruments) async {
     try {
       final box = await _getBox();
       
@@ -55,12 +55,12 @@ class IntegratedSymbolsLocalStorageService {
   }
 
   /// Hive Box에서 통합 심볼 정보 개별 불러오기
-  Future<List<IntegratedInstrument>> loadIntegratedInstruments() async {
+  Future<List<Instrument>> loadInstruments() async {
     try {
       final box = await _getBox();
-      final List<IntegratedInstrument> instruments = [];
+      final List<Instrument> instruments = [];
       
-      // 모든 키를 순회하며 IntegratedInstrument 객체만 수집
+      // 모든 키를 순회하며 Instrument 객체만 수집
       for (final key in box.keys) {
         if (key != _lastUpdateKey) { // 마지막 업데이트 시간 키는 제외
           final instrument = box.get(key);
@@ -99,7 +99,7 @@ class IntegratedSymbolsLocalStorageService {
   Future<bool> hasStoredData() async {
     try {
       final box = await _getBox();
-      // IntegratedInstrument Box에 데이터가 있는지 확인
+      // Instrument Box에 데이터가 있는지 확인
       return box.isNotEmpty;
     } catch (e) {
       return false;
@@ -118,7 +118,7 @@ class IntegratedSymbolsLocalStorageService {
   }
 
   /// 개별 심볼 저장
-  Future<void> saveInstrument(IntegratedInstrument instrument) async {
+  Future<void> saveInstrument(Instrument instrument) async {
     try {
       final box = await _getBox();
       final key = _generateSymbolKey(instrument);
@@ -142,7 +142,7 @@ class IntegratedSymbolsLocalStorageService {
   }
 
   /// 개별 심볼 조회
-  Future<IntegratedInstrument?> getInstrument(String symbol, String exchange) async {
+  Future<Instrument?> getInstrument(String symbol, String exchange) async {
     try {
       final box = await _getBox();
       final key = '${symbol}_$exchange';
@@ -165,12 +165,12 @@ class IntegratedSymbolsLocalStorageService {
   }
 
   /// 필터링된 통합 심볼 정보 가져오기 (개별 저장 구조 기반)
-  Future<List<IntegratedInstrument>> getFilteredInstruments({
+  Future<List<Instrument>> getFilteredInstruments({
     String? exchange,
     String? status,
     String? searchQuery,
   }) async {
-    final allInstruments = await loadIntegratedInstruments();
+    final allInstruments = await loadInstruments();
     
     return allInstruments.where((instrument) {
       // 거래소 필터
@@ -198,9 +198,9 @@ class IntegratedSymbolsLocalStorageService {
   }
 
   /// 특정 거래소의 심볼만 필터링하여 조회
-  Future<List<IntegratedInstrument>> loadInstrumentsByExchange(String exchange) async {
+  Future<List<Instrument>> loadInstrumentsByExchange(String exchange) async {
     try {
-      final allInstruments = await loadIntegratedInstruments();
+      final allInstruments = await loadInstruments();
       return allInstruments.where((instrument) => instrument.exchange == exchange).toList();
     } catch (e) {
       debugPrint('거래소별 심볼 정보 필터링 중 오류 발생: $e');
@@ -209,9 +209,9 @@ class IntegratedSymbolsLocalStorageService {
   }
 
   /// 심볼 검색
-  Future<List<IntegratedInstrument>> searchInstruments(String query) async {
+  Future<List<Instrument>> searchInstruments(String query) async {
     try {
-      final allInstruments = await loadIntegratedInstruments();
+      final allInstruments = await loadInstruments();
       final lowerQuery = query.toLowerCase();
       
       return allInstruments.where((instrument) {

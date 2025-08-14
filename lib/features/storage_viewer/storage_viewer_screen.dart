@@ -1,5 +1,5 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
-import 'package:finow/features/integrated_symbols/models/integrated_instrument.dart';
+import 'package:finow/features/instruments/models/instrument.dart';
 import 'package:finow/features/storage_viewer/local_storage_service.dart';
 import 'package:finow/features/settings/api_key_service.dart';
 import 'package:finow/features/storage_viewer/api_keys_storage_view.dart';
@@ -71,12 +71,12 @@ final symbolsItemCountProvider = Provider<AsyncValue<int>>((ref) {
   final searchQuery = ref.watch(searchQueryProvider);
 
   return allData.whenData((data) {
-    final boxData = data['integrated_instruments'] ?? {};
+    final boxData = data['instruments'] ?? {};
     final filteredData = boxData.entries.where((entry) {
       final key = entry.key.toString().toLowerCase();
       final value = entry.value;
       final query = searchQuery.toLowerCase();
-      if (value is IntegratedInstrument) {
+      if (value is Instrument) {
         final symbolString = value.symbol.toLowerCase();
         final baseCoinString = value.baseCoin.toLowerCase();
         final quoteCoinString = value.quoteCoin.toLowerCase();
@@ -263,7 +263,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
               children: [
                 _buildBoxContent('settings', localStorageService, searchQuery),
                 _buildBoxContent('exchangeRates', localStorageService, searchQuery),
-                _buildBoxContent('integrated_instruments', localStorageService, searchQuery),
+                _buildBoxContent('instruments', localStorageService, searchQuery),
                 const ApiKeysStorageView(),
               ],
             ),
@@ -621,7 +621,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
       final commonBoxNames = [
         'exchangeRates',
         'settings',
-        'integrated_instruments',
+        'instruments',
         'ui_scale',
         'font_size',
         'theme_mode',
@@ -854,7 +854,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 sourceString.contains(query);
           }
           
-          if (value is IntegratedInstrument) {
+          if (value is Instrument) {
             final symbolString = value.symbol.toLowerCase();
             final baseCoinString = value.baseCoin.toLowerCase();
             final quoteCoinString = value.quoteCoin.toLowerCase();
@@ -956,7 +956,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                               ),
                             ],
                           );
-                        } else if (value is IntegratedInstrument) {
+                        } else if (value is Instrument) {
                           subtitleWidget = Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -1082,9 +1082,9 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
             data[key.toString()] = value;
           }
         }
-      } else if (boxName == 'integrated_instruments') {
-        // IntegratedInstrument 타입의 Box 처리
-        final box = Hive.box<IntegratedInstrument>(boxName);
+      } else if (boxName == 'instruments') {
+        // Instrument 타입의 Box 처리
+        final box = Hive.box<Instrument>(boxName);
         for (var key in box.keys) {
           final value = box.get(key);
           if (value != null) {

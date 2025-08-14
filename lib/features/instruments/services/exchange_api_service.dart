@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../models/integrated_instrument.dart';
+import '../models/instrument.dart';
 
 /// 거래소 API 서비스 (Dio 기반)
 class ExchangeApiService {
@@ -19,7 +19,7 @@ class ExchangeApiService {
   }
 
   /// Bybit 스팟 거래 심볼 정보 조회
-  Future<List<IntegratedInstrument>> fetchBybitInstruments() async {
+  Future<List<Instrument>> fetchBybitInstruments() async {
     try {
       final response = await _dio.get(
         '$_bybitBaseUrl/market/instruments-info',
@@ -33,7 +33,7 @@ class ExchangeApiService {
           final List<dynamic> instruments = data['result']['list'] ?? [];
           
           return instruments
-              .map((item) => IntegratedInstrument.fromBybit(item))
+              .map((item) => Instrument.fromBybit(item))
               .toList();
         } else {
           throw Exception('Bybit API 오류: ${data['retMsg']}');
@@ -50,7 +50,7 @@ class ExchangeApiService {
   }
 
   /// Bithumb 마켓 정보 조회
-  Future<List<IntegratedInstrument>> fetchBithumbInstruments() async {
+  Future<List<Instrument>> fetchBithumbInstruments() async {
     try {
       final response = await _dio.get(
         '$_bithumbBaseUrl/market/all',
@@ -64,12 +64,12 @@ class ExchangeApiService {
         final warningData = await _fetchBithumbWarnings();
         
         return data.map((item) {
-          final instrument = IntegratedInstrument.fromBithumb(item);
+          final instrument = Instrument.fromBithumb(item);
           
           // 경고 정보가 있다면 추가
           final warning = warningData[instrument.symbol];
           if (warning != null) {
-            return IntegratedInstrument(
+            return Instrument(
               symbol: instrument.symbol,
               baseCoin: instrument.baseCoin,
               quoteCoin: instrument.quoteCoin,
@@ -125,14 +125,14 @@ class ExchangeApiService {
   }
 
   /// 모든 거래소의 통합 심볼 정보 조회
-  Future<List<IntegratedInstrument>> fetchAllInstruments() async {
+  Future<List<Instrument>> fetchAllInstruments() async {
     try {
       final futures = await Future.wait([
         fetchBybitInstruments(),
         fetchBithumbInstruments(),
       ]);
 
-      final List<IntegratedInstrument> allInstruments = [];
+      final List<Instrument> allInstruments = [];
       
       for (final instruments in futures) {
         allInstruments.addAll(instruments);

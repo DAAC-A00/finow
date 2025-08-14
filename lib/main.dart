@@ -1,8 +1,8 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_update_service.dart';
 import 'package:finow/features/exchange_rate/exconvert_periodic_update_service.dart';
-import 'package:finow/features/integrated_symbols/services/integrated_symbols_sync_service.dart';
-import 'package:finow/features/integrated_symbols/models/integrated_instrument.dart';
+import 'package:finow/features/instruments/services/instruments_sync_service.dart';
+import 'package:finow/features/instruments/models/instrument.dart';
 import 'package:finow/features/settings/models/api_key_data.dart';
 import 'package:finow/features/settings/api_key_status.dart';
 import 'package:finow/routing/app_router.dart';
@@ -20,7 +20,7 @@ void main() async {
 
   // Hive 어댑터 등록
   Hive.registerAdapter(ExchangeRateAdapter());
-  Hive.registerAdapter(IntegratedInstrumentAdapter());
+  Hive.registerAdapter(InstrumentAdapter());
   Hive.registerAdapter(InstrumentPriceFilterAdapter());
   Hive.registerAdapter(InstrumentLotSizeFilterAdapter());
   Hive.registerAdapter(ApiKeyDataAdapter());
@@ -29,7 +29,7 @@ void main() async {
   // 사용할 Box들 미리 열기
   await Hive.openBox('settings');
   await Hive.openBox<ExchangeRate>('exchangeRates');
-  await Hive.openBox<IntegratedInstrument>('integrated_instruments');
+  await Hive.openBox<Instrument>('instruments');
   await Hive.openBox<ApiKeyData>('api_keys');
 
   runApp(const ProviderScope(child: _AppInitializer()));
@@ -57,7 +57,7 @@ class __AppInitializerState extends ConsumerState<_AppInitializer> {
     ref.read(exConvertPeriodicUpdateServiceProvider).startPeriodicUpdates();
     
     // 3. 통합 심볼 정보 초기 동기화 및 Bithumb 경고 정보 주기적 업데이트 시작
-    await ref.read(integratedSymbolsSyncServiceProvider).performInitialSync();
+    await ref.read(instrumentsSyncServiceProvider).performInitialSync();
   }
 
   @override
