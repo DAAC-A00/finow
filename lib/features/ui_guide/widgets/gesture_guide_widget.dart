@@ -1,6 +1,6 @@
 // 이 위젯은 다양한 제스처(스와이프, 드래그, 롱프레스 등) 구현 예시를 제공하여, 프로젝트 내 제스처 UX의 기준점 역할을 합니다.
 // 실제 서비스 적용 전, 제스처 동작의 방향성과 일관성을 확인하는 용도로 사용하세요.
-import 'package:finow/ui_scale_provider.dart';
+
 import 'package:flutter/material.dart';
 
 class GestureGuideWidget extends StatefulWidget {
@@ -64,7 +64,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
                   color: colorScheme.error,
                   alignment: Alignment.centerRight,
                   padding: const EdgeInsets.only(right: 16),
-                  child: ScaledIcon(
+                  child: Icon(
                     Icons.delete,
                     color: colorScheme.onError,
                   ),
@@ -74,7 +74,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
                     item,
                     style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
                   ),
-                  leading: ScaledIcon(
+                  leading: Icon(
                     Icons.drag_handle,
                     color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
                   ),
@@ -98,7 +98,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
               feedback: CircleAvatar(
                 backgroundColor: colorScheme.primary,
                 radius: 25,
-                child: ScaledIcon(
+                child: Icon(
                   Icons.touch_app,
                   color: colorScheme.onPrimary,
                 ),
@@ -106,7 +106,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
               childWhenDragging: CircleAvatar(
                 backgroundColor: colorScheme.surfaceContainerHighest,
                 radius: 25,
-                child: ScaledIcon(
+                child: Icon(
                   Icons.touch_app,
                   color: colorScheme.onSurfaceVariant.withAlpha((255 * 0.5).round()),
                 ),
@@ -114,7 +114,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
               child: CircleAvatar(
                 backgroundColor: colorScheme.primary,
                 radius: 25,
-                child: ScaledIcon(
+                child: Icon(
                   Icons.touch_app,
                   color: colorScheme.onPrimary,
                 ),
@@ -141,10 +141,9 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
                       width: isHovering ? 3 : 1,
                     ),
                   ),
-                  child: ScaledIcon(
+                  child: Icon(
                     Icons.track_changes,
                     color: colorScheme.onSurface,
-                    size: 40,
                   ),
                 );
               },
@@ -177,7 +176,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  ScaledIcon(
+                  Icon(
                     Icons.touch_app,
                     color: colorScheme.onPrimaryContainer,
                   ),

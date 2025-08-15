@@ -1,6 +1,6 @@
 // 이 위젯은 다크모드/라이트모드 테마 시스템의 구현 예시와 가이드라인을 제공합니다.
 // 프로젝트 내 모든 UI 컴포넌트가 다크모드/라이트모드를 완벽히 지원하도록 하는 기준점 역할을 합니다.
-import 'package:finow/ui_scale_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:finow/theme_provider.dart';
@@ -163,7 +163,7 @@ class ThemeGuideWidget extends ConsumerWidget {
             onPressed: () => ref
                 .read(themeModeNotifierProvider.notifier)
                 .setThemeMode(ThemeMode.light),
-            icon: const ScaledIcon(Icons.light_mode),
+            icon: const Icon(Icons.light_mode),
             label: const Text('라이트 모드'),
             style: ElevatedButton.styleFrom(
               backgroundColor: currentMode == ThemeMode.light
@@ -181,7 +181,7 @@ class ThemeGuideWidget extends ConsumerWidget {
             onPressed: () => ref
                 .read(themeModeNotifierProvider.notifier)
                 .setThemeMode(ThemeMode.dark),
-            icon: const ScaledIcon(Icons.dark_mode),
+            icon: const Icon(Icons.dark_mode),
             label: const Text('다크 모드'),
             style: ElevatedButton.styleFrom(
               backgroundColor: currentMode == ThemeMode.dark
@@ -199,7 +199,7 @@ class ThemeGuideWidget extends ConsumerWidget {
             onPressed: () => ref
                 .read(themeModeNotifierProvider.notifier)
                 .setThemeMode(ThemeMode.system),
-            icon: const ScaledIcon(Icons.settings),
+            icon: const Icon(Icons.settings),
             label: const Text('시스템'),
             style: ElevatedButton.styleFrom(
               backgroundColor: currentMode == ThemeMode.system
@@ -331,14 +331,14 @@ class ThemeGuideWidget extends ConsumerWidget {
         // 카드와 리스트 타일 예시
         Card(
           child: ListTile(
-            leading: ScaledIcon(Icons.palette, color: colorScheme.primary),
+            leading: Icon(Icons.palette, color: colorScheme.primary),
             title: Text('테마 적용 예시',
                 style: textTheme.titleMedium
                     ?.copyWith(color: colorScheme.onSurface)),
             subtitle: Text('다크/라이트 모드 호환',
                 style: textTheme.bodyMedium
                     ?.copyWith(color: colorScheme.onSurface.withAlpha((255 * 0.7).round()))),
-            trailing: ScaledIcon(Icons.arrow_forward_ios,
+            trailing: Icon(Icons.arrow_forward_ios,
                 color: colorScheme.onSurface.withAlpha((255 * 0.5).round())),
           ),
         ),
@@ -351,7 +351,7 @@ class ThemeGuideWidget extends ConsumerWidget {
             labelText: '입력 필드 예시',
             hintText: '텍스트를 입력하세요',
             border: const OutlineInputBorder(),
-            prefixIcon: ScaledIcon(Icons.edit, color: colorScheme.primary),
+            prefixIcon: Icon(Icons.edit, color: colorScheme.primary),
           ),
         ),
       ],

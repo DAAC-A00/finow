@@ -1,3 +1,4 @@
+
 import 'package:finow/ui_scale_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -74,9 +75,8 @@ class ShowGuideWidget extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
       color: colorScheme.surface,
       child: ListTile(
-        leading: ScaledIcon(
+        leading: Icon(
           icon,
-          size: 40,
           color: colorScheme.primary,
         ),
         title: Text(
@@ -92,7 +92,7 @@ class ShowGuideWidget extends StatelessWidget {
             color: colorScheme.onSurface.withAlpha((255 * 0.7).round()),
           ),
         ),
-        trailing: ScaledIcon(
+        trailing: Icon(
           Icons.play_arrow,
           color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
         ),
@@ -118,7 +118,7 @@ class ShowGuideWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ScaledIcon(
+              Icon(
                 Icons.drag_handle,
                 color: colorScheme.onSurface.withAlpha((255 * 0.4).round()),
               ),
@@ -191,7 +191,7 @@ class ShowGuideWidget extends StatelessWidget {
           ),
         ),
         backgroundColor: colorScheme.surface,
-        leading: ScaledIcon(
+        leading: Icon(
           Icons.info_outline,
           color: colorScheme.primary,
         ),

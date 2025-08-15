@@ -2,7 +2,7 @@ import 'package:finow/features/settings/api_key_service.dart';
 import 'package:finow/features/settings/api_key_validation_service.dart';
 import 'package:finow/features/settings/models/api_key_data.dart';
 import 'package:finow/features/settings/api_key_status.dart';
-import 'package:finow/ui_scale_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -52,7 +52,7 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                       ),
                     ),
                     IconButton(
-                      icon: const ScaledIcon(Icons.clear_all, size: 24),
+                      icon: const Icon(Icons.clear_all),
                       onPressed: () async {
                         final bool? confirm = await showDialog<bool>(
                           context: context,
@@ -103,9 +103,8 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ScaledIcon(
+                        Icon(
                           Icons.inbox_outlined,
-                          size: 48,
                           color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
                         ),
                         const SizedBox(height: 16),
@@ -143,7 +142,7 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                               child: Row(
                                 children: [
                                   const Text('└ '),
-                                  ScaledIcon(status.icon, color: status.color, size: 16),
+                                  Icon(status.icon, color: status.color),
                                   const SizedBox(width: 4),
                                   Text(status.label, style: TextStyle(color: status.color, fontStyle: FontStyle.italic)),
                                   const SizedBox(width: 8),
@@ -170,17 +169,17 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: const ScaledIcon(Icons.sync),
+                              icon: const Icon(Icons.sync),
                               onPressed: () {
                                 ref.read(apiKeyStatusProvider.notifier).validateKey(apiKey.key);
                               },
                             ),
                             IconButton(
-                              icon: const ScaledIcon(Icons.edit),
+                              icon: const Icon(Icons.edit),
                               onPressed: () => _showApiKeyDialog(context, existingKey: apiKey, index: index),
                             ),
                             IconButton(
-                              icon: const ScaledIcon(Icons.delete),
+                              icon: const Icon(Icons.delete),
                               onPressed: () => _confirmDelete(context, apiKey),
                             ),
                           ],
@@ -198,7 +197,7 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showApiKeyDialog(context),
-        child: const ScaledIcon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }

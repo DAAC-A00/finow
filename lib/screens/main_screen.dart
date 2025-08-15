@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:finow/features/menu/menu_repository.dart';
-import 'package:finow/ui_scale_provider.dart';
+
 
 class MainScreen extends ConsumerWidget {
   final Widget child;
@@ -21,7 +21,7 @@ class MainScreen extends ConsumerWidget {
       bottomNavigationBar: BottomNavigationBar(
         items: bottomNavMenus.map((menu) {
           return BottomNavigationBarItem(
-            icon: ScaledIcon(menu.icon),
+            icon: Icon(menu.icon),
             label: menu.name,
           );
         }).toList(),

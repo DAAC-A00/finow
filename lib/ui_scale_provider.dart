@@ -48,39 +48,6 @@ class UIScaleConsumer extends ConsumerWidget {
   }
 }
 
-
-/// 스케일된 아이콘 위젯
-class ScaledIcon extends StatelessWidget {
-  const ScaledIcon(
-    this.icon, {
-    super.key,
-    this.size,
-    this.color,
-    this.semanticLabel,
-    this.textDirection,
-  });
-
-  final IconData icon;
-  final double? size;
-  final Color? color;
-  final String? semanticLabel;
-  final TextDirection? textDirection;
-
-  @override
-  Widget build(BuildContext context) {
-    final scale = UIScaleProvider.of(context).scale;
-    final scaledSize = (size ?? 24.0) * scale;
-
-    return Icon(
-      icon,
-      size: scaledSize,
-      color: color,
-      semanticLabel: semanticLabel,
-      textDirection: textDirection,
-    );
-  }
-}
-
 /// 스케일된 이미지 위젯
 class ScaledImage extends StatelessWidget {
   const ScaledImage({

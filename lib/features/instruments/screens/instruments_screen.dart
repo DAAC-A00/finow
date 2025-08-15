@@ -4,7 +4,7 @@ import '../models/instrument.dart';
 import '../providers/instruments_provider.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:finow/ui_scale_provider.dart';
+
 
 /// Instrument Information Screen
 class InstrumentsScreen extends ConsumerStatefulWidget {
@@ -63,12 +63,12 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
         title: const Text('Instruments'),
         actions: [
           IconButton(
-            icon: const ScaledIcon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             onPressed: () => _refreshData(),
             tooltip: 'Refresh Data',
           ),
           PopupMenuButton<String>(
-            icon: const ScaledIcon(Icons.more_vert),
+            icon: const Icon(Icons.more_vert),
             onSelected: (value) {
               switch (value) {
                 case 'clear':
@@ -84,7 +84,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                 value: 'clear',
                 child: Row(
                   children: [
-                    ScaledIcon(Icons.delete_outline),
+                    Icon(Icons.delete_outline),
                     SizedBox(width: 8),
                     Text('Clear Stored Data'),
                   ],
@@ -94,7 +94,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                 value: 'info',
                 child: Row(
                   children: [
-                    ScaledIcon(Icons.info_outline),
+                    Icon(Icons.info_outline),
                     SizedBox(width: 8),
                     Text('Info'),
                   ],
@@ -120,7 +120,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                 border: const OutlineInputBorder(),
                 suffixIcon: _searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const ScaledIcon(Icons.clear),
+                        icon: const Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
                           setState(() {
@@ -142,7 +142,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ScaledIcon(Icons.list),
+                    Icon(Icons.list),
                     Text('All'),
                   ],
                 ),
@@ -151,7 +151,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ScaledIcon(Icons.currency_bitcoin),
+                    Icon(Icons.currency_bitcoin),
                     Text('Bybit'),
                   ],
                 ),
@@ -160,7 +160,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ScaledIcon(Icons.account_balance),
+                    Icon(Icons.account_balance),
                     Text('Bithumb'),
                   ],
                 ),
@@ -187,7 +187,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
         onPressed: () => _refreshData(),
         backgroundColor: colorScheme.primary,
         foregroundColor: colorScheme.onPrimary,
-        child: const ScaledIcon(Icons.cloud_download),
+        child: const Icon(Icons.cloud_download),
       ),
     );
   }
@@ -584,9 +584,8 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ScaledIcon(
+          Icon(
             Icons.inbox_outlined,
-            size: 64,
             color: colorScheme.onSurface.withAlpha((255 * 0.4).round()),
           ),
           const SizedBox(height: 16),
@@ -606,7 +605,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: () => _refreshData(),
-            icon: const ScaledIcon(Icons.refresh),
+            icon: const Icon(Icons.refresh),
             label: const Text('Load Data'),
           ),
         ],
@@ -624,9 +623,8 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            ScaledIcon(
+            Icon(
               Icons.error_outline,
-              size: 64,
               color: colorScheme.error,
             ),
             const SizedBox(height: 16),
@@ -647,7 +645,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
             const SizedBox(height: 24),
             ElevatedButton.icon(
               onPressed: () => _refreshData(),
-              icon: const ScaledIcon(Icons.refresh),
+              icon: const Icon(Icons.refresh),
               label: const Text('Retry'),
             ),
           ],

@@ -1,7 +1,7 @@
 // 설계 원칙과 코딩 표준의 실제 적용 예시를 제공합니다.
 // docs에서 제거된 설계 원칙 관련 코드 예시들을 실제로 동작하는 형태로 구현합니다.
 import 'package:flutter/material.dart';
-import 'package:finow/ui_scale_provider.dart';
+
 
 class PrinciplesGuideWidget extends StatefulWidget {
   const PrinciplesGuideWidget({super.key});
@@ -65,9 +65,8 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                ScaledIcon(
+                Icon(
                   Icons.rule,
-                  size: 48,
                   color: colorScheme.primary,
                 ),
                 const SizedBox(height: 8),
@@ -115,7 +114,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
               children: [
                 Row(
                   children: [
-                    ScaledIcon(
+                    Icon(
                       Icons.check_circle,
                       color: colorScheme.primary,
                     ),
@@ -281,7 +280,7 @@ ExchangeRateRepository → 데이터만''',
                     ),
                   ),
                   if (onTap != null)
-                    ScaledIcon(
+                    Icon(
                       isExpanded ? Icons.expand_less : Icons.expand_more,
                       color: color,
                     ),
@@ -322,7 +321,7 @@ ExchangeRateRepository → 데이터만''',
             ),
             TextButton.icon(
               onPressed: () => setState(() => _showConstExample = !_showConstExample),
-              icon: ScaledIcon(_showConstExample ? Icons.visibility_off : Icons.visibility, size: 16),
+              icon: Icon(_showConstExample ? Icons.visibility_off : Icons.visibility),
               label: Text(_showConstExample ? '숨기기' : '코드 보기'),
             ),
           ],
@@ -352,7 +351,7 @@ ExchangeRateRepository → 데이터만''',
                     scrollDirection: Axis.horizontal,
                     child: Text(
                       '''const Text('정적 텍스트')
-const ScaledIcon(Icons.home)
+const Icon(Icons.home)
 const SizedBox(height: 16)''',
                       style: TextStyle(
                         fontFamily: 'monospace',
@@ -388,7 +387,7 @@ const SizedBox(height: 16)''',
                     scrollDirection: Axis.horizontal,
                     child: Text(
                       '''Text('정적 텍스트')  // const 누락
-ScaledIcon(Icons.home)     // const 누락''',
+Icon(Icons.home)     // const 누락''',
                       style: textTheme.bodySmall?.copyWith(
                         fontFamily: 'monospace',
                         color: colorScheme.onErrorContainer,
@@ -425,7 +424,7 @@ ScaledIcon(Icons.home)     // const 누락''',
           const SizedBox(height: 8),
           Row(
             children: [
-              ScaledIcon(Icons.check, color: colorScheme.secondary),
+              Icon(Icons.check, color: colorScheme.secondary),
               const SizedBox(width: 8),
               const Text('const ScaledIcon 사용'),
             ],
@@ -433,7 +432,7 @@ ScaledIcon(Icons.home)     // const 누락''',
           const SizedBox(height: 4),
           Row(
             children: [
-              ScaledIcon(Icons.text_fields, color: colorScheme.primary),
+              Icon(Icons.text_fields, color: colorScheme.primary),
               const SizedBox(width: 8),
               const Text('const Text 사용'),
             ],
@@ -441,7 +440,7 @@ ScaledIcon(Icons.home)     // const 누락''',
           const SizedBox(height: 4),
           Row(
             children: [
-              ScaledIcon(Icons.space_bar, color: colorScheme.onSurface.withAlpha(153)),
+              Icon(Icons.space_bar, color: colorScheme.onSurface.withAlpha(153)),
               const SizedBox(width: 8),
               const Text('const SizedBox 사용'),
             ],
@@ -642,7 +641,7 @@ ScaledIcon(Icons.home)     // const 누락''',
             children: [
               Row(
                 children: [
-                  ScaledIcon(Icons.error_outline, color: colorScheme.tertiary, size: 16),
+                  Icon(Icons.error_outline, color: colorScheme.tertiary),
                   const SizedBox(width: 8),
                   Text(
                     'AsyncValue.when 패턴',
@@ -689,7 +688,7 @@ ScaledIcon(Icons.home)     // const 누락''',
             children: [
               Row(
                 children: [
-                  ScaledIcon(Icons.warning, color: colorScheme.error, size: 16),
+                  Icon(Icons.warning, color: colorScheme.error),
                   const SizedBox(width: 8),
                   Text(
                     '에러 처리 원칙',

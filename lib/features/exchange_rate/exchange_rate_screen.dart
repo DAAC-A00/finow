@@ -140,7 +140,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                           const SizedBox(width: 4),
                           if (sortCriteria == SortCriteria.byCodeAsc ||
                               sortCriteria == SortCriteria.byCodeDesc)
-                            ScaledIcon(
+                            Icon(
                               sortCriteria == SortCriteria.byCodeAsc
                                   ? Icons.arrow_upward
                                   : Icons.arrow_downward,
@@ -173,7 +173,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                           const SizedBox(width: 4),
                           if (sortCriteria == SortCriteria.byPriceAsc ||
                               sortCriteria == SortCriteria.byPriceDesc)
-                            ScaledIcon(
+                            Icon(
                               sortCriteria == SortCriteria.byPriceAsc
                                   ? Icons.arrow_upward
                                   : Icons.arrow_downward,
@@ -253,10 +253,9 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
               baseHeight: 20,
             );
           } else {
-            leadingIcon = const ScaledIcon(
+            leadingIcon = const Icon(
               Icons.currency_exchange,
               color: Colors.blueAccent,
-              size: 20,
             );
           }
 

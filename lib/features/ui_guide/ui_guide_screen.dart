@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:finow/theme_provider.dart';
-import 'package:finow/ui_scale_provider.dart';
+
 
 import 'widgets/animation_guide_widget.dart';
 import 'widgets/gesture_guide_widget.dart';
@@ -30,7 +30,7 @@ class UiGuideScreen extends ConsumerWidget {
           actions: [
             // 테마 토글 버튼
             IconButton(
-              icon: ScaledIcon(
+              icon: Icon(
                 isDarkMode ? Icons.light_mode : Icons.dark_mode,
                 color: Theme.of(context).colorScheme.onSurface,
               ),

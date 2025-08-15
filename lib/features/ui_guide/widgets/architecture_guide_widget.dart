@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:finow/ui_scale_provider.dart';
+
 
 class ArchitectureGuideWidget extends StatelessWidget {
   const ArchitectureGuideWidget({super.key});
@@ -60,9 +60,8 @@ class ArchitectureGuideWidget extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Column(
               children: [
-                ScaledIcon(
+                Icon(
                   Icons.architecture,
-                  size: 48,
                   color: colorScheme.primary,
                 ),
                 const SizedBox(height: 8),
@@ -110,7 +109,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    ScaledIcon(
+                    Icon(
                       Icons.folder_open,
                       color: colorScheme.primary,
                     ),
@@ -173,9 +172,8 @@ class ArchitectureGuideWidget extends StatelessWidget {
                   ),
                   IconButton(
                     onPressed: () => _copyToClipboard(_getFolderStructureText()),
-                    icon: ScaledIcon(
+                    icon: Icon(
                       Icons.copy,
-                      size: 16,
                       color: colorScheme.onSurfaceVariant,
                     ),
                     tooltip: '복사',
@@ -288,7 +286,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () => _copyToClipboard(_getModelStructureText()),
-                  icon: const ScaledIcon(Icons.copy, size: 16),
+                  icon: const Icon(Icons.copy),
                   tooltip: '복사',
                 ),
               ],
@@ -422,7 +420,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: () => _copyToClipboard(_getRoutingStructureText()),
-                  icon: const ScaledIcon(Icons.copy, size: 16),
+                  icon: const Icon(Icons.copy),
                   tooltip: '복사',
                 ),
               ],

@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:finow/ui_scale_provider.dart';
+
 
 // 검색어를 관리하는 StateProvider
 final searchQueryProvider = StateProvider<String>((ref) => '');
@@ -168,7 +168,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 title: const Text('Local Storage Viewer'),
         actions: [
           IconButton(
-            icon: const ScaledIcon(Icons.info_outline),
+            icon: const Icon(Icons.info_outline),
             tooltip: 'Local Storage Viewer Information',
             onPressed: () => _showInfoBottomSheet(context),
           ),
@@ -188,7 +188,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 border: const OutlineInputBorder(),
                 suffixIcon: searchQuery.isNotEmpty
                     ? IconButton(
-                        icon: const ScaledIcon(Icons.clear),
+                        icon: const Icon(Icons.clear),
                         onPressed: () {
                           ref.read(searchQueryProvider.notifier).state = '';
                           _controller.clear();
@@ -237,19 +237,19 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 indicatorColor: Theme.of(context).colorScheme.primary,
                 tabs: [
                   Tab(
-                    icon: const ScaledIcon(Icons.settings),
+                    icon: const Icon(Icons.settings),
                     text: 'Settings',
                   ),
                   Tab(
-                    icon: const ScaledIcon(Icons.attach_money),
+                    icon: const Icon(Icons.attach_money),
                     text: 'Exchange Rates',
                   ),
                   Tab(
-                    icon: const ScaledIcon(Icons.currency_exchange),
+                    icon: const Icon(Icons.currency_exchange),
                     text: 'Instruments',
                   ),
                   Tab(
-                    icon: const ScaledIcon(Icons.vpn_key),
+                    icon: const Icon(Icons.vpn_key),
                     text: 'API Keys',
                   ),
                 ],
@@ -638,7 +638,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                     ),
                   ),
                   IconButton(
-                    icon: const ScaledIcon(Icons.delete_forever, size: 24),
+                    icon: const Icon(Icons.delete_forever),
                     onPressed: () => _clearBox(context, ref, localStorageService, boxName),
                     tooltip: 'Clear all data in this box',
                   ),
@@ -653,9 +653,8 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          ScaledIcon(
+                          Icon(
                             Icons.inbox_outlined,
-                            size: 48,
                             color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
                           ),
                           const SizedBox(height: 16),
@@ -780,12 +779,12 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 IconButton(
-                                  icon: const ScaledIcon(Icons.edit, size: 20),
+                                  icon: const Icon(Icons.edit),
                                   onPressed: () => _showEditDialog(
                                     context, ref, localStorageService, boxName, key, value),
                                 ),
                                 IconButton(
-                                  icon: const ScaledIcon(Icons.delete, size: 20),
+                                  icon: const Icon(Icons.delete),
                                   onPressed: () => _confirmDelete(
                                     context, ref, localStorageService, boxName, key),
                                 ),

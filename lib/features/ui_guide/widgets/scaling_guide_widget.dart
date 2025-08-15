@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:finow/ui_scale_provider.dart';
+
 import 'package:finow/font_size_provider.dart';
 
 class ScalingGuideWidget extends ConsumerWidget {
@@ -56,9 +57,8 @@ class ScalingGuideWidget extends ConsumerWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              ScaledIcon(
+              Icon(
                 Icons.zoom_in,
-                size: 48,
                 color: colorScheme.secondary,
               ),
               const SizedBox(height: 8),
@@ -97,7 +97,7 @@ class ScalingGuideWidget extends ConsumerWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              ScaledIcon(Icons.settings, color: colorScheme.primary),
+              Icon(Icons.settings, color: colorScheme.primary),
               const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -139,7 +139,7 @@ class ScalingGuideWidget extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  ScaledIcon(Icons.widgets, color: colorScheme.tertiary),
+                  Icon(Icons.widgets, color: colorScheme.tertiary),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Column(
@@ -224,31 +224,31 @@ class ScalingGuideWidget extends ConsumerWidget {
           children: [
             Column(
               children: [
-                const ScaledIcon(Icons.home, size: 16),
+                const Icon(Icons.home),
                 Text('16px', style: textTheme.labelSmall),
               ],
             ),
             Column(
               children: [
-                const ScaledIcon(Icons.search, size: 24),
+                const Icon(Icons.search),
                 Text('24px', style: textTheme.labelSmall),
               ],
             ),
             Column(
               children: [
-                const ScaledIcon(Icons.settings, size: 32),
+                const Icon(Icons.settings),
                 Text('32px', style: textTheme.labelSmall),
               ],
             ),
             Column(
               children: [
-                ScaledIcon(Icons.favorite, size: 40, color: colorScheme.error),
+                Icon(Icons.favorite, color: colorScheme.error),
                 Text('40px', style: textTheme.labelSmall),
               ],
             ),
             Column(
               children: [
-                ScaledIcon(Icons.star, size: 48, color: colorScheme.secondary),
+                Icon(Icons.star, color: colorScheme.secondary),
                 Text('48px', style: textTheme.labelSmall),
               ],
             ),
@@ -334,7 +334,7 @@ class ScalingGuideWidget extends ConsumerWidget {
           children: [
             Row(
               children: [
-                ScaledIcon(Icons.warning, color: colorScheme.error, size: 16),
+                Icon(Icons.warning, color: colorScheme.error),
                 const SizedBox(width: 8),
                 Text(
                   '❌ 스케일링 미적용 (잘못된 사용)',
@@ -353,7 +353,7 @@ class ScalingGuideWidget extends ConsumerWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                ScaledIcon(Icons.check_circle, color: colorScheme.secondary, size: 16),
+                Icon(Icons.check_circle, color: colorScheme.secondary),
                 const SizedBox(width: 8),
                 Text(
                   '✅ 스케일링 적용 (올바른 사용)',
@@ -364,7 +364,7 @@ class ScalingGuideWidget extends ConsumerWidget {
             const SizedBox(height: 8),
             Row(
               children: [
-                const ScaledIcon(Icons.home, size: 24), // ScaledIcon - 스케일링 적용됨
+                const Icon(Icons.home), // ScaledIcon - 스케일링 적용됨
                 const SizedBox(width: 16),
                 Text('ScaledIcon (반응형 크기)', style: textTheme.bodyMedium),
               ],
@@ -389,7 +389,7 @@ class ScalingGuideWidget extends ConsumerWidget {
             children: [
               Row(
                 children: [
-                  ScaledIcon(Icons.code, color: colorScheme.primary),
+                  Icon(Icons.code, color: colorScheme.primary),
                   const SizedBox(width: 8),
                   Text(
                     '구현 가이드',

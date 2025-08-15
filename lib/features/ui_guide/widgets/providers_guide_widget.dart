@@ -2,7 +2,7 @@
 // docs/GROUND_RULES.md에서 제거된 Provider 코드 예시들을 실제로 동작하는 형태로 구현합니다.
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:finow/ui_scale_provider.dart';
+
 
 // 예시용 Provider들
 final counterProvider = StateProvider<int>((ref) => 0);
@@ -113,9 +113,8 @@ class ProvidersGuideWidget extends ConsumerWidget {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            ScaledIcon(
+            Icon(
               Icons.account_tree,
-              size: 48,
               color: colorScheme.primary,
             ),
             const SizedBox(height: 8),
@@ -159,7 +158,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
           children: [
             Row(
               children: [
-                ScaledIcon(Icons.code, color: colorScheme.secondary),
+                Icon(Icons.code, color: colorScheme.secondary),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Column(
@@ -401,7 +400,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
           children: [
             Row(
               children: [
-                ScaledIcon(
+                Icon(
                   Icons.lightbulb,
                   color: colorScheme.secondary,
                 ),

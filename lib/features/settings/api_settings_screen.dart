@@ -2,7 +2,7 @@ import 'package:finow/features/settings/api_key_service.dart';
 import 'package:finow/features/settings/api_key_validation_service.dart';
 import 'package:finow/features/settings/models/api_key_data.dart';
 import 'package:finow/features/settings/api_key_status.dart';
-import 'package:finow/ui_scale_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -70,7 +70,7 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
                   title: Text(apiKeyData.key, maxLines: 1, overflow: TextOverflow.ellipsis),
                   subtitle: Row(
                     children: [
-                      ScaledIcon(status.icon, color: status.color, size: 16),
+                      Icon(status.icon, color: status.color),
                       const SizedBox(width: 4),
                       Text(status.label, style: TextStyle(color: status.color)),
                     ],
@@ -79,17 +79,17 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: const ScaledIcon(Icons.sync),
+                        icon: const Icon(Icons.sync),
                         onPressed: () {
                           ref.read(apiKeyStatusProvider.notifier).validateKey(apiKeyData.key);
                         },
                       ),
                       IconButton(
-                        icon: const ScaledIcon(Icons.edit),
+                        icon: const Icon(Icons.edit),
                         onPressed: () => _showApiKeyDialog(context, ref, existingKey: apiKeyData, index: index),
                       ),
                       IconButton(
-                        icon: const ScaledIcon(Icons.delete),
+                        icon: const Icon(Icons.delete),
                         onPressed: () {
                           ref.read(apiKeyServiceProvider).deleteApiKey(apiKeyData.key);
                         },
@@ -100,7 +100,7 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
               }),
               ListTile(
                 title: const Text('Add API Key'),
-                trailing: const ScaledIcon(Icons.add),
+                trailing: const Icon(Icons.add),
                 onTap: () => _showApiKeyDialog(context, ref),
               ),
             ],
