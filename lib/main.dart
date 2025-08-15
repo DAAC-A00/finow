@@ -25,6 +25,7 @@ void main() async {
   Hive.registerAdapter(InstrumentLotSizeFilterAdapter());
   Hive.registerAdapter(InstrumentLeverageFilterAdapter());
   Hive.registerAdapter(InstrumentRiskParametersAdapter());
+  // ticker 데이터는 실시간으로만 사용하므로 Hive 어댑터 불필요
   Hive.registerAdapter(ApiKeyDataAdapter());
   Hive.registerAdapter(ApiKeyStatusAdapter());
 
@@ -32,6 +33,7 @@ void main() async {
   await Hive.openBox('settings');
   await Hive.openBox<ExchangeRate>('exchangeRates');
   await Hive.openBox<Instrument>('instruments');
+  // ticker 데이터는 실시간으로만 사용하므로 로컬 저장 박스 불필요
   await Hive.openBox<ApiKeyData>('api_keys');
 
   runApp(const ProviderScope(child: _AppInitializer()));

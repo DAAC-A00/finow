@@ -4,6 +4,9 @@ import 'package:finow/features/exchange_rate/exchange_rate_screen.dart';
 import 'package:finow/features/instruments/models/instrument.dart';
 import 'package:finow/features/instruments/screens/instrument_details_screen.dart';
 import 'package:finow/features/instruments/screens/instruments_screen.dart';
+import 'package:finow/features/ticker/models/ticker_price_data.dart';
+import 'package:finow/features/ticker/screens/ticker_screen.dart';
+import 'package:finow/features/ticker/screens/ticker_details_screen.dart';
 
 import 'package:finow/features/menu/menu_screen.dart';
 import 'package:finow/features/settings/api_settings_screen.dart';
@@ -69,6 +72,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           );
         },
       ),
+      // New route for TickerDetailsScreen
+      GoRoute(
+        path: '/ticker/details',
+        builder: (context, state) => TickerDetailsScreen(
+          ticker: state.extra as IntegratedTickerPriceData,
+        ),
+      ),
       ...topLevelRoutes,
     ],
   );
@@ -88,6 +98,9 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
           break;
         case '/instruments':
           screen = const InstrumentsScreen();
+          break;
+        case '/ticker':
+          screen = const TickerScreen();
           break;
         case '/settings':
           screen = const SettingsScreen();
