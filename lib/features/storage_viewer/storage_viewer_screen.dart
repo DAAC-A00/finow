@@ -184,7 +184,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 ref.read(searchQueryProvider.notifier).state = value;
               },
               decoration: InputDecoration(
-                hintText: 'Search local storage...',
+                hintText: 'Search local storage...', 
                 border: const OutlineInputBorder(),
                 suffixIcon: searchQuery.isNotEmpty
                     ? IconButton(
@@ -452,10 +452,6 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
       },
     );
   }
-
-  
-
-  
 
   void _showInfoBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -771,11 +767,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                             ],
                           );
                         } else {
-                          // ignore: unnecessary_string_interpolations
-                          } else {
-                          // ignore: unnecessary_string_interpolations
                           subtitleWidget = Text(value.toString());
-                        }
                         }
                         
                         return Card(
