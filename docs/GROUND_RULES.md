@@ -45,7 +45,7 @@
 #### 1. 스케일링 시스템 (100% 준수)
 **기본 원리**: MediaQuery textScaler + UIScaleProvider 조합으로 글자 및 이미지 자동 스케일링
 
-**필수 사용**: ScaledIcon(모든 아이콘), ScaledAssetImage(모든 이미지), 일반 Text(자동 스케일링)
+**필수 사용**: Icon(모든 아이콘), ScaledAssetImage(모든 이미지), 일반 Text(자동 스케일링)
 
 👉 **구현 방법과 예시**: UI Guide의 **Scaling** 탭에서 확인하세요
 
@@ -105,7 +105,7 @@
 ### UI 컴포넌트 작업 시
 - [ ] 하드코딩된 크기/간격이 없는지 확인 (패딩, 마진 등)
 - [ ] 모든 스타일이 `Theme.of(context)`를 통해 적용되었는지 확인
-- [ ] 아이콘/이미지에 `ScaledIcon`/`ScaledAssetImage` 사용 확인
+- [ ] 아이콘/이미지에 `Icon`/`ScaledAssetImage` 사용 확인
 - [ ] `const` 생성자 사용
 - [ ] Admin Mode 체크 (개발자 도구인 경우)
 
@@ -157,8 +157,8 @@
 → **해결**: Settings에서 Admin Mode 활성화
 
 ### 3. 스케일링이 적용되지 않음
-→ **원인**: ScaledIcon 대신 일반 Icon 사용
-→ **해결**: 모든 아이콘을 ScaledIcon으로 변경
+→ **원인**: Icon 대신 일반 Icon 사용
+→ **해결**: 모든 아이콘을 Icon으로 변경
 
 ### 4. 라우팅에서 데이터 전달 안됨
 → **원인**: state.extra 타입 캐스팅 오류

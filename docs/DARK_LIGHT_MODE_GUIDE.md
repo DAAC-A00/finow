@@ -67,7 +67,7 @@ MaterialApp.router(
 3. **투명도는 withAlpha() 사용**
    ```dart
    // ✅ 올바른 방법
-   ScaledIcon(
+   Icon(
      Icons.info,
      color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.6).round()),
    )
@@ -168,24 +168,24 @@ hint: 0.4             // 힌트 텍스트
 Card(
   color: Theme.of(context).colorScheme.surface,
   child: ListTile(
-    leading: ScaledIcon(
+    leading: Icon(
       Icons.star,
       color: Theme.of(context).colorScheme.primary,
     ),
-    title: ScaledText(
+    title: Text(
       'Title',
       style: Theme.of(context).textTheme.titleMedium?.copyWith(
         color: Theme.of(context).colorScheme.onSurface,
         fontWeight: FontWeight.bold,
       ),
     ),
-    subtitle: ScaledText(
+    subtitle: Text(
       'Subtitle',
       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
         color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.7).round()),
       ),
     ),
-    trailing: ScaledIcon(
+    trailing: Icon(
       Icons.arrow_forward_ios,
       color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
     ),
@@ -200,17 +200,17 @@ Row(
   children: [
     ElevatedButton(
       onPressed: () {},
-      child: const ScaledText('Primary'),
+      child: const Text('Primary'),
     ),
     const SizedBox(width: 8),
     OutlinedButton(
       onPressed: () {},
-      child: const ScaledText('Secondary'),
+      child: const Text('Secondary'),
     ),
     const SizedBox(width: 8),
     TextButton(
       onPressed: () {},
-      child: const ScaledText('Tertiary'),
+      child: const Text('Tertiary'),
     ),
   ],
 )
@@ -224,7 +224,7 @@ TextField(
     labelText: 'Label',
     hintText: 'Hint text',
     border: const OutlineInputBorder(),
-    prefixIcon: ScaledIcon(
+    prefixIcon: Icon(
       Icons.search,
       color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.6).round()),
     ),
@@ -248,11 +248,11 @@ showModalBottomSheet(
     ),
     child: Column(
       children: [
-        ScaledIcon(
+        Icon(
           Icons.drag_handle,
           color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.4).round()),
         ),
-        ScaledText(
+        Text(
           'Bottom Sheet',
           style: Theme.of(context).textTheme.titleLarge?.copyWith(
             color: Theme.of(context).colorScheme.onSurface,
@@ -333,7 +333,7 @@ showModalBottomSheet(
 3. **아이콘이 테마와 어울리지 않는 경우**
    ```dart
    // 해결책: 테마 색상 적용
-   ScaledIcon(
+   Icon(
      Icons.icon,
      color: Theme.of(context).colorScheme.primary,
    )

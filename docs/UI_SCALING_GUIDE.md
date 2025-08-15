@@ -45,26 +45,29 @@ static ThemeData getDarkTheme(double scale)
 
 **❌ 잘못된 방법:**
 ```dart
-Text('Hello World')
+// Text 위젯에 고정된 크기를 직접 지정하는 경우 (스케일링에 반응하지 않음)
+Text('Hello World', style: TextStyle(fontSize: 16))
 ```
 
 **✅ 올바른 방법:**
 ```dart
-ScaledText('Hello World')
+Text('Hello World')
 ```
 
-**참고:** ScaledText는 내부적으로 MediaQuery textScaler를 사용하므로 일반 Text와 동일하게 동작하지만, 일관성을 위해 사용을 권장합니다.
+**참고:** Flutter의 기본 Text 위젯은 MediaQuery textScaler를 사용하여 자동으로 스케일링됩니다. 특별한 경우가 아니라면 기본 Text 위젯을 사용하세요.
 
 ### 2. 아이콘 (Icon)
 
 **❌ 잘못된 방법:**
 ```dart
+// Icon 위젯에 고정된 크기를 직접 지정하는 경우 (스케일링에 반응하지 않음)
 Icon(Icons.home, size: 24)
 ```
 
 **✅ 올바른 방법:**
 ```dart
-ScaledIcon(Icons.home, size: 24)  // 24는 기본 크기, 자동으로 스케일링됨
+// Icon 위젯 사용 (기본 크기 사용, 스케일링에 반응)
+Icon(Icons.home)
 ```
 
 ### 3. 이미지 (Image)
@@ -87,107 +90,6 @@ ScaledImage(
   image: NetworkImage('https://example.com/image.png'),
   baseWidth: 40,
   baseHeight: 40,
-)
-```
-
-### 4. 컨테이너 (Container)
-
-**❌ 잘못된 방법:**
-```dart
-Container(
-  width: 100,
-  height: 50,
-  padding: EdgeInsets.all(16),
-  margin: EdgeInsets.symmetric(horizontal: 8),
-  child: child,
-)
-```
-
-**✅ 올바른 방법:**
-```dart
-ScaledContainer(
-  baseWidth: 100,
-  baseHeight: 50,
-  basePadding: EdgeInsets.all(16),
-  baseMargin: EdgeInsets.symmetric(horizontal: 8),
-  child: child,
-)
-```
-
-### 5. 패딩 (Padding)
-
-**❌ 잘못된 방법:**
-```dart
-Padding(
-  padding: EdgeInsets.all(16),
-  child: child,
-)
-```
-
-**✅ 올바른 방법:**
-```dart
-ScaledPadding.all(
-  baseValue: 16,
-  child: child,
-)
-
-// 또는
-ScaledPadding.symmetric(
-  baseVertical: 8,
-  baseHorizontal: 16,
-  child: child,
-)
-```
-
-### 6. SizedBox
-
-**❌ 잘못된 방법:**
-```dart
-SizedBox(width: 20, height: 20)
-```
-
-**✅ 올바른 방법:**
-```dart
-ScaledSizedBox(baseWidth: 20, baseHeight: 20)
-
-// 정사각형의 경우
-ScaledSizedBox.square(baseDimension: 20)
-```
-
-### 7. BorderRadius
-
-**❌ 잘못된 방법:**
-```dart
-BorderRadius.circular(8)
-```
-
-**✅ 올바른 방법:**
-```dart
-ScaledBorderRadius.circular(context, 8)
-
-// 개별 모서리 설정
-ScaledBorderRadius.only(
-  context: context,
-  topLeft: 8,
-  topRight: 8,
-)
-```
-
-### 8. EdgeInsets (헬퍼 사용)
-
-**❌ 잘못된 방법:**
-```dart
-EdgeInsets.all(16)
-EdgeInsets.symmetric(horizontal: 12, vertical: 8)
-```
-
-**✅ 올바른 방법:**
-```dart
-ScaledEdgeInsets.all(context, 16)
-ScaledEdgeInsets.symmetric(
-  context: context,
-  horizontal: 12,
-  vertical: 8,
 )
 ```
 
@@ -217,7 +119,7 @@ static ThemeData _getScaledTheme(ThemeData baseTheme, double scale) {
 ### 1. 최소/최대 크기 제한
 ```dart
 // 아이콘 크기가 너무 작거나 크지 않도록 제한
-ScaledIcon(
+Icon(
   Icons.home,
   size: math.max(16, math.min(48, 24 * scale)), // 16~48 범위로 제한
 )
@@ -225,7 +127,7 @@ ScaledIcon(
 
 ### 2. 텍스트 오버플로우 처리
 ```dart
-ScaledText(
+Text(
   'Long text that might overflow',
   overflow: TextOverflow.ellipsis,
   maxLines: 1,
@@ -237,9 +139,9 @@ ScaledText(
 // Flexible이나 Expanded 사용으로 레이아웃 깨짐 방지
 Row(
   children: [
-    ScaledIcon(Icons.star),
+    Icon(Icons.star),
     Expanded(
-      child: ScaledText('Flexible text content'),
+      child: Text('Flexible text content'),
     ),
   ],
 )
@@ -267,14 +169,9 @@ Row(
 
 새로운 UI 컴포넌트 구현 시 다음 사항을 확인하세요:
 
-- [ ] 모든 Text 위젯을 ScaledText로 교체
-- [ ] 모든 Icon 위젯을 ScaledIcon으로 교체
+- [ ] 모든 Text 위젯을 Text로 사용 (자동 스케일링)
+- [ ] 모든 Icon 위젯을 Icon으로 사용 (자동 스케일링)
 - [ ] 모든 이미지를 ScaledImage/ScaledAssetImage로 교체
-- [ ] 고정 크기 Container를 ScaledContainer로 교체
-- [ ] 고정 패딩을 ScaledPadding으로 교체
-- [ ] 고정 SizedBox를 ScaledSizedBox로 교체
-- [ ] BorderRadius를 ScaledBorderRadius로 교체
-- [ ] 직접적인 EdgeInsets 사용을 ScaledEdgeInsets로 교체
 - [ ] 다양한 폰트 크기에서 테스트 완료
 - [ ] 레이아웃 깨짐 없음 확인
 - [ ] 접근성 가이드라인 준수
@@ -285,44 +182,10 @@ Row(
 ```dart
 // ❌ 잘못된 예: 이미 스케일이 적용된 값에 다시 스케일 적용
 final scale = UIScaleProvider.of(context).scale;
-ScaledIcon(Icons.home, size: 24 * scale) // 중복 스케일링!
+Icon(Icons.home, size: 24 * scale) // 중복 스케일링!
 
-// ✅ 올바른 예: ScaledIcon이 자동으로 스케일링 처리
-ScaledIcon(Icons.home, size: 24)
-```
-
-### 2. Context 접근 가능 위치에서만 헬퍼 사용
-```dart
-// ❌ build 메서드 외부에서 사용 불가
-class MyWidget extends StatelessWidget {
-  final borderRadius = ScaledBorderRadius.circular(context, 8); // 오류!
-  
-  @override
-  Widget build(BuildContext context) {
-    // ✅ build 메서드 내부에서 사용
-    final borderRadius = ScaledBorderRadius.circular(context, 8);
-    return Container(/* ... */);
-  }
-}
-```
-
-### 3. 성능 최적화
-```dart
-// 자주 사용되는 스케일 값은 캐싱
-class MyWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final scale = UIScaleProvider.of(context).scale;
-    
-    return Column(
-      children: [
-        // 여러 위젯에서 같은 스케일 값 재사용
-        ScaledPadding.all(baseValue: 16, child: widget1),
-        ScaledPadding.all(baseValue: 16, child: widget2),
-      ],
-    );
-  }
-}
+// ✅ 올바른 예: Icon이 자동으로 스케일링 처리
+Icon(Icons.home)
 ```
 
 ## 🔄 마이그레이션 가이드
