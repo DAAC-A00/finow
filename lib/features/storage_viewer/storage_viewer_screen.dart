@@ -219,7 +219,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                     const SizedBox(height: 8),
                     LinearProgressIndicator(
                       value: percentage / 100,
-                      backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
+                      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                       valueColor: AlwaysStoppedAnimation<Color>(Theme.of(context).colorScheme.primary),
                     ),
                   ],
@@ -230,11 +230,6 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
           const Divider(height: 1),
           Consumer(
             builder: (context, ref, child) {
-              final settingsCount = ref.watch(settingsItemCountProvider);
-              final exchangeRatesCount = ref.watch(exchangeRatesItemCountProvider);
-              final symbolsCount = ref.watch(symbolsItemCountProvider);
-              final apiKeysCount = ref.watch(apiKeysItemCountProvider);
-
               return TabBar(
                 controller: _tabController,
                 labelColor: Theme.of(context).colorScheme.primary,
@@ -440,6 +435,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                   await localStorageService.updateEntry(boxName, key, newValue);
                   ref.invalidate(allStorageDataProvider);
                   ref.invalidate(storageUsageProvider);
+                  if (!context.mounted) return;
                   Navigator.of(context).pop();
                 } else {
                   final currentContext = context;
@@ -457,353 +453,9 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
     );
   }
 
-  /// Box 목록을 보여주는 Bottom Sheet
-  void _showBoxListBottomSheet(BuildContext context, WidgetRef ref) {
-    final localStorageService = ref.watch(localStorageServiceProvider);
-    
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.3,
-        maxChildSize: 0.9,
-        expand: false,
-        builder: (context, scrollController) => Container(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Handle bar
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(bottom: 16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.3).round()),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-              Text(
-                'Hive Box 목록',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Expanded(
-                child: FutureBuilder<List<String>>(
-                  future: _getBoxNames(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ScaledIcon(
-                              Icons.error_outline,
-                              size: 48,
-                              color: Theme.of(context).colorScheme.error,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              '오류가 발생했습니다',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              snapshot.error.toString(),
-                              style: Theme.of(context).textTheme.bodyMedium,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    
-                    final boxNames = snapshot.data ?? [];
-                    
-                    if (boxNames.isEmpty) {
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            ScaledIcon(
-                              Icons.inbox_outlined,
-                              size: 48,
-                              color: Theme.of(context).colorScheme.onSurface.withAlpha((255 * 0.5).round()),
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              '등록된 Box가 없습니다',
-                              style: Theme.of(context).textTheme.titleMedium,
-                            ),
-                          ],
-                        ),
-                      );
-                    }
-                    
-                    return ListView.builder(
-                      controller: scrollController,
-                      itemCount: boxNames.length,
-                      itemBuilder: (context, index) {
-                        final boxName = boxNames[index];
-                        return Card(
-                          margin: const EdgeInsets.only(bottom: 8),
-                          child: ListTile(
-                            leading: CircleAvatar(
-                              backgroundColor: Theme.of(context).colorScheme.primary.withAlpha((255 * 0.1).round()),
-                              child: ScaledIcon(
-                                Icons.storage,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                            title: Text(
-                              boxName,
-                              style: const TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                            subtitle: FutureBuilder<int>(
-                              future: _getBoxItemCount(boxName),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  return Text('${snapshot.data}개 항목');
-                                }
-                                return const Text('로딩 중...');
-                              },
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const ScaledIcon(Icons.info_outline),
-                                  onPressed: () => _showBoxInfo(context, boxName),
-                                  tooltip: 'Box 정보',
-                                ),
-                                IconButton(
-                                  icon: const ScaledIcon(Icons.delete_outline),
-                                  onPressed: () => _confirmDeleteBox(context, ref, boxName),
-                                  tooltip: 'Box 삭제',
-                                ),
-                              ],
-                            ),
-                            onTap: () {
-                              Navigator.pop(context);
-                              // 해당 Box의 데이터만 필터링하여 표시하는 기능 추가 가능
-                              _filterByBox(ref, boxName);
-                            },
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  
 
-  /// 모든 Box 이름 가져오기
-  Future<List<String>> _getBoxNames() async {
-    try {
-      // 알려진 Box 이름들을 확인하여 존재하는 것들만 반환
-      final knownBoxes = <String>[];
-      
-      // 기존에 알려진 Box들 확인
-      final commonBoxNames = [
-        'exchangeRates',
-        'settings',
-        'instruments',
-        'ui_scale',
-        'font_size',
-        'theme_mode',
-      ];
-      
-      for (final boxName in commonBoxNames) {
-        try {
-          if (await Hive.boxExists(boxName)) {
-            knownBoxes.add(boxName);
-          }
-        } catch (_) {
-          // 개별 Box 확인 실패는 무시
-        }
-      }
-      
-      return knownBoxes;
-    } catch (e) {
-      // 오류 발생 시 빈 리스트 반환
-      return [];
-    }
-  }
-
-  /// 특정 Box의 항목 개수 가져오기
-  Future<int> _getBoxItemCount(String boxName) async {
-    try {
-      if (Hive.isBoxOpen(boxName)) {
-        // Box 타입에 따라 안전하게 접근
-        if (boxName == 'exchangeRates') {
-          final box = Hive.box<ExchangeRate>(boxName);
-          return box.length;
-        } else {
-          final box = Hive.box(boxName);
-          return box.length;
-        }
-      } else {
-        // Box가 열려 있지 않으면 0을 반환
-        return 0;
-      }
-    } catch (e) {
-      // 오류 발생 시 0을 반환
-      return 0;
-    }
-  }
-
-  /// Box 정보 다이얼로그 표시
-  void _showBoxInfo(BuildContext context, String boxName) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Box 정보: $boxName'),
-        content: FutureBuilder<Map<String, dynamic>>(
-          future: _getBoxInfo(boxName),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SizedBox(
-                height: 100,
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-            
-            if (snapshot.hasError) {
-              return Text('오류: ${snapshot.error}');
-            }
-            
-            final details = snapshot.data ?? {};
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Box 이름: $boxName'),
-                const SizedBox(height: 8),
-                Text('항목 개수: ${details['itemCount'] ?? 0}'),
-                const SizedBox(height: 8),
-                Text('열린 상태: ${details['isOpen'] ? '예' : '아니오'}'),
-                if (details['path'] != null) ...[
-                  const SizedBox(height: 8),
-                  Text('경로: ${details['path']}'),
-                ],
-              ],
-            );
-          },
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('닫기'),
-          ),
-        ],
-      ),
-    );
-  }
-
-  /// Box 세부 정보 가져오기
-  Future<Map<String, dynamic>> _getBoxInfo(String boxName) async {
-    try {
-      final isOpen = Hive.isBoxOpen(boxName);
-      
-      if (!isOpen) {
-        // Box가 열려 있지 않으면 정보를 가져올 수 없습니다.
-        return {'itemCount': 0, 'isOpen': false, 'path': 'Box not open'};
-      }
-      
-      // Box 타입에 따라 안전하게 접근
-      if (boxName == 'exchangeRates') {
-        final box = Hive.box<ExchangeRate>(boxName);
-        return {
-          'itemCount': box.length,
-          'isOpen': isOpen,
-          'path': box.path,
-        };
-      } else {
-        final box = Hive.box(boxName);
-        return {
-          'itemCount': box.length,
-          'isOpen': isOpen,
-          'path': box.path,
-        };
-      }
-    } catch (e) {
-      return {'error': e.toString()};
-    }
-  }
-
-  /// Box 삭제 확인 다이얼로그
-  Future<void> _confirmDeleteBox(BuildContext context, WidgetRef ref, String boxName) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Box 삭제'),
-        content: Text('"$boxName" Box를 완전히 삭제하시겠습니까?\n\n이 작업은 되돌릴 수 없습니다.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('취소'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: TextButton.styleFrom(
-              foregroundColor: Theme.of(context).colorScheme.error,
-            ),
-            child: const Text('삭제'),
-          ),
-        ],
-      ),
-    );
-
-    if (confirmed == true) {
-      try {
-        await Hive.deleteBoxFromDisk(boxName);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('"$boxName" Box가 삭제되었습니다'),
-              backgroundColor: Colors.green,
-            ),
-          );
-          // 데이터 새로고침
-          ref.invalidate(allStorageDataProvider);
-          ref.invalidate(storageUsageProvider);
-        }
-      } catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Box 삭제 중 오류가 발생했습니다: $e'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    }
-  }
-
-  /// 특정 Box로 필터링
-  void _filterByBox(WidgetRef ref, String boxName) {
-    // 검색어에 Box 이름을 설정하여 필터링 효과
-    ref.read(searchQueryProvider.notifier).state = boxName;
-  }
+  
 
   void _showInfoBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -1119,7 +771,11 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                             ],
                           );
                         } else {
+                          // ignore: unnecessary_string_interpolations
+                          } else {
+                          // ignore: unnecessary_string_interpolations
                           subtitleWidget = Text(value.toString());
+                        }
                         }
                         
                         return Card(

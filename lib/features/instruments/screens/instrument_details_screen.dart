@@ -176,7 +176,7 @@ class InstrumentDetailsScreen extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     return Card(
       elevation: 2,
-      color: colorScheme.surfaceVariant,
+      color: colorScheme.surfaceContainerHighest,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),

@@ -41,15 +41,15 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
       ),
       body: RefreshIndicator(
         onRefresh: () async {
+          final scaffoldMessenger = ScaffoldMessenger.of(context);
           await _validateAllKeys();
-          if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('API keys have been re-validated.'),
-                duration: Duration(seconds: 2),
-              ),
-            );
-          }
+          if (!mounted) return;
+          scaffoldMessenger.showSnackBar(
+            const SnackBar(
+              content: Text('API keys have been re-validated.'),
+              duration: Duration(seconds: 2),
+            ),
+          );
         },
         child: apiKeysAsync.when(
           data: (apiKeys) => ListView(
@@ -166,6 +166,8 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
             TextButton(
               child: const Text('Save'),
               onPressed: () async {
+                final navigator = Navigator.of(context);
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
                 final newKey = keyController.text.trim();
                 final newLastValidated = int.tryParse(lastValidatedController.text); // Parse to int?
 
@@ -206,10 +208,11 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
                     }
                     ref.read(apiKeyStatusProvider.notifier).validateKey(newKey);
                   }
-                  Navigator.of(context).pop();
+                  if (!mounted) return;
+                  navigator.pop();
                 } else {
                   // Show error if key is empty
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  scaffoldMessenger.showSnackBar(
                     const SnackBar(content: Text('API Key cannot be empty.')),
                   );
                 }

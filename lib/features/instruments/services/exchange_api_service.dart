@@ -52,11 +52,7 @@ class ExchangeApiService {
                 .map((item) => Instrument.fromBybit(item, category: resultCategory))
                 .toList();
                 
-            // 디버깅: category 정보가 제대로 설정되었는지 확인
-            if (mappedInstruments.isNotEmpty) {
-              print('📊 ${category.toUpperCase()} 카테고리: ${mappedInstruments.length}개 심볼 조회 완료');
-              print('🏷️  첫 번째 심볼 category 확인: ${mappedInstruments.first.category}');
-            }
+            
             
             allInstruments.addAll(mappedInstruments);
           } else {
@@ -67,7 +63,7 @@ class ExchangeApiService {
         }
       } while (nextCursor != null);
       
-      print('✅ ${category.toUpperCase()} 카테고리 총 ${allInstruments.length}개 심볼 조회 완료');
+      
       return allInstruments;
     } catch (e) {
       if (e is DioException) {

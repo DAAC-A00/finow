@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/instrument.dart';
 import '../providers/instruments_provider.dart';
 import 'package:go_router/go_router.dart';
-import 'package:finow/features/instruments/screens/instrument_details_screen.dart';
+
 import 'package:finow/ui_scale_provider.dart';
 
 /// Instrument Information Screen
@@ -784,24 +784,5 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
     context.push('/instruments/details', extra: instrument);
   }
 
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              '$label:',
-              style: const TextStyle(fontWeight: FontWeight.w500),
-            ),
-          ),
-          Expanded(
-            child: Text(value),
-          ),
-        ],
-      ),
-    );
-  }
+  
 }

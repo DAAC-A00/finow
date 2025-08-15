@@ -8,11 +8,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:finow/features/storage_viewer/storage_viewer_screen.dart'; // For searchQueryProvider
 
-class ApiKeysStorageView extends ConsumerWidget {
+class ApiKeysStorageView extends ConsumerStatefulWidget {
   const ApiKeysStorageView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ApiKeysStorageView> createState() => _ApiKeysStorageViewState();
+}
+
+class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
+  @override
+  Widget build(BuildContext context) {
     final apiKeysAsync = ref.watch(apiKeyListProvider);
     final apiKeyStatusMap = ref.watch(apiKeyStatusProvider);
 
@@ -147,7 +152,7 @@ class ApiKeysStorageView extends ConsumerWidget {
                               ),
                             ),
                             Text(
-                              'Last Validated (Unix): ${apiKey.lastValidated ?? 'N/A'}',
+                              'Last Validated (Unix): ${apiKey.lastValidated ?? 'N/A'}'
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 8.0, top: 2.0),
@@ -172,11 +177,11 @@ class ApiKeysStorageView extends ConsumerWidget {
                             ),
                             IconButton(
                               icon: const ScaledIcon(Icons.edit),
-                              onPressed: () => _showApiKeyDialog(context, ref, existingKey: apiKey, index: index),
+                              onPressed: () => _showApiKeyDialog(context, existingKey: apiKey, index: index),
                             ),
                             IconButton(
                               icon: const ScaledIcon(Icons.delete),
-                              onPressed: () => _confirmDelete(context, ref, apiKey),
+                              onPressed: () => _confirmDelete(context, apiKey),
                             ),
                           ],
                         ),
@@ -192,7 +197,7 @@ class ApiKeysStorageView extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showApiKeyDialog(context, ref),
+        onPressed: () => _showApiKeyDialog(context),
         child: const ScaledIcon(Icons.add),
       ),
     );
@@ -205,7 +210,8 @@ class ApiKeysStorageView extends ConsumerWidget {
     return '${key.substring(0, 4)}...${key.substring(key.length - 4)}';
   }
 
-  Future<void> _confirmDelete(BuildContext context, WidgetRef ref, ApiKeyData apiKey) async {
+  Future<void> _confirmDelete(BuildContext context, ApiKeyData apiKey) async {
+    final navigator = Navigator.of(context);
     final bool? confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -214,11 +220,11 @@ class ApiKeysStorageView extends ConsumerWidget {
           content: Text('Are you sure you want to delete \'${_maskApiKey(apiKey.key)}\'?'),
           actions: <Widget>[
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => navigator.pop(false),
               child: const Text('Cancel'),
             ),
             TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
+              onPressed: () => navigator.pop(true),
               child: const Text('Delete'),
             ),
           ],
@@ -231,17 +237,17 @@ class ApiKeysStorageView extends ConsumerWidget {
     }
   }
 
-  void _showApiKeyDialog(BuildContext context, WidgetRef ref, {ApiKeyData? existingKey, int? index}) {
+  void _showApiKeyDialog(BuildContext context, {ApiKeyData? existingKey, int? index}) {
     final keyController = TextEditingController(text: existingKey?.key);
     final lastValidatedController = TextEditingController(text: existingKey?.lastValidated?.toString());
-    ApiKeyStatus selectedStatus = existingKey?.status ?? ApiKeyStatus.unknown; // Initialize with existing status or unknown
+    ApiKeyStatus selectedStatus = existingKey?.status ?? ApiKeyStatus.unknown;
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text(existingKey == null ? 'Add API Key' : 'Edit API Key'),
-          content: SingleChildScrollView( // Use SingleChildScrollView to prevent overflow
+          content: SingleChildScrollView(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -262,7 +268,6 @@ class ApiKeysStorageView extends ConsumerWidget {
                   onChanged: (ApiKeyStatus? newValue) {
                     if (newValue != null) {
                       selectedStatus = newValue;
-                      // Rebuild the dialog to reflect the change (optional, but good for immediate feedback)
                       (context as Element).markNeedsBuild();
                     }
                   },
@@ -271,7 +276,7 @@ class ApiKeysStorageView extends ConsumerWidget {
                 TextField(
                   controller: lastValidatedController,
                   decoration: const InputDecoration(labelText: "Last Validated (Unix Timestamp)"),
-                  keyboardType: TextInputType.number, // Allow only numbers
+                  keyboardType: TextInputType.number,
                 ),
               ],
             ),
@@ -284,32 +289,30 @@ class ApiKeysStorageView extends ConsumerWidget {
             TextButton(
               child: const Text('Save'),
               onPressed: () async {
+                final navigator = Navigator.of(context);
+                final scaffoldMessenger = ScaffoldMessenger.of(context);
                 final newKey = keyController.text.trim();
-                final newLastValidated = int.tryParse(lastValidatedController.text); // Parse to int?
+                final newLastValidated = int.tryParse(lastValidatedController.text);
 
                 if (newKey.isNotEmpty) {
                   final service = ref.read(apiKeyServiceProvider);
                   if (existingKey != null && index != null) {
-                    // Update existing API Key
                     final updatedApiKeyData = existingKey.copyWith(
                       key: newKey,
                       status: selectedStatus,
                       lastValidated: newLastValidated,
                     );
                     await service.updateApiKey(index, updatedApiKeyData);
-                    // Re-validate the key after update if its key changed
                     if (existingKey.key != newKey) {
                       ref.read(apiKeyStatusProvider.notifier).validateKey(newKey);
                     }
                   } else {
-                    // Add new API Key
                     final newApiKeyData = ApiKeyData(
                       key: newKey,
                       status: selectedStatus,
                       lastValidated: newLastValidated,
                     );
-                    await service.addApiKey(newApiKeyData.key); // addApiKey only takes key, so we need to update status and lastValidated after adding
-                    // Find the newly added key and update its status and lastValidated
+                    await service.addApiKey(newApiKeyData.key); 
                     final addedKeys = service.getApiKeys().where((element) => element.key == newKey);
                     if (addedKeys.isNotEmpty) {
                       final addedKey = addedKeys.first;
@@ -324,10 +327,11 @@ class ApiKeysStorageView extends ConsumerWidget {
                     }
                     ref.read(apiKeyStatusProvider.notifier).validateKey(newKey);
                   }
-                  Navigator.of(context).pop();
+                  if (!mounted) return;
+                  navigator.pop();
                 } else {
-                  // Show error if key is empty
-                  ScaffoldMessenger.of(context).showSnackBar(
+                  if (!mounted) return;
+                  scaffoldMessenger.showSnackBar(
                     const SnackBar(content: Text('API Key cannot be empty.')),
                   );
                 }

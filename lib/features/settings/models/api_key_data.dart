@@ -8,6 +8,7 @@ part 'api_key_data.g.dart';
 @JsonSerializable()
 class ApiKeyData extends HiveObject {
   @HiveField(0)
+  @override
   final String key;
 
   @HiveField(1)
@@ -52,7 +53,6 @@ class ApiKeyData extends HiveObject {
         return 6;
       case ApiKeyStatus.unknown:
       case ApiKeyStatus.validating:
-      default:
         return 7; // 미지정 상태는 가장 낮은 우선순위
     }
   }
