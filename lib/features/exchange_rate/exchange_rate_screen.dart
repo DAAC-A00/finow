@@ -275,7 +275,6 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
               ),
               trailing: Text(
                 _formatPrice(rate.price),
-                style: const TextStyle(fontSize: 15),
               ),
               onTap: () =>
                   context.push('/exchange/${rate.quoteCode}', extra: rate),

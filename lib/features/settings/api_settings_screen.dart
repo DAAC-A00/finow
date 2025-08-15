@@ -57,7 +57,6 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
               const ListTile(
                 title: Text(
                   'V6 Exchange Rate API',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 subtitle: Text('API keys for currency exchange rate data.'),
               ),

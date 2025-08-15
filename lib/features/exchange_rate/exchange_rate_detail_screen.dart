@@ -35,7 +35,6 @@ class ExchangeRateDetailScreen extends StatelessWidget {
                   title: const Text('Price'),
                   trailing: Text(
                     exchangeRate.price.toString(),
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
                 const Divider(),
