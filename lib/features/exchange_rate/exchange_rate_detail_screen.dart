@@ -32,27 +32,47 @@ class ExchangeRateDetailScreen extends StatelessWidget {
               children: [
                 ListTile(
                   leading: const Icon(Icons.show_chart, color: Colors.blueAccent),
-                  title: const Text('Price'),
-                  trailing: Text(
-                    exchangeRate.price.toString(),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Price'),
+                      Text(
+                        exchangeRate.price.toString(),
+                      ),
+                    ]
                   ),
                 ),
                 const Divider(),
                 ListTile(
                   leading: const Icon(Icons.flag, color: Colors.green),
-                  title: const Text('Base Code'),
-                  trailing: Text(exchangeRate.baseCode),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Base Code'),
+                      Text(exchangeRate.baseCode),
+                    ]
+                  ),
                 ),
                 ListTile(
                   leading: const Icon(Icons.flag_outlined, color: Colors.orange),
-                  title: const Text('Quote Code'),
-                  trailing: Text(exchangeRate.quoteCode),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Quote Code'),
+                      Text(exchangeRate.quoteCode),
+                    ]
+                  ),
                 ),
                 const Divider(),
                 ListTile(
                   leading: const Icon(Icons.update, color: Colors.grey),
-                  title: const Text('Last Updated'),
-                  trailing: Text(formattedDateTime),
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text('Last Updated'),
+                      Text(formattedDateTime),
+                    ]
+                  ),
                 ),
               ],
             ),

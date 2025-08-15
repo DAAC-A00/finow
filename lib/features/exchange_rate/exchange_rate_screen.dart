@@ -268,12 +268,17 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
             ),
             child: ListTile(
               leading: leadingIcon,
-              title: Text(
-                '${rate.baseCode}/${rate.quoteCode}',
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              trailing: Text(
-                _formatPrice(rate.price),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    '${rate.baseCode}/${rate.quoteCode}',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    _formatPrice(rate.price),
+                  ),
+                ]
               ),
               onTap: () =>
                   context.push('/exchange/${rate.quoteCode}', extra: rate),
