@@ -66,7 +66,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
                   color: colorScheme.primary,
                 ),
                 const SizedBox(height: 8),
-                ScaledText(
+                Text(
                   'Finow 아키텍처 패턴',
                   style: textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
@@ -75,7 +75,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                ScaledText(
+                Text(
                   '실제 프로젝트에서 사용되는 아키텍처 패턴과 구조',
                   textAlign: TextAlign.center,
                   style: textTheme.bodyMedium?.copyWith(
@@ -119,14 +119,14 @@ class ArchitectureGuideWidget extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ScaledText(
+                          Text(
                             title,
                             style: textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: colorScheme.onSurface,
                             ),
                           ),
-                          ScaledText(
+                          Text(
                             subtitle,
                             style: textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurface.withAlpha((255 * 0.7).round()),
@@ -164,7 +164,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ScaledText(
+                  Text(
                     '실제 프로젝트 폴더 구조',
                     style: textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.bold,
@@ -191,7 +191,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
                 ),
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: ScaledText(
+                  child: Text(
                     _getFolderStructureText(),
                     style: textTheme.bodySmall?.copyWith(
                       fontFamily: 'monospace',
@@ -239,25 +239,25 @@ class ArchitectureGuideWidget extends StatelessWidget {
         children: [
           SizedBox(
             width: 60,
-            child: ScaledText(
+            child: Text(
               type,
               style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
             ),
           ),
-          const ScaledText(': '),
+          const Text(': '),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
             decoration: BoxDecoration(
               color: colorScheme.primaryContainer.withAlpha((255 * 0.4).round()),
               borderRadius: BorderRadius.circular(3),
             ),
-            child: ScaledText(
+            child: Text(
               example,
               style: textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
             ),
           ),
           const SizedBox(width: 8),
-          ScaledText(
+          Text(
             '($rule)',
             style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface.withAlpha((255 * 0.6).round())),
           ),
@@ -282,7 +282,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ScaledText(
+                Text(
                   'ExchangeRate 모델 예시',
                   style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
@@ -302,7 +302,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
               ),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: ScaledText(
+                child: Text(
                   _getModelStructureText(),
                   style: textTheme.bodySmall?.copyWith(
                     fontFamily: 'monospace',
@@ -312,7 +312,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 8),
-            ScaledText(
+            Text(
               '🔸 Hive 로컬 저장 + JSON API 통신 모두 지원\n'
               '🔸 build_runner로 자동 코드 생성',
               style: textTheme.bodySmall?.copyWith(color: colorScheme.secondary),
@@ -336,7 +336,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ScaledText(
+            Text(
               '동적 메뉴 구조',
               style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
@@ -359,7 +359,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
                 color: colorScheme.tertiaryContainer.withAlpha((255 * 0.4).round()),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: ScaledText(
+              child: Text(
                 '💡 AdminModeProvider 상태에 따라 MenuRepository에서 동적으로 메뉴 제공',
                 style: textTheme.bodySmall,
               ),
@@ -375,7 +375,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        ScaledText(
+        Text(
           title,
           style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: color),
         ),
@@ -392,7 +392,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  ScaledText(menu, style: textTheme.bodySmall),
+                  Text(menu, style: textTheme.bodySmall),
                 ],
               ),
             )),
@@ -416,7 +416,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                ScaledText(
+                Text(
                   '라우팅 구조',
                   style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                 ),
@@ -440,7 +440,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
               ),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: ScaledText(
+                child: Text(
                   _getRoutingStructureText(),
                   style: textTheme.bodySmall?.copyWith(
                     fontFamily: 'monospace',
@@ -470,12 +470,12 @@ class ArchitectureGuideWidget extends StatelessWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          ScaledText(
+          Text(
             '$component: ',
             style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, color: color),
           ),
           Expanded(
-            child: ScaledText(description, style: textTheme.bodySmall),
+            child: Text(description, style: textTheme.bodySmall),
           ),
         ],
       ),
@@ -495,7 +495,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ScaledText(
+            Text(
               '서비스 레이어 분리',
               style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
@@ -511,7 +511,7 @@ class ArchitectureGuideWidget extends StatelessWidget {
                 color: colorScheme.secondaryContainer.withAlpha((255 * 0.4).round()),
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: ScaledText(
+              child: Text(
                 '📋 단일 책임 원칙에 따라 역할별로 명확하게 분리\n'
                 '🔄 Provider에서 각 서비스를 주입받아 협업',
                 style: textTheme.bodySmall,
@@ -540,14 +540,14 @@ class ArchitectureGuideWidget extends StatelessWidget {
           ),
           SizedBox(
             width: 80,
-            child: ScaledText(
+            child: Text(
               layer,
               style: textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, color: color),
             ),
           ),
-          const ScaledText(': '),
+          const Text(': '),
           Expanded(
-            child: ScaledText(
+            child: Text(
               '$className ($responsibility)',
               style: textTheme.bodySmall,
             ),

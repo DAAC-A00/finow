@@ -79,14 +79,14 @@ class ShowGuideWidget extends StatelessWidget {
           size: 40,
           color: colorScheme.primary,
         ),
-        title: ScaledText(
+        title: Text(
           title,
           style: textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
             color: colorScheme.onSurface,
           ),
         ),
-        subtitle: ScaledText(
+        subtitle: Text(
           subtitle,
           style: textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurface.withAlpha((255 * 0.7).round()),
@@ -123,7 +123,7 @@ class ShowGuideWidget extends StatelessWidget {
                 color: colorScheme.onSurface.withAlpha((255 * 0.4).round()),
               ),
               const SizedBox(height: 16),
-              ScaledText(
+              Text(
                 'This is a Bottom Sheet',
                 style: textTheme.titleMedium?.copyWith(
                   color: colorScheme.onSurface,
@@ -132,7 +132,7 @@ class ShowGuideWidget extends StatelessWidget {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                child: const ScaledText('닫기'),
+                child: const Text('닫기'),
               ),
             ],
           ),
@@ -161,7 +161,7 @@ class ShowGuideWidget extends StatelessWidget {
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: ScaledText(
+        content: Text(
           'This is a SnackBar.',
           style: textTheme.bodyMedium?.copyWith(
             color: colorScheme.onInverseSurface,
@@ -184,7 +184,7 @@ class ShowGuideWidget extends StatelessWidget {
 
     ScaffoldMessenger.of(context).showMaterialBanner(
       MaterialBanner(
-        content: ScaledText(
+        content: Text(
           'This is a Material Banner.',
           style: textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurface,
@@ -199,7 +199,7 @@ class ShowGuideWidget extends StatelessWidget {
           TextButton(
             onPressed: () =>
                 ScaffoldMessenger.of(context).hideCurrentMaterialBanner(),
-            child: ScaledText(
+            child: Text(
               '닫기',
               style: textTheme.labelLarge?.copyWith(
                 color: colorScheme.primary,
@@ -219,13 +219,13 @@ class ShowGuideWidget extends StatelessWidget {
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: colorScheme.surface,
-        title: ScaledText(
+        title: Text(
           'Confirm Action',
           style: textTheme.titleLarge?.copyWith(
             color: colorScheme.onSurface,
           ),
         ),
-        content: ScaledText(
+        content: Text(
           'Are you sure you want to proceed?',
           style: textTheme.bodyMedium?.copyWith(
             color: colorScheme.onSurface.withAlpha((255 * 0.8).round()),
@@ -234,7 +234,7 @@ class ShowGuideWidget extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: ScaledText(
+            child: Text(
               'Cancel',
               style: textTheme.labelLarge?.copyWith(
                 color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
@@ -243,7 +243,7 @@ class ShowGuideWidget extends StatelessWidget {
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: const ScaledText('OK'),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -254,16 +254,16 @@ class ShowGuideWidget extends StatelessWidget {
     showCupertinoDialog(
       context: context,
       builder: (context) => CupertinoAlertDialog(
-        title: const ScaledText('Cupertino Alert'),
-        content: const ScaledText('This is a Cupertino-style alert.'),
+        title: const Text('Cupertino Alert'),
+        content: const Text('This is a Cupertino-style alert.'),
         actions: [
           CupertinoDialogAction(
             onPressed: () => Navigator.of(context).pop(),
-            child: const ScaledText('Cancel'),
+            child: const Text('Cancel'),
           ),
           CupertinoDialogAction(
             onPressed: () => Navigator.of(context).pop(),
-            child: const ScaledText('OK'),
+            child: const Text('OK'),
           ),
         ],
       ),

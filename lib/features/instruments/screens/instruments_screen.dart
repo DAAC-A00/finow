@@ -200,7 +200,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
       child: Row(
         children: [
           Text(
-            'Status Filter:',
+            'Status',
             style: TextStyle(
               fontWeight: FontWeight.w500,
               color: colorScheme.onSurface,
@@ -256,7 +256,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
       child: Row(
         children: [
           Text(
-            'Category:',
+            'Category',
             style: TextStyle(
               fontWeight: FontWeight.w500,
               color: colorScheme.onSurface,

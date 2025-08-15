@@ -27,7 +27,7 @@ class ThemeGuideWidget extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ScaledText(
+              Text(
                 '현재 테마: ${isDarkMode ? "다크 모드" : "라이트 모드"}',
                 style: textTheme.titleMedium?.copyWith(
                   color: colorScheme.primary,
@@ -35,7 +35,7 @@ class ThemeGuideWidget extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              ScaledText(
+              Text(
                 '시스템 테마 모드: ${themeMode.name}',
                 style: textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurface.withAlpha((255 * 0.8).round()),
@@ -103,7 +103,7 @@ class ThemeGuideWidget extends ConsumerWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ScaledText(
+              Text(
                 '✅',
                 style: textTheme.titleMedium?.copyWith(
                   color: colorScheme.primary,
@@ -111,7 +111,7 @@ class ThemeGuideWidget extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: ScaledText(
+                child: Text(
                   principle,
                   style: textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurface,
@@ -137,7 +137,7 @@ class ThemeGuideWidget extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            ScaledText(
+            Text(
               title,
               style: textTheme.titleLarge?.copyWith(
                 color: Theme.of(context).colorScheme.onSurface,
@@ -164,7 +164,7 @@ class ThemeGuideWidget extends ConsumerWidget {
                 .read(themeModeNotifierProvider.notifier)
                 .setThemeMode(ThemeMode.light),
             icon: const ScaledIcon(Icons.light_mode),
-            label: const ScaledText('라이트 모드'),
+            label: const Text('라이트 모드'),
             style: ElevatedButton.styleFrom(
               backgroundColor: currentMode == ThemeMode.light
                   ? colorScheme.primary
@@ -182,7 +182,7 @@ class ThemeGuideWidget extends ConsumerWidget {
                 .read(themeModeNotifierProvider.notifier)
                 .setThemeMode(ThemeMode.dark),
             icon: const ScaledIcon(Icons.dark_mode),
-            label: const ScaledText('다크 모드'),
+            label: const Text('다크 모드'),
             style: ElevatedButton.styleFrom(
               backgroundColor: currentMode == ThemeMode.dark
                   ? colorScheme.primary
@@ -200,7 +200,7 @@ class ThemeGuideWidget extends ConsumerWidget {
                 .read(themeModeNotifierProvider.notifier)
                 .setThemeMode(ThemeMode.system),
             icon: const ScaledIcon(Icons.settings),
-            label: const ScaledText('시스템'),
+            label: const Text('시스템'),
             style: ElevatedButton.styleFrom(
               backgroundColor: currentMode == ThemeMode.system
                   ? colorScheme.primary
@@ -239,7 +239,7 @@ class ThemeGuideWidget extends ConsumerWidget {
             border: Border.all(color: colorScheme.outline.withAlpha((255 * 0.3).round())),
           ),
           child: Center(
-            child: ScaledText(
+            child: Text(
               colorInfo.$1,
               style: textTheme.labelMedium?.copyWith(
                 color: colorInfo.$3,
@@ -275,7 +275,7 @@ class ThemeGuideWidget extends ConsumerWidget {
             children: [
               SizedBox(
                 width: 120,
-                child: ScaledText(
+                child: Text(
                   styleInfo.$1,
                   style: textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
@@ -283,7 +283,7 @@ class ThemeGuideWidget extends ConsumerWidget {
                 ),
               ),
               Expanded(
-                child: ScaledText(
+                child: Text(
                   '샘플 텍스트',
                   style: styleInfo.$2?.copyWith(
                     color: colorScheme.onSurface,
@@ -307,21 +307,21 @@ class ThemeGuideWidget extends ConsumerWidget {
             Expanded(
               child: ElevatedButton(
                 onPressed: () {},
-                child: const ScaledText('Elevated Button'),
+                child: const Text('Elevated Button'),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: OutlinedButton(
                 onPressed: () {},
-                child: const ScaledText('Outlined Button'),
+                child: const Text('Outlined Button'),
               ),
             ),
             const SizedBox(width: 8),
             Expanded(
               child: TextButton(
                 onPressed: () {},
-                child: const ScaledText('Text Button'),
+                child: const Text('Text Button'),
               ),
             ),
           ],
@@ -332,10 +332,10 @@ class ThemeGuideWidget extends ConsumerWidget {
         Card(
           child: ListTile(
             leading: ScaledIcon(Icons.palette, color: colorScheme.primary),
-            title: ScaledText('테마 적용 예시',
+            title: Text('테마 적용 예시',
                 style: textTheme.titleMedium
                     ?.copyWith(color: colorScheme.onSurface)),
-            subtitle: ScaledText('다크/라이트 모드 호환',
+            subtitle: Text('다크/라이트 모드 호환',
                 style: textTheme.bodyMedium
                     ?.copyWith(color: colorScheme.onSurface.withAlpha((255 * 0.7).round()))),
             trailing: ScaledIcon(Icons.arrow_forward_ios,
@@ -381,7 +381,7 @@ class ThemeGuideWidget extends ConsumerWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ScaledText(
+              Text(
                 guideline.substring(0, 2),
                 style: textTheme.titleMedium?.copyWith(
                   color: isWarning ? colorScheme.error : colorScheme.primary,
@@ -389,7 +389,7 @@ class ThemeGuideWidget extends ConsumerWidget {
               ),
               const SizedBox(width: 8),
               Expanded(
-                child: ScaledText(
+                child: Text(
                   guideline.substring(3),
                   style: textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurface,

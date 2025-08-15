@@ -33,7 +33,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
 
     return Column(
       children: [
-        ScaledText(
+        Text(
           'Dismissible (Swipe to delete)',
           style: textTheme.titleMedium?.copyWith(
             color: colorScheme.onSurface,
@@ -52,7 +52,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
                   });
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: ScaledText(
+                      content: Text(
                         '$item dismissed',
                         style: textTheme.bodyMedium?.copyWith(color: colorScheme.onInverseSurface),
                       ),
@@ -70,7 +70,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
                   ),
                 ),
                 child: ListTile(
-                  title: ScaledText(
+                  title: Text(
                     item,
                     style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
                   ),
@@ -82,7 +82,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
               ),
             )),
         const SizedBox(height: 20),
-        ScaledText(
+        Text(
           'Draggable & DragTarget',
           style: textTheme.titleMedium?.copyWith(
             color: colorScheme.onSurface,
@@ -152,7 +152,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
           ],
         ),
         const SizedBox(height: 20),
-        ScaledText(
+        Text(
           'Long Press & Double Tap',
           style: textTheme.titleMedium?.copyWith(
             color: colorScheme.onSurface,
@@ -182,7 +182,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
                     color: colorScheme.onPrimaryContainer,
                   ),
                   const SizedBox(height: 4),
-                  ScaledText(
+                  Text(
                     _lastEvent,
                     style: textTheme.bodyMedium?.copyWith(
                       color: colorScheme.onPrimaryContainer,
@@ -195,7 +195,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
           ),
         ),
         const SizedBox(height: 20),
-        ScaledText(
+        Text(
           'Toggles',
           style: textTheme.titleMedium?.copyWith(
             color: colorScheme.onSurface,
@@ -204,7 +204,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
         ),
         const SizedBox(height: 16),
         SwitchListTile(
-          title: const ScaledText('Switch'),
+          title: const Text('Switch'),
           value: _isSwitchOn,
           onChanged: (value) {
             setState(() {
@@ -213,7 +213,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
           },
         ),
         CheckboxListTile(
-          title: const ScaledText('Checkbox'),
+          title: const Text('Checkbox'),
           value: _isChecked,
           onChanged: (value) {
             setState(() {
@@ -222,7 +222,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
           },
         ),
         RadioListTile<int>(
-          title: const ScaledText('Radio Option 1'),
+          title: const Text('Radio Option 1'),
           value: 0,
           groupValue: _selectedRadio,
           onChanged: (value) {
@@ -232,7 +232,7 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
           },
         ),
         RadioListTile<int>(
-          title: const ScaledText('Radio Option 2'),
+          title: const Text('Radio Option 2'),
           value: 1,
           groupValue: _selectedRadio,
           onChanged: (value) {

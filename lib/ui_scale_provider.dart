@@ -48,57 +48,6 @@ class UIScaleConsumer extends ConsumerWidget {
   }
 }
 
-/// 스케일된 텍스트 위젯 - MediaQuery textScaler를 사용하므로 일반 Text와 동일하게 처리
-/// 호환성을 위해 유지하지만, 내부적으로는 일반 Text 위젯을 사용
-class ScaledText extends StatelessWidget {
-  const ScaledText(
-    this.data, {
-    super.key,
-    this.style,
-    this.strutStyle,
-    this.textAlign,
-    this.textDirection,
-    this.locale,
-    this.softWrap,
-    this.overflow,
-    this.maxLines,
-    this.semanticsLabel,
-    this.textWidthBasis,
-    this.textHeightBehavior,
-  });
-
-  final String data;
-  final TextStyle? style;
-  final StrutStyle? strutStyle;
-  final TextAlign? textAlign;
-  final TextDirection? textDirection;
-  final Locale? locale;
-  final bool? softWrap;
-  final TextOverflow? overflow;
-  final int? maxLines;
-  final String? semanticsLabel;
-  final TextWidthBasis? textWidthBasis;
-  final TextHeightBehavior? textHeightBehavior;
-
-  @override
-  Widget build(BuildContext context) {
-    // MediaQuery textScaler를 사용하므로 일반 Text 위젯과 동일하게 동작
-    return Text(
-      data,
-      style: style,
-      strutStyle: strutStyle,
-      textAlign: textAlign,
-      textDirection: textDirection,
-      locale: locale,
-      softWrap: softWrap,
-      overflow: overflow,
-      maxLines: maxLines,
-      semanticsLabel: semanticsLabel,
-      textWidthBasis: textWidthBasis,
-      textHeightBehavior: textHeightBehavior,
-    );
-  }
-}
 
 /// 스케일된 아이콘 위젯
 class ScaledIcon extends StatelessWidget {

@@ -210,16 +210,16 @@ class ApiKeysStorageView extends ConsumerWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const ScaledText('Delete API Key'),
-          content: ScaledText('Are you sure you want to delete \'${_maskApiKey(apiKey.key)}\'?'),
+          title: const Text('Delete API Key'),
+          content: Text('Are you sure you want to delete \'${_maskApiKey(apiKey.key)}\'?'),
           actions: <Widget>[
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
-              child: const ScaledText('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(true),
-              child: const ScaledText('Delete'),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -240,7 +240,7 @@ class ApiKeysStorageView extends ConsumerWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: ScaledText(existingKey == null ? 'Add API Key' : 'Edit API Key'),
+          title: Text(existingKey == null ? 'Add API Key' : 'Edit API Key'),
           content: SingleChildScrollView( // Use SingleChildScrollView to prevent overflow
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -278,11 +278,11 @@ class ApiKeysStorageView extends ConsumerWidget {
           ),
           actions: [
             TextButton(
-              child: const ScaledText('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const ScaledText('Save'),
+              child: const Text('Save'),
               onPressed: () async {
                 final newKey = keyController.text.trim();
                 final newLastValidated = int.tryParse(lastValidatedController.text); // Parse to int?

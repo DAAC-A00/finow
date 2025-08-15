@@ -37,7 +37,7 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
-        title: const ScaledText('API Key Management'),
+        title: const Text('API Key Management'),
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -45,7 +45,7 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: ScaledText('API keys have been re-validated.'),
+                content: Text('API keys have been re-validated.'),
                 duration: Duration(seconds: 2),
               ),
             );
@@ -55,11 +55,11 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
           data: (apiKeys) => ListView(
             children: [
               const ListTile(
-                title: ScaledText(
+                title: Text(
                   'V6 Exchange Rate API',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                 ),
-                subtitle: ScaledText('API keys for currency exchange rate data.'),
+                subtitle: Text('API keys for currency exchange rate data.'),
               ),
               const Divider(),
               ...apiKeys.asMap().entries.map((entry) {
@@ -68,12 +68,12 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
                 final status = apiKeyStatusMap[apiKeyData.key] ?? apiKeyData.status;
 
                 return ListTile(
-                  title: ScaledText(apiKeyData.key, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  title: Text(apiKeyData.key, maxLines: 1, overflow: TextOverflow.ellipsis),
                   subtitle: Row(
                     children: [
                       ScaledIcon(status.icon, color: status.color, size: 16),
                       const SizedBox(width: 4),
-                      ScaledText(status.label, style: TextStyle(color: status.color)),
+                      Text(status.label, style: TextStyle(color: status.color)),
                     ],
                   ),
                   trailing: Row(
@@ -100,7 +100,7 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
                 );
               }),
               ListTile(
-                title: const ScaledText('Add API Key'),
+                title: const Text('Add API Key'),
                 trailing: const ScaledIcon(Icons.add),
                 onTap: () => _showApiKeyDialog(context, ref),
               ),
@@ -122,7 +122,7 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: ScaledText(existingKey == null ? 'Add API Key' : 'Edit API Key'),
+          title: Text(existingKey == null ? 'Add API Key' : 'Edit API Key'),
           content: SingleChildScrollView( // Use SingleChildScrollView to prevent overflow
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -160,11 +160,11 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
           ),
           actions: [
             TextButton(
-              child: const ScaledText('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
-              child: const ScaledText('Save'),
+              child: const Text('Save'),
               onPressed: () async {
                 final newKey = keyController.text.trim();
                 final newLastValidated = int.tryParse(lastValidatedController.text); // Parse to int?

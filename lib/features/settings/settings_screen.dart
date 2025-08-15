@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:finow/theme_provider.dart';
 import 'package:finow/font_size_provider.dart';
-import 'package:finow/ui_scale_provider.dart';
+
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -19,15 +19,15 @@ class SettingsScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(
         leading: const BackButton(),
-        title: const ScaledText('Settings'),
+        title: const Text('Settings'),
       ),
       body: ListView(
         children: [
           const ListTile(
-            title: ScaledText('Theme Settings', style: TextStyle(fontWeight: FontWeight.bold)),
+            title: Text('Theme Settings', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           RadioListTile<ThemeMode>(
-            title: const ScaledText('System Theme'),
+            title: const Text('System Theme'),
             value: ThemeMode.system,
             groupValue: currentThemeMode,
             onChanged: (ThemeMode? value) {
@@ -37,7 +37,7 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
           RadioListTile<ThemeMode>(
-            title: const ScaledText('Light Mode'),
+            title: const Text('Light Mode'),
             value: ThemeMode.light,
             groupValue: currentThemeMode,
             onChanged: (ThemeMode? value) {
@@ -47,7 +47,7 @@ class SettingsScreen extends ConsumerWidget {
             },
           ),
           RadioListTile<ThemeMode>(
-            title: const ScaledText('Dark Mode'),
+            title: const Text('Dark Mode'),
             value: ThemeMode.dark,
             groupValue: currentThemeMode,
             onChanged: (ThemeMode? value) {
@@ -58,10 +58,10 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const Divider(),
           const ListTile(
-            title: ScaledText('Font Size Settings', style: TextStyle(fontWeight: FontWeight.bold)),
+            title: Text('Font Size Settings', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
           ...FontSizeOption.values.map((fontSize) => RadioListTile<FontSizeOption>(
-            title: ScaledText(fontSize.label),
+            title: Text(fontSize.label),
             value: fontSize,
             groupValue: currentFontSize,
             onChanged: (FontSizeOption? value) {
@@ -72,7 +72,7 @@ class SettingsScreen extends ConsumerWidget {
           )),
           const Divider(),
           SwitchListTile(
-            title: const ScaledText('Admin Mode'),
+            title: const Text('Admin Mode'),
             value: isAdminMode,
             onChanged: (bool value) {
               ref.read(adminModeProvider.notifier).setAdminMode(value);

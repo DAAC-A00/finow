@@ -119,7 +119,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
               color: colorScheme.primary,
             ),
             const SizedBox(height: 8),
-            ScaledText(
+            Text(
               title,
               style: textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
@@ -128,7 +128,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
-            ScaledText(
+            Text(
               '실제 프로젝트에서 사용되는 5가지 Provider 패턴의 동작 예시',
               textAlign: TextAlign.center,
               style: textTheme.bodyMedium?.copyWith(
@@ -165,13 +165,13 @@ class ProvidersGuideWidget extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ScaledText(
+                      Text(
                         title,
                         style: textTheme.titleMedium?.copyWith(
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      ScaledText(
+                      Text(
                         subtitle,
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.onSurfaceVariant.withAlpha((255 * 0.8).round()),
@@ -205,7 +205,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ScaledText(
+              Text(
                 '카운터: $counter',
                 style: textTheme.bodyLarge?.copyWith(
                   color: colorScheme.onSecondaryContainer,
@@ -216,17 +216,17 @@ class ProvidersGuideWidget extends ConsumerWidget {
                 children: [
                   ElevatedButton(
                     onPressed: () => ref.read(counterProvider.notifier).state++,
-                    child: const ScaledText('+'),
+                    child: const Text('+'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: () => ref.read(counterProvider.notifier).state--,
-                    child: const ScaledText('-'),
+                    child: const Text('-'),
                   ),
                   const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: () => ref.read(counterProvider.notifier).state = 0,
-                    child: const ScaledText('리셋'),
+                    child: const Text('리셋'),
                   ),
                 ],
               ),
@@ -256,20 +256,20 @@ class ProvidersGuideWidget extends ConsumerWidget {
                 const SizedBox(
                     width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
                 const SizedBox(width: 8),
-                ScaledText(
+                Text(
                   '로딩 중...',
                   style: textTheme.bodyMedium?.copyWith(color: colorScheme.onTertiaryContainer),
                 ),
               ],
             ),
-            error: (error, stack) => ScaledText(
+            error: (error, stack) => Text(
               '오류: $error',
               style: textTheme.bodyMedium?.copyWith(color: colorScheme.error),
             ),
             data: (data) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ScaledText(
+                Text(
                   '비동기 카운터: $data',
                   style: textTheme.bodyLarge?.copyWith(
                     color: colorScheme.onTertiaryContainer,
@@ -278,7 +278,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () => ref.read(asyncCounterProvider.notifier).increment(),
-                  child: const ScaledText('비동기 증가'),
+                  child: const Text('비동기 증가'),
                 ),
               ],
             ),
@@ -303,7 +303,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ScaledText(
+              Text(
                 '메시지: ${exampleState.message}',
                 style: textTheme.bodyLarge?.copyWith(
                   color: colorScheme.onSurfaceVariant,
@@ -317,7 +317,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
                     const SizedBox(
                         width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)),
                     const SizedBox(width: 8),
-                    ScaledText(
+                    Text(
                       '업데이트 중...',
                       style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
                     ),
@@ -328,7 +328,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
                   onPressed: () => ref
                       .read(exampleStateNotifierProvider.notifier)
                       .updateMessage('업데이트됨 ${DateTime.now().millisecondsSinceEpoch}'),
-                  child: const ScaledText('메시지 업데이트'),
+                  child: const Text('메시지 업데이트'),
                 ),
             ],
           ),
@@ -356,20 +356,20 @@ class ProvidersGuideWidget extends ConsumerWidget {
                 const SizedBox(
                     width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
                 const SizedBox(width: 8),
-                ScaledText(
+                Text(
                   '데이터 로딩 중... (2초)',
                   style: textTheme.bodyMedium?.copyWith(color: colorScheme.onPrimaryContainer),
                 ),
               ],
             ),
-            error: (error, stack) => ScaledText(
+            error: (error, stack) => Text(
               '오류: $error',
               style: textTheme.bodyMedium?.copyWith(color: colorScheme.error),
             ),
             data: (data) => Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ScaledText(
+                Text(
                   '데이터: $data',
                   style: textTheme.bodyLarge?.copyWith(
                     color: colorScheme.onPrimaryContainer,
@@ -378,7 +378,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
                 const SizedBox(height: 8),
                 ElevatedButton(
                   onPressed: () => ref.refresh(futureExampleProvider),
-                  child: const ScaledText('데이터 새로고침'),
+                  child: const Text('데이터 새로고침'),
                 ),
               ],
             ),
@@ -406,7 +406,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
                   color: colorScheme.secondary,
                 ),
                 const SizedBox(width: 8),
-                ScaledText(
+                Text(
                   '사용 가이드',
                   style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
@@ -435,14 +435,14 @@ class ProvidersGuideWidget extends ConsumerWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ScaledText(
+          Text(
             '• ',
             style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
               color: colorScheme.onSurface,
             ),
           ),
-          ScaledText(
+          Text(
             '$provider: ',
             style: textTheme.bodyMedium?.copyWith(
               fontWeight: FontWeight.bold,
@@ -450,7 +450,7 @@ class ProvidersGuideWidget extends ConsumerWidget {
             ),
           ),
           Expanded(
-            child: ScaledText(
+            child: Text(
               usage,
               style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurface),
             ),

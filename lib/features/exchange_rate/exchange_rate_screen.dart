@@ -136,7 +136,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                       label: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const ScaledText('ABC'),
+                          const Text('ABC'),
                           const SizedBox(width: 4),
                           if (sortCriteria == SortCriteria.byCodeAsc ||
                               sortCriteria == SortCriteria.byCodeDesc)
@@ -169,7 +169,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                       label: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const ScaledText('Price'),
+                          const Text('Price'),
                           const SizedBox(width: 4),
                           if (sortCriteria == SortCriteria.byPriceAsc ||
                               sortCriteria == SortCriteria.byPriceDesc)
@@ -199,7 +199,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
                     ),
                   ],
                 ),
-                ScaledText(
+                Text(
                   '${filteredRates.length} items',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
@@ -212,7 +212,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
               error: (err, stack) => Center(
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: ScaledText('Failed to load data.\nError: $err',
+                  child: Text('Failed to load data.\nError: $err',
                       textAlign: TextAlign.center),
                 ),
               ),
@@ -232,7 +232,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
       BuildContext context, List<ExchangeRate> rates, int lastUpdatedUnix) {
     if (rates.isEmpty) {
       return const Center(
-          child: ScaledText('No data available or matches your search.'));
+          child: Text('No data available or matches your search.'));
     }
 
     return ListView.builder(
@@ -269,11 +269,11 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
             ),
             child: ListTile(
               leading: leadingIcon,
-              title: ScaledText(
+              title: Text(
                 '${rate.baseCode}/${rate.quoteCode}',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              trailing: ScaledText(
+              trailing: Text(
                 _formatPrice(rate.price),
                 style: const TextStyle(fontSize: 15),
               ),

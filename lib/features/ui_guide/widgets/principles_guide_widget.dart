@@ -71,7 +71,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
                   color: colorScheme.primary,
                 ),
                 const SizedBox(height: 8),
-                ScaledText(
+                Text(
                   'Finow 개발 원칙',
                   style: textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
@@ -80,7 +80,7 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 8),
-                ScaledText(
+                Text(
                   '코드 품질과 유지보수성을 위한 핵심 개발 원칙들',
                   textAlign: TextAlign.center,
                   style: textTheme.bodyMedium?.copyWith(
@@ -124,14 +124,14 @@ class _PrinciplesGuideWidgetState extends State<PrinciplesGuideWidget> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ScaledText(
+                          Text(
                             title,
                             style: textTheme.titleMedium?.copyWith(
                               fontWeight: FontWeight.bold,
                               color: colorScheme.onSurface,
                             ),
                           ),
-                          ScaledText(
+                          Text(
                             subtitle,
                             style: textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurface.withAlpha(178),
@@ -250,7 +250,7 @@ ExchangeRateRepository → 데이터만''',
                       shape: BoxShape.circle,
                     ),
                     child: Center(
-                      child: ScaledText(
+                      child: Text(
                         letter,
                         style: textTheme.titleMedium?.copyWith(
                           color: onColor,
@@ -264,14 +264,14 @@ ExchangeRateRepository → 데이터만''',
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ScaledText(
+                        Text(
                           name,
                           style: textTheme.titleSmall?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: color,
                           ),
                         ),
-                        ScaledText(
+                        Text(
                           description,
                           style: textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurface.withAlpha(178),
@@ -297,7 +297,7 @@ ExchangeRateRepository → 데이터만''',
                 color: colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: ScaledText(
+              child: Text(
                 example,
                 style: textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
               ),
@@ -316,14 +316,14 @@ ExchangeRateRepository → 데이터만''',
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            ScaledText(
+            Text(
               'const 사용 예시',
               style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
             TextButton.icon(
               onPressed: () => setState(() => _showConstExample = !_showConstExample),
               icon: ScaledIcon(_showConstExample ? Icons.visibility_off : Icons.visibility, size: 16),
-              label: ScaledText(_showConstExample ? '숨기기' : '코드 보기'),
+              label: Text(_showConstExample ? '숨기기' : '코드 보기'),
             ),
           ],
         ),
@@ -337,7 +337,7 @@ ExchangeRateRepository → 데이터만''',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ScaledText(
+                Text(
                   '✅ 올바른 예시',
                   style: textTheme.bodyMedium?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.bold),
                 ),
@@ -350,8 +350,8 @@ ExchangeRateRepository → 데이터만''',
                   ),
                   child: const SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: ScaledText(
-                      '''const ScaledText('정적 텍스트')
+                    child: Text(
+                      '''const Text('정적 텍스트')
 const ScaledIcon(Icons.home)
 const SizedBox(height: 16)''',
                       style: TextStyle(
@@ -373,7 +373,7 @@ const SizedBox(height: 16)''',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ScaledText(
+                Text(
                   '❌ 잘못된 예시',
                   style: textTheme.bodyMedium?.copyWith(color: colorScheme.error, fontWeight: FontWeight.bold),
                 ),
@@ -386,8 +386,8 @@ const SizedBox(height: 16)''',
                   ),
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
-                    child: ScaledText(
-                      '''ScaledText('정적 텍스트')  // const 누락
+                    child: Text(
+                      '''Text('정적 텍스트')  // const 누락
 ScaledIcon(Icons.home)     // const 누락''',
                       style: textTheme.bodySmall?.copyWith(
                         fontFamily: 'monospace',
@@ -418,7 +418,7 @@ ScaledIcon(Icons.home)     // const 누락''',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ScaledText(
+          Text(
             '실제 const 적용 예시:',
             style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary),
           ),
@@ -427,7 +427,7 @@ ScaledIcon(Icons.home)     // const 누락''',
             children: [
               ScaledIcon(Icons.check, color: colorScheme.secondary),
               const SizedBox(width: 8),
-              const ScaledText('const ScaledIcon 사용'),
+              const Text('const ScaledIcon 사용'),
             ],
           ),
           const SizedBox(height: 4),
@@ -435,7 +435,7 @@ ScaledIcon(Icons.home)     // const 누락''',
             children: [
               ScaledIcon(Icons.text_fields, color: colorScheme.primary),
               const SizedBox(width: 8),
-              const ScaledText('const ScaledText 사용'),
+              const Text('const Text 사용'),
             ],
           ),
           const SizedBox(height: 4),
@@ -443,7 +443,7 @@ ScaledIcon(Icons.home)     // const 누락''',
             children: [
               ScaledIcon(Icons.space_bar, color: colorScheme.onSurface.withAlpha(153)),
               const SizedBox(width: 8),
-              const ScaledText('const SizedBox 사용'),
+              const Text('const SizedBox 사용'),
             ],
           ),
         ],
@@ -466,7 +466,7 @@ ScaledIcon(Icons.home)     // const 누락''',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ScaledText(
+              Text(
                 '✅ 올바른 위젯 분리',
                 style: textTheme.bodyMedium?.copyWith(color: colorScheme.secondary, fontWeight: FontWeight.bold),
               ),
@@ -489,12 +489,12 @@ ScaledIcon(Icons.home)     // const 누락''',
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ScaledText(
+              Text(
                 '❌ 잘못된 예시: 모든 것을 build()에',
                 style: textTheme.bodyMedium?.copyWith(color: colorScheme.error, fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 4),
-              const ScaledText(
+              const Text(
                 '''• 100줄 이상의 복잡한 build() 메서드
 • 가독성 저하 및 유지보수 어려움
 • 재사용성 부족''',
@@ -523,7 +523,7 @@ ScaledIcon(Icons.home)     // const 누락''',
               borderRadius: BorderRadius.circular(1.5),
             ),
           ),
-          ScaledText(
+          Text(
             name,
             style: textTheme.bodySmall?.copyWith(
               fontFamily: 'monospace',
@@ -533,7 +533,7 @@ ScaledIcon(Icons.home)     // const 누락''',
           ),
           const SizedBox(width: 8),
           Expanded(
-            child: ScaledText(
+            child: Text(
               description,
               style: textTheme.bodySmall?.copyWith(color: colorScheme.onSurface.withAlpha(153)),
             ),
@@ -606,14 +606,14 @@ ScaledIcon(Icons.home)     // const 누락''',
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ScaledText(
+                Text(
                   technique,
                   style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: color,
                   ),
                 ),
-                ScaledText(
+                Text(
                   '$purpose: $example',
                   style: textTheme.bodySmall,
                 ),
@@ -644,7 +644,7 @@ ScaledIcon(Icons.home)     // const 누락''',
                 children: [
                   ScaledIcon(Icons.error_outline, color: colorScheme.tertiary, size: 16),
                   const SizedBox(width: 8),
-                  ScaledText(
+                  Text(
                     'AsyncValue.when 패턴',
                     style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.tertiary),
                   ),
@@ -659,7 +659,7 @@ ScaledIcon(Icons.home)     // const 누락''',
                 ),
                 child: const SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: ScaledText(
+                  child: Text(
                     '''asyncData.when(
   loading: () => CircularProgressIndicator(),
   error: (error, stack) => ErrorWidget(
@@ -691,14 +691,14 @@ ScaledIcon(Icons.home)     // const 누락''',
                 children: [
                   ScaledIcon(Icons.warning, color: colorScheme.error, size: 16),
                   const SizedBox(width: 8),
-                  ScaledText(
+                  Text(
                     '에러 처리 원칙',
                     style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.error),
                   ),
                 ],
               ),
               const SizedBox(height: 8),
-              const ScaledText(
+              const Text(
                 '''• 모든 API 호출에 try-catch 적용
 • 사용자에게 명확한 에러 메시지 제공
 • 재시도 메커니즘 구현

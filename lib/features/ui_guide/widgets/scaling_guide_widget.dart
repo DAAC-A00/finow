@@ -62,7 +62,7 @@ class ScalingGuideWidget extends ConsumerWidget {
                 color: colorScheme.secondary,
               ),
               const SizedBox(height: 8),
-              ScaledText(
+              Text(
                 'UI 스케일링 시스템',
                 style: textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -71,7 +71,7 @@ class ScalingGuideWidget extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              ScaledText(
+              Text(
                 'MediaQuery textScaler + UIScaleProvider 조합으로 전체 UI 스케일링',
                 textAlign: TextAlign.center,
                 style: textTheme.bodyMedium?.copyWith(
@@ -102,18 +102,18 @@ class ScalingGuideWidget extends ConsumerWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ScaledText(
+                  Text(
                     '현재 스케일 설정',
                     style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
                   ),
-                  ScaledText(
+                  Text(
                     '${currentFontSize.label}: ${currentFontSize.scale}x',
                     style: textTheme.bodyLarge?.copyWith(color: colorScheme.primary),
                   ),
                 ],
               ),
               const SizedBox(width: 16),
-              const ScaledText('← Settings에서 변경해보세요'),
+              const Text('← Settings에서 변경해보세요'),
             ],
           ),
         ),
@@ -145,11 +145,11 @@ class ScalingGuideWidget extends ConsumerWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        ScaledText(
+                        Text(
                           title,
                           style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                         ),
-                        ScaledText(
+                        Text(
                           subtitle,
                           style: textTheme.bodySmall?.copyWith(
                             color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
@@ -270,7 +270,7 @@ class ScalingGuideWidget extends ConsumerWidget {
         ),
         child: Column(
           children: [
-            ScaledText(
+            Text(
               '실제 프로젝트에서 사용되는 이미지들',
               style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
             ),
@@ -336,7 +336,7 @@ class ScalingGuideWidget extends ConsumerWidget {
               children: [
                 ScaledIcon(Icons.warning, color: colorScheme.error, size: 16),
                 const SizedBox(width: 8),
-                ScaledText(
+                Text(
                   '❌ 스케일링 미적용 (잘못된 사용)',
                   style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.error),
                 ),
@@ -347,7 +347,7 @@ class ScalingGuideWidget extends ConsumerWidget {
               children: [
                 const Icon(Icons.home, size: 24), // 일반 Icon - 스케일링 안됨
                 const SizedBox(width: 16),
-                ScaledText('일반 Icon (고정 크기)', style: textTheme.bodyMedium),
+                Text('일반 Icon (고정 크기)', style: textTheme.bodyMedium),
               ],
             ),
             const SizedBox(height: 16),
@@ -355,7 +355,7 @@ class ScalingGuideWidget extends ConsumerWidget {
               children: [
                 ScaledIcon(Icons.check_circle, color: colorScheme.secondary, size: 16),
                 const SizedBox(width: 8),
-                ScaledText(
+                Text(
                   '✅ 스케일링 적용 (올바른 사용)',
                   style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.secondary),
                 ),
@@ -366,7 +366,7 @@ class ScalingGuideWidget extends ConsumerWidget {
               children: [
                 const ScaledIcon(Icons.home, size: 24), // ScaledIcon - 스케일링 적용됨
                 const SizedBox(width: 16),
-                ScaledText('ScaledIcon (반응형 크기)', style: textTheme.bodyMedium),
+                Text('ScaledIcon (반응형 크기)', style: textTheme.bodyMedium),
               ],
             ),
           ],
@@ -391,7 +391,7 @@ class ScalingGuideWidget extends ConsumerWidget {
                 children: [
                   ScaledIcon(Icons.code, color: colorScheme.primary),
                   const SizedBox(width: 8),
-                  ScaledText(
+                  Text(
                     '구현 가이드',
                     style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                   ),
@@ -412,12 +412,12 @@ class ScalingGuideWidget extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ScaledText(
+                    Text(
                       '핵심 원리:',
                       style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: colorScheme.primary),
                     ),
                     const SizedBox(height: 4),
-                    ScaledText(
+                    Text(
                       '• MediaQuery textScaler: 텍스트 자동 스케일링\n'
                       '• UIScaleProvider: 아이콘/이미지 수동 스케일링\n'
                       '• FontSizeProvider: 사용자 설정 값 제공',
@@ -449,11 +449,11 @@ class ScalingGuideWidget extends ConsumerWidget {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          ScaledText(
+          Text(
             '$component: ',
             style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold, color: color),
           ),
-          Expanded(child: ScaledText(usage, style: textTheme.bodyMedium)),
+          Expanded(child: Text(usage, style: textTheme.bodyMedium)),
         ],
       ),
     );

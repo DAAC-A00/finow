@@ -1,6 +1,6 @@
 // 이 위젯은 다양한 애니메이션 구현 예시를 제공하여, 프로젝트 내 애니메이션 스타일의 기준점 역할을 합니다.
 // 실제 서비스 적용 전, 애니메이션 효과의 방향성과 일관성을 확인하는 용도로 사용하세요.
-import 'package:finow/ui_scale_provider.dart';
+
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
@@ -114,7 +114,7 @@ class _AnimationGuideWidgetState extends State<AnimationGuideWidget>
           width: (MediaQuery.of(context).size.width - 32 - 16) / 2, // Half width minus padding and spacing
           child: ElevatedButton(
               onPressed: () => setState(() => _isToggled = !_isToggled),
-              child: const ScaledText('Toggle Animations')),
+              child: const Text('Toggle Animations')),
         ),
       ],
     );
@@ -129,7 +129,7 @@ class _AnimationGuideWidgetState extends State<AnimationGuideWidget>
       width: itemWidth,
       child: Column(
         children: [
-          ScaledText(title, style: textTheme.titleMedium),
+          Text(title, style: textTheme.titleMedium),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(8),
@@ -151,7 +151,7 @@ class _HeroDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const ScaledText('Hero Detail')),
+      appBar: AppBar(title: const Text('Hero Detail')),
       body: const Center(
         child: Hero(
           tag: 'logo',
