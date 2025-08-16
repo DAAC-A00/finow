@@ -96,25 +96,7 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: TextField(
-          controller: _controller,
-          onChanged: (value) {
-            ref.read(searchQueryProvider.notifier).state = value;
-          },
-          decoration: InputDecoration(
-            hintText: 'Search by currency code (e.g., KRW, JPY)',
-            border: InputBorder.none,
-            suffixIcon: searchQuery.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () {
-                      ref.read(searchQueryProvider.notifier).state = '';
-                      _controller.clear();
-                    },
-                  )
-                : null,
-          ),
-        ),
+        title: const Text('Exchange Rate'),
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -124,6 +106,28 @@ class _ExchangeRateScreenState extends ConsumerState<ExchangeRateScreen> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _controller,
+              onChanged: (value) {
+                ref.read(searchQueryProvider.notifier).state = value;
+              },
+              decoration: InputDecoration(
+                hintText: 'Search by currency code (e.g., KRW, JPY)',
+                border: const OutlineInputBorder(),
+                suffixIcon: searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          ref.read(searchQueryProvider.notifier).state = '';
+                          _controller.clear();
+                        },
+                      )
+                    : null,
+              ),
+            ),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(

@@ -15,9 +15,9 @@ class MenuRepository {
 
   final List<Menu> _baseMenus = const [
     Menu(name: 'Home', path: '/home', icon: Icons.home, showInBottomNav: true),
-    Menu(name: 'Exchange Rate', path: '/exchange', icon: Icons.attach_money, showInBottomNav: true),
+    Menu(name: 'Exchange Rate', path: '/exchange', icon: Icons.attach_money, showInBottomNav: false),
     Menu(name: 'Instruments', path: '/instruments', icon: Icons.currency_exchange, showInBottomNav: false),
-    Menu(name: 'Ticker', path: '/ticker', icon: Icons.trending_up, showInBottomNav: false),
+    Menu(name: 'Ticker', path: '/ticker', icon: Icons.trending_up, showInBottomNav: true),
     Menu(name: 'Menu', path: '/menu', icon: Icons.menu, showInBottomNav: true),
     Menu(name: 'Settings', path: '/settings', icon: Icons.settings, showInBottomNav: false),
   ];
