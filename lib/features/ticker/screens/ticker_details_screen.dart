@@ -85,7 +85,7 @@ class TickerDetailsScreen extends StatelessWidget {
             SizedBox(height: 16.0),
             _buildInfoRow('심볼', ticker.symbol, colorScheme),
             _buildInfoRow('카테고리', ticker.category.toUpperCase(), colorScheme),
-            if (ticker.quantity != null && ticker.quantity != 1.0)
+            if (ticker.quantity != null)
               _buildInfoRow('수량', ticker.quantity.toString(), colorScheme),
             _buildInfoRow('기초 코인', ticker.baseCoin, colorScheme),
             _buildInfoRow('견적 코인', ticker.quoteCoin, colorScheme),

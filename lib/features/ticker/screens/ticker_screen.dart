@@ -301,7 +301,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                 runSpacing: 4.0,
                 children: [
                   _buildInfoChip(
-                    ticker.quantity != null
+                    (ticker.quantity != null && ticker.quantity != 1.0)
                         ? '${ticker.quantity}${ticker.baseCoin}/${ticker.quoteCoin}'
                         : '${ticker.baseCoin}/${ticker.quoteCoin}',
                     colorScheme,

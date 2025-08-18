@@ -111,7 +111,7 @@ class TickerRepository {
     String coin = '';
 
     for (int i = 0; i < baseCoin.length; i++) {
-      if (double.tryParse(baseCoin[i]) != null || baseCoin[i] == '.') {
+      if (int.tryParse(baseCoin[i]) != null) {
         quantityStr += baseCoin[i];
       } else {
         coin = baseCoin.substring(i);
@@ -120,16 +120,19 @@ class TickerRepository {
     }
 
     if (quantityStr.isNotEmpty) {
-      return {
-        'quantity': double.tryParse(quantityStr) ?? 1.0,
-        'baseCoin': coin,
-      };
-    } else {
-      return {
-        'quantity': 1.0,
-        'baseCoin': baseCoin,
-      };
+      final quantity = int.tryParse(quantityStr);
+      if (quantity != null && quantity % 1000 == 0) {
+        return {
+          'quantity': quantity.toDouble(),
+          'baseCoin': coin,
+        };
+      }
     }
+    
+    return {
+      'quantity': 1.0,
+      'baseCoin': baseCoin,
+    };
   }
 
   /// 특정 카테고리의 통합 실시간 ticker 데이터를 가져옴
