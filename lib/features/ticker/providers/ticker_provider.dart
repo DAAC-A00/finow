@@ -71,7 +71,7 @@ class LiveTickerNotifier extends StateNotifier<AsyncValue<List<IntegratedTickerP
           ? tickers 
           : tickers.where((ticker) => ticker.category.toLowerCase() == category.toLowerCase()).toList(),
       loading: () => [],
-      error: (_, __) => [],
+      error: (_, _) => [],
     );
   }
 
@@ -91,7 +91,7 @@ class LiveTickerNotifier extends StateNotifier<AsyncValue<List<IntegratedTickerP
         ).toList();
       },
       loading: () => [],
-      error: (_, __) => [],
+      error: (_, _) => [],
     );
   }
 
@@ -102,7 +102,7 @@ class LiveTickerNotifier extends StateNotifier<AsyncValue<List<IntegratedTickerP
           ? tickers 
           : tickers.where((ticker) => ticker.status == status).toList(),
       loading: () => [],
-      error: (_, __) => [],
+      error: (_, _) => [],
     );
   }
 
@@ -141,7 +141,7 @@ class LiveTickerNotifier extends StateNotifier<AsyncValue<List<IntegratedTickerP
         return filtered;
       },
       loading: () => [],
-      error: (_, __) => [],
+      error: (_, _) => [],
     );
   }
 

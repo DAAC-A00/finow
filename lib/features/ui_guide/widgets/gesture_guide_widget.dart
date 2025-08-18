@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 // 이 위젯은 다양한 제스처(스와이프, 드래그, 롱프레스 등) 구현 예시를 제공하여, 프로젝트 내 제스처 UX의 기준점 역할을 합니다.
 // 실제 서비스 적용 전, 제스처 동작의 방향성과 일관성을 확인하는 용도로 사용하세요.
 
@@ -220,23 +222,37 @@ class _GestureGuideWidgetState extends State<GestureGuideWidget> {
             });
           },
         ),
-        RadioListTile<int>(
+        ListTile(
           title: const Text('Radio Option 1'),
-          value: 0,
-          groupValue: _selectedRadio,
-          onChanged: (value) {
+          leading: Radio.adaptive(
+            value: 0,
+            groupValue: _selectedRadio,
+            onChanged: (value) {
+              setState(() {
+                _selectedRadio = value;
+              });
+            },
+          ),
+          onTap: () {
             setState(() {
-              _selectedRadio = value;
+              _selectedRadio = 0;
             });
           },
         ),
-        RadioListTile<int>(
+        ListTile(
           title: const Text('Radio Option 2'),
-          value: 1,
-          groupValue: _selectedRadio,
-          onChanged: (value) {
+          leading: Radio.adaptive(
+            value: 1,
+            groupValue: _selectedRadio,
+            onChanged: (value) {
+              setState(() {
+                _selectedRadio = value;
+              });
+            },
+          ),
+          onTap: () {
             setState(() {
-              _selectedRadio = value;
+              _selectedRadio = 1;
             });
           },
         ),

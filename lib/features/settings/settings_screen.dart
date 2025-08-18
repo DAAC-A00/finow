@@ -1,3 +1,4 @@
+// ignore_for_file: deprecated_member_use
 
 import 'package:finow/features/settings/admin_mode_provider.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +27,7 @@ class SettingsScreen extends ConsumerWidget {
           const ListTile(
             title: Text('Theme Settings', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
-          RadioListTile<ThemeMode>(
+          RadioListTile.adaptive(
             title: const Text('System Theme'),
             value: ThemeMode.system,
             groupValue: currentThemeMode,
@@ -36,7 +37,7 @@ class SettingsScreen extends ConsumerWidget {
               }
             },
           ),
-          RadioListTile<ThemeMode>(
+          RadioListTile.adaptive(
             title: const Text('Light Mode'),
             value: ThemeMode.light,
             groupValue: currentThemeMode,
@@ -46,7 +47,7 @@ class SettingsScreen extends ConsumerWidget {
               }
             },
           ),
-          RadioListTile<ThemeMode>(
+          RadioListTile.adaptive(
             title: const Text('Dark Mode'),
             value: ThemeMode.dark,
             groupValue: currentThemeMode,
@@ -60,7 +61,7 @@ class SettingsScreen extends ConsumerWidget {
           const ListTile(
             title: Text('Font Size Settings', style: TextStyle(fontWeight: FontWeight.bold)),
           ),
-          ...FontSizeOption.values.map((fontSize) => RadioListTile<FontSizeOption>(
+          ...FontSizeOption.values.map((fontSize) => RadioListTile.adaptive(
             title: Text(fontSize.label),
             value: fontSize,
             groupValue: currentFontSize,

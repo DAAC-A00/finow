@@ -17,7 +17,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
   
-  String _selectedCategory = 'all';
+  
   String _selectedStatus = 'all';
   String _searchQuery = '';
 
@@ -73,7 +73,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                 Tab(text: 'Inverse'),
               ],
               labelColor: colorScheme.primary,
-              unselectedLabelColor: colorScheme.onSurface.withAlpha(153),
+                            unselectedLabelColor: colorScheme.onSurface.withAlpha(153),
               indicatorColor: colorScheme.primary,
             ),
           ),
@@ -325,7 +325,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                         '24h Vol: ${_formatVolume(priceData.volume24h!)}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: colorScheme.onSurface.withOpacity(0.6),
+                          color: colorScheme.onSurface.withAlpha(153),
                         ),
                       ),
                     if (priceData.highPrice24h != null && priceData.lowPrice24h != null)
@@ -333,7 +333,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                         'H: ${priceData.highPrice24h} L: ${priceData.lowPrice24h}',
                         style: TextStyle(
                           fontSize: 12,
-                          color: colorScheme.onSurface.withOpacity(0.6),
+                          color: colorScheme.onSurface.withAlpha(153),
                         ),
                       ),
                   ],
@@ -390,9 +390,9 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withAlpha(25),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Text(
         category.toUpperCase(),
@@ -409,7 +409,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceVariant,
+        color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
@@ -427,9 +427,9 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withAlpha(25),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Text(
         status,
@@ -446,9 +446,9 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
-        color: Colors.blue.withOpacity(0.1),
+        color: Colors.blue.withAlpha(25),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.blue.withOpacity(0.3)),
+        border: Border.all(color: Colors.blue.withAlpha(76)),
       ),
       child: Text(
         contractType,
@@ -466,9 +466,9 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withAlpha(25),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Text(
         'Margin',
@@ -485,9 +485,9 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
-        color: Colors.amber.withOpacity(0.1),
+        color: Colors.amber.withAlpha(25),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: Colors.amber.withOpacity(0.3)),
+        border: Border.all(color: Colors.amber.withAlpha(76)),
       ),
       child: const Text(
         'Innovation',

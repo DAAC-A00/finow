@@ -132,7 +132,7 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<ApiKeyStatus>(
-                  value: selectedStatus,
+                  initialValue: selectedStatus,
                   decoration: const InputDecoration(labelText: "Status"),
                   items: ApiKeyStatus.values.map((status) {
                     return DropdownMenuItem(
