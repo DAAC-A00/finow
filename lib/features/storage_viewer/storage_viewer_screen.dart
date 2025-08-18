@@ -84,6 +84,7 @@ final symbolsItemCountProvider = Provider<AsyncValue<int>>((ref) {
         final statusString = value.status.toLowerCase();
         final koreanNameString = (value.koreanName ?? '').toLowerCase();
         final englishNameString = (value.englishName ?? '').toLowerCase();
+        final categoryString = (value.category ?? '').toLowerCase();
 
         return key.contains(query) ||
             symbolString.contains(query) ||
@@ -92,7 +93,8 @@ final symbolsItemCountProvider = Provider<AsyncValue<int>>((ref) {
             exchangeString.contains(query) ||
             statusString.contains(query) ||
             koreanNameString.contains(query) ||
-            englishNameString.contains(query);
+            englishNameString.contains(query) ||
+            categoryString.contains(query);
       }
       final valueString = value.toString().toLowerCase();
       return key.contains(query) || valueString.contains(query);
@@ -602,6 +604,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
             final statusString = value.status.toLowerCase();
             final koreanNameString = (value.koreanName ?? '').toLowerCase();
             final englishNameString = (value.englishName ?? '').toLowerCase();
+            final categoryString = (value.category ?? '').toLowerCase();
             
             return key.contains(query) ||
                 symbolString.contains(query) ||
@@ -610,7 +613,8 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                 exchangeString.contains(query) ||
                 statusString.contains(query) ||
                 koreanNameString.contains(query) ||
-                englishNameString.contains(query);
+                englishNameString.contains(query) ||
+                categoryString.contains(query);
           }
           
           final valueString = value.toString().toLowerCase();
@@ -705,6 +709,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                               Text('quoteCoin: ${value.quoteCoin}'),
                               Text('exchange: ${value.exchange}'),
                               Text('status: ${value.status}'),
+                              if (value.category != null) Text('category: ${value.category}'),
                               if (value.koreanName != null) Text('koreanName: ${value.koreanName}'),
                               if (value.englishName != null) Text('englishName: ${value.englishName}'),
                               if (value.marketWarning != null) Text('marketWarning: ${value.marketWarning}'),
