@@ -73,7 +73,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                 Tab(text: 'Inverse'),
               ],
               labelColor: colorScheme.primary,
-              unselectedLabelColor: colorScheme.onSurface.withOpacity(0.6),
+              unselectedLabelColor: colorScheme.onSurface.withAlpha(153),
               indicatorColor: colorScheme.primary,
             ),
           ),
@@ -260,7 +260,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                             ticker.koreanName!,
                             style: TextStyle(
                               fontSize: 14,
-                              color: colorScheme.onSurface.withOpacity(0.7),
+                              color: colorScheme.onSurface.withAlpha(178),
                             ),
                           ),
                         ],
@@ -300,7 +300,12 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                 spacing: 8.0,
                 runSpacing: 4.0,
                 children: [
-                  _buildInfoChip('${ticker.baseCoin}/${ticker.quoteCoin}', colorScheme),
+                  _buildInfoChip(
+                    ticker.quantity != null
+                        ? '${ticker.quantity}${ticker.baseCoin}/${ticker.quoteCoin}'
+                        : '${ticker.baseCoin}/${ticker.quoteCoin}',
+                    colorScheme,
+                  ),
                   _buildStatusChip(ticker.status, colorScheme),
                   if (ticker.contractType != null)
                     _buildContractTypeChip(ticker.contractType!, colorScheme),

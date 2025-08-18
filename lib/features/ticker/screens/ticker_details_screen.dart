@@ -85,6 +85,8 @@ class TickerDetailsScreen extends StatelessWidget {
             SizedBox(height: 16.0),
             _buildInfoRow('심볼', ticker.symbol, colorScheme),
             _buildInfoRow('카테고리', ticker.category.toUpperCase(), colorScheme),
+            if (ticker.quantity != null && ticker.quantity != 1.0)
+              _buildInfoRow('수량', ticker.quantity.toString(), colorScheme),
             _buildInfoRow('기초 코인', ticker.baseCoin, colorScheme),
             _buildInfoRow('견적 코인', ticker.quoteCoin, colorScheme),
             _buildInfoRow('상태', ticker.status, colorScheme),
@@ -225,14 +227,14 @@ class TickerDetailsScreen extends StatelessWidget {
                         Text(
                           ticker.koreanName!,
                           style: theme.textTheme.bodyLarge?.copyWith(
-                            color: colorScheme.onSurface.withAlpha((255 * 0.7).round()),
+                            color: colorScheme.onSurface.withAlpha(178),
                           ),
                         ),
                       if (ticker.englishName != null)
                         Text(
                           ticker.englishName!,
                           style: theme.textTheme.bodyMedium?.copyWith(
-                            color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
+                            color: colorScheme.onSurface.withAlpha(153),
                           ),
                         ),
                     ],
@@ -483,7 +485,7 @@ class TickerDetailsScreen extends StatelessWidget {
             SizedBox(height: 12.0),
             Text(
               '가격 필터 정보는 현재 사용할 수 없습니다.',
-              style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
+              style: TextStyle(color: colorScheme.onSurface.withAlpha(153)),
             ),
           ],
         ),
@@ -512,7 +514,7 @@ class TickerDetailsScreen extends StatelessWidget {
             SizedBox(height: 12.0),
             Text(
               '로트 크기 필터 정보는 현재 사용할 수 없습니다.',
-              style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
+              style: TextStyle(color: colorScheme.onSurface.withAlpha(153)),
             ),
           ],
         ),
@@ -541,7 +543,7 @@ class TickerDetailsScreen extends StatelessWidget {
             SizedBox(height: 12.0),
             Text(
               '레버리지 필터 정보는 현재 사용할 수 없습니다.',
-              style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
+              style: TextStyle(color: colorScheme.onSurface.withAlpha(153)),
             ),
           ],
         ),
@@ -570,7 +572,7 @@ class TickerDetailsScreen extends StatelessWidget {
             SizedBox(height: 12.0),
             Text(
               '리스크 매개변수 정보는 현재 사용할 수 없습니다.',
-              style: TextStyle(color: colorScheme.onSurface.withOpacity(0.6)),
+              style: TextStyle(color: colorScheme.onSurface.withAlpha(153)),
             ),
           ],
         ),
@@ -604,14 +606,14 @@ class TickerDetailsScreen extends StatelessWidget {
                 Icon(
                   Icons.info_outline,
                   size: 16,
-                  color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
+                  color: colorScheme.onSurface.withAlpha(153),
                 ),
                 SizedBox(width: 8.0),
                 Expanded(
                   child: Text(
                     'Ticker 정보는 Bybit API에서 실시간으로 가져온 데이터입니다.',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
+                      color: colorScheme.onSurface.withAlpha(153),
                     ),
                   ),
                 ),
@@ -627,24 +629,24 @@ class TickerDetailsScreen extends StatelessWidget {
     Color color;
     switch (category.toLowerCase()) {
       case 'spot':
-        color = Colors.green;
+        color = colorScheme.primary;
         break;
       case 'linear':
-        color = Colors.blue;
+        color = colorScheme.secondary;
         break;
       case 'inverse':
-        color = Colors.purple;
+        color = colorScheme.tertiary;
         break;
       default:
-        color = Colors.grey;
+        color = colorScheme.onSurface.withAlpha(100);
     }
     
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withAlpha((255 * 0.1).round()),
+        color: color.withAlpha(25),
         borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: color.withAlpha((255 * 0.3).round())),
+        border: Border.all(color: color.withAlpha(76)),
       ),
       child: Text(
         category.toUpperCase(),
@@ -661,14 +663,14 @@ class TickerDetailsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: colorScheme.primaryContainer.withAlpha((255 * 0.3).round()),
+        color: colorScheme.primaryContainer.withAlpha(76),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         text,
         style: TextStyle(
           fontSize: 12,
-          color: colorScheme.onSurface.withAlpha((255 * 0.8).round()),
+          color: colorScheme.onSurface.withAlpha(204),
         ),
       ),
     );
@@ -680,7 +682,7 @@ class TickerDetailsScreen extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withAlpha((255 * 0.1).round()),
+        color: color.withAlpha(25),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
@@ -706,7 +708,7 @@ class TickerDetailsScreen extends StatelessWidget {
               label,
               style: TextStyle(
                 fontSize: 14,
-                color: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
+                color: colorScheme.onSurface.withAlpha(153),
               ),
             ),
           ),

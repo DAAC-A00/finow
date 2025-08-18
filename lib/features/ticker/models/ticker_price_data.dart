@@ -247,6 +247,7 @@ class IntegratedTickerPriceData {
   final String category;
   final String baseCoin;
   final String quoteCoin;
+  final double? quantity;
   final String status;
   final String exchange;
   
@@ -291,6 +292,7 @@ class IntegratedTickerPriceData {
     required this.category,
     required this.baseCoin,
     required this.quoteCoin,
+    this.quantity,
     required this.status,
     required this.exchange,
     this.koreanName,

@@ -62,12 +62,14 @@ class TickerRepository {
       // Instrument 데이터를 기준으로 통합 (ticker 데이터가 없어도 포함)
       for (final instrument in instruments) {
         final tickerData = tickerMap[instrument.symbol];
+        final parsedCoin = _parseBaseCoin(instrument.baseCoin);
         
         integratedTickers.add(IntegratedTickerPriceData(
           symbol: instrument.symbol,
           category: instrument.category ?? 'unknown',
-          baseCoin: instrument.baseCoin,
+          baseCoin: parsedCoin['baseCoin']!,
           quoteCoin: instrument.quoteCoin,
+          quantity: parsedCoin['quantity']!,
           status: instrument.status,
           exchange: instrument.exchange,
           koreanName: instrument.koreanName,
@@ -101,6 +103,32 @@ class TickerRepository {
       return integratedTickers;
     } catch (e) {
       throw Exception('통합 실시간 Ticker 데이터 가져오기 중 오류: $e');
+    }
+  }
+
+  Map<String, dynamic> _parseBaseCoin(String baseCoin) {
+    String quantityStr = '';
+    String coin = '';
+
+    for (int i = 0; i < baseCoin.length; i++) {
+      if (double.tryParse(baseCoin[i]) != null || baseCoin[i] == '.') {
+        quantityStr += baseCoin[i];
+      } else {
+        coin = baseCoin.substring(i);
+        break;
+      }
+    }
+
+    if (quantityStr.isNotEmpty) {
+      return {
+        'quantity': double.tryParse(quantityStr) ?? 1.0,
+        'baseCoin': coin,
+      };
+    } else {
+      return {
+        'quantity': 1.0,
+        'baseCoin': baseCoin,
+      };
     }
   }
 
