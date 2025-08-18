@@ -346,11 +346,60 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
     TextEditingController quoteCodeController = TextEditingController();
     TextEditingController priceController = TextEditingController();
 
+    // Instrument 전용 컨트롤러들
+    TextEditingController symbolController = TextEditingController();
+    TextEditingController baseCoinController = TextEditingController();
+    TextEditingController quoteCoinController = TextEditingController();
+    TextEditingController exchangeController = TextEditingController();
+    TextEditingController statusController = TextEditingController();
+    TextEditingController categoryController = TextEditingController();
+    TextEditingController koreanNameController = TextEditingController();
+    TextEditingController englishNameController = TextEditingController();
+    TextEditingController marketWarningController = TextEditingController();
+    TextEditingController contractTypeController = TextEditingController();
+    TextEditingController launchTimeController = TextEditingController();
+    TextEditingController deliveryTimeController = TextEditingController();
+    TextEditingController deliveryFeeRateController = TextEditingController();
+    TextEditingController priceScaleController = TextEditingController();
+    bool? unifiedMarginTradeValue;
+    TextEditingController fundingIntervalController = TextEditingController();
+    TextEditingController settleCoinController = TextEditingController();
+    TextEditingController copyTradingController = TextEditingController();
+    TextEditingController upperFundingRateController = TextEditingController();
+    TextEditingController lowerFundingRateController = TextEditingController();
+    bool? isPreListingValue;
+    TextEditingController preListingInfoController = TextEditingController(); // For JSON string
+    TextEditingController displayNameController = TextEditingController();
+
     if (value is ExchangeRate) {
       lastUpdatedUnixController.text = value.lastUpdatedUnix.toString();
       baseCodeController.text = value.baseCode;
       quoteCodeController.text = value.quoteCode;
       priceController.text = value.price.toString();
+    } else if (value is Instrument) {
+      symbolController.text = value.symbol;
+      baseCoinController.text = value.baseCoin;
+      quoteCoinController.text = value.quoteCoin;
+      exchangeController.text = value.exchange;
+      statusController.text = value.status;
+      categoryController.text = value.category ?? '';
+      koreanNameController.text = value.koreanName ?? '';
+      englishNameController.text = value.englishName ?? '';
+      marketWarningController.text = value.marketWarning ?? '';
+      contractTypeController.text = value.contractType ?? '';
+      launchTimeController.text = value.launchTime ?? '';
+      deliveryTimeController.text = value.deliveryTime ?? '';
+      deliveryFeeRateController.text = value.deliveryFeeRate ?? '';
+      priceScaleController.text = value.priceScale ?? '';
+      unifiedMarginTradeValue = value.unifiedMarginTrade;
+      fundingIntervalController.text = value.fundingInterval?.toString() ?? '';
+      settleCoinController.text = value.settleCoin ?? '';
+      copyTradingController.text = value.copyTrading ?? '';
+      upperFundingRateController.text = value.upperFundingRate ?? '';
+      lowerFundingRateController.text = value.lowerFundingRate ?? '';
+      isPreListingValue = value.isPreListing;
+      preListingInfoController.text = value.preListingInfo?.toString() ?? ''; // Convert Map to String
+      displayNameController.text = value.displayName ?? '';
     }
 
     await showDialog(
@@ -395,6 +444,118 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                       ),
                     ],
                   )
+                else if (value is Instrument)
+                  Column(
+                    children: [
+                      TextField(
+                        controller: symbolController,
+                        decoration: const InputDecoration(labelText: 'Symbol'),
+                      ),
+                      TextField(
+                        controller: baseCoinController,
+                        decoration: const InputDecoration(labelText: 'Base Coin'),
+                      ),
+                      TextField(
+                        controller: quoteCoinController,
+                        decoration: const InputDecoration(labelText: 'Quote Coin'),
+                      ),
+                      TextField(
+                        controller: exchangeController,
+                        decoration: const InputDecoration(labelText: 'Exchange'),
+                      ),
+                      TextField(
+                        controller: statusController,
+                        decoration: const InputDecoration(labelText: 'Status'),
+                      ),
+                      TextField(
+                        controller: categoryController,
+                        decoration: const InputDecoration(labelText: 'Category'),
+                      ),
+                      TextField(
+                        controller: koreanNameController,
+                        decoration: const InputDecoration(labelText: 'Korean Name'),
+                      ),
+                      TextField(
+                        controller: englishNameController,
+                        decoration: const InputDecoration(labelText: 'English Name'),
+                      ),
+                      TextField(
+                        controller: marketWarningController,
+                        decoration: const InputDecoration(labelText: 'Market Warning'),
+                      ),
+                      TextField(
+                        controller: contractTypeController,
+                        decoration: const InputDecoration(labelText: 'Contract Type'),
+                      ),
+                      TextField(
+                        controller: launchTimeController,
+                        decoration: const InputDecoration(labelText: 'Launch Time'),
+                      ),
+                      TextField(
+                        controller: deliveryTimeController,
+                        decoration: const InputDecoration(labelText: 'Delivery Time'),
+                      ),
+                      TextField(
+                        controller: deliveryFeeRateController,
+                        decoration: const InputDecoration(labelText: 'Delivery Fee Rate'),
+                        keyboardType: TextInputType.number,
+                      ),
+                      TextField(
+                        controller: priceScaleController,
+                        decoration: const InputDecoration(labelText: 'Price Scale'),
+                      ),
+                      SwitchListTile(
+                        title: const Text('Unified Margin Trade'),
+                        value: unifiedMarginTradeValue ?? false,
+                        onChanged: (newValue) {
+                          unifiedMarginTradeValue = newValue;
+                          if (!context.mounted) return;
+                          (context as Element).markNeedsBuild();
+                        },
+                      ),
+                      TextField(
+                        controller: fundingIntervalController,
+                        decoration: const InputDecoration(labelText: 'Funding Interval'),
+                        keyboardType: TextInputType.number,
+                      ),
+                      TextField(
+                        controller: settleCoinController,
+                        decoration: const InputDecoration(labelText: 'Settle Coin'),
+                      ),
+                      TextField(
+                        controller: copyTradingController,
+                        decoration: const InputDecoration(labelText: 'Copy Trading'),
+                      ),
+                      TextField(
+                        controller: upperFundingRateController,
+                        decoration: const InputDecoration(labelText: 'Upper Funding Rate'),
+                        keyboardType: TextInputType.number,
+                      ),
+                      TextField(
+                        controller: lowerFundingRateController,
+                        decoration: const InputDecoration(labelText: 'Lower Funding Rate'),
+                        keyboardType: TextInputType.number,
+                      ),
+                      SwitchListTile(
+                        title: const Text('Is Pre-Listing'),
+                        value: isPreListingValue ?? false,
+                        onChanged: (newValue) {
+                          isPreListingValue = newValue;
+                          if (!context.mounted) return;
+                          (context as Element).markNeedsBuild();
+                        },
+                      ),
+                      TextField(
+                        controller: preListingInfoController,
+                        decoration: const InputDecoration(labelText: 'Pre-Listing Info (JSON)'),
+                        maxLines: 3,
+                      ),
+                      TextField(
+                        controller: displayNameController,
+                        decoration: const InputDecoration(labelText: 'Display Name'),
+                      ),
+                    ],
+                  )
                 else
                   TextField(
                     controller: genericController,
@@ -427,6 +588,38 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                     quoteCode: quoteCodeController.text,
                     price: double.tryParse(priceController.text) ?? value.price,
                     source: value.source, // 기존 source 값 유지
+                  );
+                } else if (value is Instrument) {
+                  newValue = Instrument(
+                    symbol: symbolController.text,
+                    baseCoin: baseCoinController.text,
+                    quoteCoin: quoteCoinController.text,
+                    exchange: exchangeController.text,
+                    status: statusController.text,
+                    category: categoryController.text.isEmpty ? null : categoryController.text,
+                    koreanName: koreanNameController.text.isEmpty ? null : koreanNameController.text,
+                    englishName: englishNameController.text.isEmpty ? null : englishNameController.text,
+                    marketWarning: marketWarningController.text.isEmpty ? null : marketWarningController.text,
+                    contractType: contractTypeController.text.isEmpty ? null : contractTypeController.text,
+                    launchTime: launchTimeController.text.isEmpty ? null : launchTimeController.text,
+                    deliveryTime: deliveryTimeController.text.isEmpty ? null : deliveryTimeController.text,
+                    deliveryFeeRate: deliveryFeeRateController.text.isEmpty ? null : deliveryFeeRateController.text,
+                    priceScale: priceScaleController.text.isEmpty ? null : priceScaleController.text,
+                    unifiedMarginTrade: unifiedMarginTradeValue,
+                    fundingInterval: int.tryParse(fundingIntervalController.text),
+                    settleCoin: settleCoinController.text.isEmpty ? null : settleCoinController.text,
+                    copyTrading: copyTradingController.text.isEmpty ? null : copyTradingController.text,
+                    upperFundingRate: upperFundingRateController.text.isEmpty ? null : upperFundingRateController.text,
+                    lowerFundingRate: lowerFundingRateController.text.isEmpty ? null : lowerFundingRateController.text,
+                    isPreListing: isPreListingValue,
+                    preListingInfo: preListingInfoController.text.isEmpty ? null : {'json': preListingInfoController.text}, // Simple JSON string for now
+                    displayName: displayNameController.text.isEmpty ? null : displayNameController.text,
+                    lastUpdated: value.lastUpdated, // Keep original lastUpdated
+                    // Preserve complex objects
+                    priceFilter: value.priceFilter,
+                    lotSizeFilter: value.lotSizeFilter,
+                    leverageFilter: value.leverageFilter,
+                    riskParameters: value.riskParameters,
                   );
                 } else {
                   newValue = genericController.text;
