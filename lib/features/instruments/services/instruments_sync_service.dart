@@ -30,19 +30,13 @@ class InstrumentsSyncService {
       
       // 저장된 데이터가 있는지 확인
       final hasStoredData = await _repository.hasStoredData();
-      final lastUpdateTime = await _repository.getLastUpdateTime();
       
-      // 저장된 데이터가 없거나 24시간이 지났다면 전체 동기화
-      final shouldFullSync = !hasStoredData || 
-          (lastUpdateTime != null && 
-           DateTime.now().difference(lastUpdateTime).inHours >= 24);
-
-      if (shouldFullSync) {
+      if (!hasStoredData) {
         debugPrint('전체 심볼 정보를 동기화합니다...');
         await _repository.fetchAndSaveInstruments();
         debugPrint('전체 심볼 정보 동기화 완료');
       } else {
-        debugPrint('저장된 심볼 정보가 최신 상태입니다.');
+        debugPrint('저장된 심볼 정보가 존재합니다. 초기 동기화를 건너뜁니다.');
       }
 
       _isInitialSyncCompleted = true;

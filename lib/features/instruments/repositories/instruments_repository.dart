@@ -43,10 +43,7 @@ class InstrumentsRepository {
     return await _storageService.searchInstruments(query);
   }
 
-  /// 마지막 업데이트 시간 조회
-  Future<DateTime?> getLastUpdateTime() async {
-    return await _storageService.getLastUpdateTime();
-  }
+  
 
   /// 저장된 데이터가 있는지 확인
   Future<bool> hasStoredData() async {

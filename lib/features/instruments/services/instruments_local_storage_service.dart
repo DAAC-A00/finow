@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 class InstrumentsLocalStorageService {
   static const String _boxName = 'instruments';
   static const String _settingsBoxName = 'settings';
-  static const String _lastUpdateKey = 'instruments_last_update';
+  
 
   /// Hive Box 가져오기 (없으면 생성)
   Future<Box<Instrument>> _getBox() async {
@@ -51,9 +51,7 @@ class InstrumentsLocalStorageService {
         categoryStats[category] = (categoryStats[category] ?? 0) + 1;
       }
       
-      // 마지막 업데이트 시간 저장 (settings Box에)
-      final settingsBox = await _getSettingsBox();
-      await settingsBox.put(_lastUpdateKey, DateTime.now().toIso8601String());
+      
       
       debugPrint('💾 통합 심볼 정보 저장 완료: ${instruments.length}개 항목');
       debugPrint('📊 카테고리별 저장 통계: $categoryStats');
@@ -79,11 +77,9 @@ class InstrumentsLocalStorageService {
       
       // 모든 키를 순회하며 Instrument 객체만 수집
       for (final key in box.keys) {
-        if (key != _lastUpdateKey) { // 마지막 업데이트 시간 키는 제외
-          final instrument = box.get(key);
-          if (instrument != null) {
-            instruments.add(instrument);
-          }
+        final instrument = box.get(key);
+        if (instrument != null) {
+          instruments.add(instrument);
         }
       }
       
@@ -95,22 +91,7 @@ class InstrumentsLocalStorageService {
     }
   }
 
-  /// 마지막 업데이트 시간 조회 (settings Box에서)
-  Future<DateTime?> getLastUpdateTime() async {
-    try {
-      final settingsBox = await _getSettingsBox();
-      final lastUpdateString = settingsBox.get(_lastUpdateKey) as String?;
-      
-      if (lastUpdateString != null) {
-        return DateTime.parse(lastUpdateString);
-      }
-      
-      return null;
-    } catch (e) {
-      debugPrint('마지막 업데이트 시간 조회 중 오류 발생: $e');
-      return null;
-    }
-  }
+  
 
   /// 저장된 데이터가 있는지 확인 (개별 심볼 기준)
   Future<bool> hasStoredData() async {

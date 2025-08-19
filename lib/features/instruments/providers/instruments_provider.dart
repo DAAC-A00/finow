@@ -77,11 +77,7 @@ class InstrumentsNotifier extends StateNotifier<AsyncValue<List<Instrument>>> {
   }
 }
 
-/// 마지막 업데이트 시간 프로바이더
-final lastUpdateTimeProvider = FutureProvider<DateTime?>((ref) async {
-  final repository = ref.watch(instrumentsRepositoryProvider);
-  return await repository.getLastUpdateTime();
-});
+
 
 /// 저장된 데이터 존재 여부 프로바이더
 final hasStoredDataProvider = FutureProvider<bool>((ref) async {

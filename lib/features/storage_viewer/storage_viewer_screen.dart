@@ -31,6 +31,8 @@ final settingsItemCountProvider = Provider<AsyncValue<int>>((ref) {
     final boxData = data['settings'] ?? {};
     final filteredData = boxData.entries.where((entry) {
       final key = entry.key.toString().toLowerCase();
+      // instruments_last_update 키는 제외
+      if (key == 'instruments_last_update') return false;
       final value = entry.value;
       final query = searchQuery.toLowerCase();
       final valueString = value.toString().toLowerCase();
@@ -776,6 +778,8 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
         // 검색 쿼리로 필터링
         final filteredData = boxData.entries.where((entry) {
           final key = entry.key.toString().toLowerCase();
+          // instruments_last_update 키는 제외
+          if (key == 'instruments_last_update') return false;
           final value = entry.value;
           final query = searchQuery.toLowerCase();
           
