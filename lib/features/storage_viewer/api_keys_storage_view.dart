@@ -256,7 +256,7 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                 ),
                 const SizedBox(height: 16),
                 DropdownButtonFormField<ApiKeyStatus>(
-                  initialValue: selectedStatus,
+                  value: selectedStatus,
                   decoration: const InputDecoration(labelText: "Status"),
                   items: ApiKeyStatus.values.map((status) {
                     return DropdownMenuItem(
