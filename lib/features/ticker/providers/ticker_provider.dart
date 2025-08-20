@@ -1,12 +1,19 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/ticker_price_data.dart';
+import '../models/ticker_sort_option.dart';
 import '../repositories/ticker_repository.dart';
 
 /// Ticker 데이터 상태 관리 프로바이더
 final tickerRepositoryProvider = Provider<TickerRepository>((ref) {
   return TickerRepository();
 });
+
+/// 현재 정렬 옵션을 관리하는 프로바이더
+final tickerSortOptionProvider = StateProvider<TickerSortOption>((ref) => TickerSortOption.turnover24h);
+
+/// 현재 정렬 방향을 관리하는 프로바이더
+final sortDirectionProvider = StateProvider<SortDirection>((ref) => SortDirection.desc);
 
 /// 실시간 통합 ticker 데이터 프로바이더
 final liveTickerProvider = StateNotifierProvider<LiveTickerNotifier, AsyncValue<List<IntegratedTickerPriceData>>>((ref) {
@@ -106,11 +113,13 @@ class LiveTickerNotifier extends StateNotifier<AsyncValue<List<IntegratedTickerP
     );
   }
 
-  /// 복합 필터링 (카테고리 + 검색어 + 상태)
-  List<IntegratedTickerPriceData> getFilteredTickers({
+  /// 복합 필터링 및 정렬
+  List<IntegratedTickerPriceData> getFilteredAndSortedTickers({
     String category = 'all',
     String query = '',
     String status = 'all',
+    TickerSortOption sortOption = TickerSortOption.turnover24h,
+    SortDirection sortDirection = SortDirection.desc,
   }) {
     return state.when(
       data: (tickers) {
@@ -137,6 +146,40 @@ class LiveTickerNotifier extends StateNotifier<AsyncValue<List<IntegratedTickerP
         if (status != 'all') {
           filtered = filtered.where((ticker) => ticker.status == status).toList();
         }
+
+        // 정렬
+        filtered.sort((a, b) {
+          int comparison;
+          switch (sortOption) {
+            case TickerSortOption.symbol:
+              comparison = a.symbol.compareTo(b.symbol);
+              break;
+            case TickerSortOption.koreanName:
+              comparison = (a.koreanName ?? '').compareTo(b.koreanName ?? '');
+              break;
+            case TickerSortOption.lastPrice:
+              final aPrice = a.priceData?.lastPriceDouble ?? 0;
+              final bPrice = b.priceData?.lastPriceDouble ?? 0;
+              comparison = aPrice.compareTo(bPrice);
+              break;
+            case TickerSortOption.priceChangePercent:
+              final aChange = a.priceData?.priceChangePercent ?? 0;
+              final bChange = b.priceData?.priceChangePercent ?? 0;
+              comparison = aChange.compareTo(bChange);
+              break;
+            case TickerSortOption.volume24h:
+              final aVolume = a.priceData?.volume24hDouble ?? 0;
+              final bVolume = b.priceData?.volume24hDouble ?? 0;
+              comparison = aVolume.compareTo(bVolume);
+              break;
+            case TickerSortOption.turnover24h:
+              final aTurnover = a.priceData?.turnover24hDouble ?? 0;
+              final bTurnover = b.priceData?.turnover24hDouble ?? 0;
+              comparison = aTurnover.compareTo(bTurnover);
+              break;
+          }
+          return sortDirection == SortDirection.asc ? comparison : -comparison;
+        });
         
         return filtered;
       },

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/ticker_price_data.dart';
+import '../models/ticker_sort_option.dart';
 import '../providers/ticker_provider.dart';
 import 'package:go_router/go_router.dart';
 
@@ -16,7 +17,6 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
-  
   
   String _selectedStatus = 'all';
   String _searchQuery = '';
@@ -73,7 +73,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                 Tab(text: 'Inverse'),
               ],
               labelColor: colorScheme.primary,
-                            unselectedLabelColor: colorScheme.onSurface.withAlpha(153),
+              unselectedLabelColor: colorScheme.onSurface.withAlpha(153),
               indicatorColor: colorScheme.primary,
             ),
           ),
@@ -106,6 +106,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                 ),
               ),
               _buildFilterChips(colorScheme),
+              _buildSortChips(ref),
               Expanded(
                 child: TabBarView(
                   controller: _tabController,
@@ -153,14 +154,80 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     );
   }
 
+  Widget _buildSortChips(WidgetRef ref) {
+    final sortOption = ref.watch(tickerSortOptionProvider);
+    final sortDirection = ref.watch(sortDirectionProvider);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: TickerSortOption.values.map((option) {
+            final isSelected = sortOption == option;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: ActionChip(
+                avatar: isSelected
+                    ? Icon(
+                        sortDirection == SortDirection.asc
+                            ? Icons.arrow_upward
+                            : Icons.arrow_downward,
+                        size: 16,
+                      )
+                    : null,
+                label: Text(_getSortOptionName(option)),
+                onPressed: () {
+                  if (isSelected) {
+                    // Toggle direction
+                    ref.read(sortDirectionProvider.notifier).state =
+                        sortDirection == SortDirection.asc
+                            ? SortDirection.desc
+                            : SortDirection.asc;
+                  } else {
+                    // Change sort option
+                    ref.read(tickerSortOptionProvider.notifier).state = option;
+                    ref.read(sortDirectionProvider.notifier).state = SortDirection.desc; // 기본 내림차순
+                  }
+                },
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  String _getSortOptionName(TickerSortOption option) {
+    switch (option) {
+      case TickerSortOption.symbol:
+        return 'Symbol';
+      case TickerSortOption.koreanName:
+        return 'Korean Name';
+      case TickerSortOption.lastPrice:
+        return 'Price';
+      case TickerSortOption.priceChangePercent:
+        return 'Change';
+      case TickerSortOption.volume24h:
+        return 'Volume';
+      case TickerSortOption.turnover24h:
+        return 'Turnover';
+    }
+  }
+
   Widget _buildLiveTickerList(AsyncValue<List<IntegratedTickerPriceData>> liveTickerState, String category) {
+    final sortOption = ref.watch(tickerSortOptionProvider);
+    final sortDirection = ref.watch(sortDirectionProvider);
+
     return liveTickerState.when(
       data: (tickers) {
         final notifier = ref.read(liveTickerProvider.notifier);
-        final filteredTickers = notifier.getFilteredTickers(
+                final filteredTickers = notifier.getFilteredAndSortedTickers(
           category: category,
           query: _searchQuery,
           status: _selectedStatus,
+          sortOption: sortOption,
+          sortDirection: sortDirection,
         );
 
         if (filteredTickers.isEmpty) {
@@ -254,16 +321,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                             color: colorScheme.onSurface,
                           ),
                         ),
-                        if (ticker.koreanName != null) ...[
-                          const SizedBox(height: 4.0),
-                          Text(
-                            ticker.koreanName!,
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: colorScheme.onSurface.withAlpha(178),
-                            ),
-                          ),
-                        ],
+                        
                       ],
                     ),
                   ),
