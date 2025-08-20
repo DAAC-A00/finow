@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:finow/features/storage_viewer/edit_storage_entry_screen.dart';
 
 
 // 검색어를 관리하는 StateProvider
@@ -336,319 +337,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
     }
   }
 
-  // 수정 대화상자
-  Future<void> _showEditDialog(BuildContext context, WidgetRef ref,
-      LocalStorageService localStorageService, String boxName, dynamic key, dynamic value) async {
-    TextEditingController genericController = TextEditingController(text: value.toString());
-    bool? boolValue = value is bool ? value : null;
-
-    // ExchangeRate 전용 컨트롤러들
-    TextEditingController lastUpdatedUnixController = TextEditingController();
-    TextEditingController baseCodeController = TextEditingController();
-    TextEditingController quoteCodeController = TextEditingController();
-    TextEditingController priceController = TextEditingController();
-
-    // Instrument 전용 컨트롤러들
-    TextEditingController symbolController = TextEditingController();
-    TextEditingController baseCoinController = TextEditingController();
-    TextEditingController quoteCoinController = TextEditingController();
-    TextEditingController exchangeController = TextEditingController();
-    TextEditingController statusController = TextEditingController();
-    TextEditingController categoryController = TextEditingController();
-    TextEditingController koreanNameController = TextEditingController();
-    TextEditingController englishNameController = TextEditingController();
-    TextEditingController marketWarningController = TextEditingController();
-    TextEditingController contractTypeController = TextEditingController();
-    TextEditingController launchTimeController = TextEditingController();
-    TextEditingController deliveryTimeController = TextEditingController();
-    TextEditingController deliveryFeeRateController = TextEditingController();
-    TextEditingController priceScaleController = TextEditingController();
-    bool? unifiedMarginTradeValue;
-    TextEditingController fundingIntervalController = TextEditingController();
-    TextEditingController settleCoinController = TextEditingController();
-    TextEditingController copyTradingController = TextEditingController();
-    TextEditingController upperFundingRateController = TextEditingController();
-    TextEditingController lowerFundingRateController = TextEditingController();
-    bool? isPreListingValue;
-    TextEditingController preListingInfoController = TextEditingController(); // For JSON string
-    TextEditingController displayNameController = TextEditingController();
-
-    if (value is ExchangeRate) {
-      lastUpdatedUnixController.text = value.lastUpdatedUnix.toString();
-      baseCodeController.text = value.baseCode;
-      quoteCodeController.text = value.quoteCode;
-      priceController.text = value.price.toString();
-    } else if (value is Instrument) {
-      symbolController.text = value.symbol;
-      baseCoinController.text = value.baseCoin;
-      quoteCoinController.text = value.quoteCoin;
-      exchangeController.text = value.exchange;
-      statusController.text = value.status;
-      categoryController.text = value.category ?? '';
-      koreanNameController.text = value.koreanName ?? '';
-      englishNameController.text = value.englishName ?? '';
-      marketWarningController.text = value.marketWarning ?? '';
-      contractTypeController.text = value.contractType ?? '';
-      launchTimeController.text = value.launchTime ?? '';
-      deliveryTimeController.text = value.deliveryTime ?? '';
-      deliveryFeeRateController.text = value.deliveryFeeRate ?? '';
-      priceScaleController.text = value.priceScale ?? '';
-      unifiedMarginTradeValue = value.unifiedMarginTrade;
-      fundingIntervalController.text = value.fundingInterval?.toString() ?? '';
-      settleCoinController.text = value.settleCoin ?? '';
-      copyTradingController.text = value.copyTrading ?? '';
-      upperFundingRateController.text = value.upperFundingRate ?? '';
-      lowerFundingRateController.text = value.lowerFundingRate ?? '';
-      isPreListingValue = value.isPreListing;
-      preListingInfoController.text = value.preListingInfo?.toString() ?? ''; // Convert Map to String
-      displayNameController.text = value.displayName ?? '';
-    }
-
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text('Edit $key'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                if (value is bool)
-                  SwitchListTile(
-                    title: const Text('값'),
-                    value: boolValue!,
-                    onChanged: (newValue) {
-                      boolValue = newValue;
-                      if (!context.mounted) return;
-                      (context as Element).markNeedsBuild(); // 다이얼로그 내부 UI 갱신
-                    },
-                  )
-                else if (value is ExchangeRate)
-                  Column(
-                    children: [
-                      TextField(
-                        controller: lastUpdatedUnixController,
-                        decoration: const InputDecoration(labelText: 'Last Updated (Unix)'),
-                        keyboardType: TextInputType.number,
-                      ),
-                      TextField(
-                        controller: baseCodeController,
-                        decoration: const InputDecoration(labelText: 'Base Code'),
-                      ),
-                      TextField(
-                        controller: quoteCodeController,
-                        decoration: const InputDecoration(labelText: 'Quote Code'),
-                      ),
-                      TextField(
-                        controller: priceController,
-                        decoration: const InputDecoration(labelText: 'Price'),
-                        keyboardType: TextInputType.numberWithOptions(decimal: true),
-                      ),
-                    ],
-                  )
-                else if (value is Instrument)
-                  Column(
-                    children: [
-                      TextField(
-                        controller: symbolController,
-                        decoration: const InputDecoration(labelText: 'Symbol'),
-                      ),
-                      TextField(
-                        controller: baseCoinController,
-                        decoration: const InputDecoration(labelText: 'Base Coin'),
-                      ),
-                      TextField(
-                        controller: quoteCoinController,
-                        decoration: const InputDecoration(labelText: 'Quote Coin'),
-                      ),
-                      TextField(
-                        controller: exchangeController,
-                        decoration: const InputDecoration(labelText: 'Exchange'),
-                      ),
-                      TextField(
-                        controller: statusController,
-                        decoration: const InputDecoration(labelText: 'Status'),
-                      ),
-                      TextField(
-                        controller: categoryController,
-                        decoration: const InputDecoration(labelText: 'Category'),
-                      ),
-                      TextField(
-                        controller: koreanNameController,
-                        decoration: const InputDecoration(labelText: 'Korean Name'),
-                      ),
-                      TextField(
-                        controller: englishNameController,
-                        decoration: const InputDecoration(labelText: 'English Name'),
-                      ),
-                      TextField(
-                        controller: marketWarningController,
-                        decoration: const InputDecoration(labelText: 'Market Warning'),
-                      ),
-                      TextField(
-                        controller: contractTypeController,
-                        decoration: const InputDecoration(labelText: 'Contract Type'),
-                      ),
-                      TextField(
-                        controller: launchTimeController,
-                        decoration: const InputDecoration(labelText: 'Launch Time'),
-                      ),
-                      TextField(
-                        controller: deliveryTimeController,
-                        decoration: const InputDecoration(labelText: 'Delivery Time'),
-                      ),
-                      TextField(
-                        controller: deliveryFeeRateController,
-                        decoration: const InputDecoration(labelText: 'Delivery Fee Rate'),
-                        keyboardType: TextInputType.number,
-                      ),
-                      TextField(
-                        controller: priceScaleController,
-                        decoration: const InputDecoration(labelText: 'Price Scale'),
-                      ),
-                      SwitchListTile(
-                        title: const Text('Unified Margin Trade'),
-                        value: unifiedMarginTradeValue ?? false,
-                        onChanged: (newValue) {
-                          unifiedMarginTradeValue = newValue;
-                          if (!context.mounted) return;
-                          (context as Element).markNeedsBuild();
-                        },
-                      ),
-                      TextField(
-                        controller: fundingIntervalController,
-                        decoration: const InputDecoration(labelText: 'Funding Interval'),
-                        keyboardType: TextInputType.number,
-                      ),
-                      TextField(
-                        controller: settleCoinController,
-                        decoration: const InputDecoration(labelText: 'Settle Coin'),
-                      ),
-                      TextField(
-                        controller: copyTradingController,
-                        decoration: const InputDecoration(labelText: 'Copy Trading'),
-                      ),
-                      TextField(
-                        controller: upperFundingRateController,
-                        decoration: const InputDecoration(labelText: 'Upper Funding Rate'),
-                        keyboardType: TextInputType.number,
-                      ),
-                      TextField(
-                        controller: lowerFundingRateController,
-                        decoration: const InputDecoration(labelText: 'Lower Funding Rate'),
-                        keyboardType: TextInputType.number,
-                      ),
-                      SwitchListTile(
-                        title: const Text('Is Pre-Listing'),
-                        value: isPreListingValue ?? false,
-                        onChanged: (newValue) {
-                          isPreListingValue = newValue;
-                          if (!context.mounted) return;
-                          (context as Element).markNeedsBuild();
-                        },
-                      ),
-                      TextField(
-                        controller: preListingInfoController,
-                        decoration: const InputDecoration(labelText: 'Pre-Listing Info (JSON)'),
-                        maxLines: 3,
-                      ),
-                      TextField(
-                        controller: displayNameController,
-                        decoration: const InputDecoration(labelText: 'Display Name'),
-                      ),
-                    ],
-                  )
-                else
-                  TextField(
-                    controller: genericController,
-                    decoration: const InputDecoration(labelText: '값'),
-                    keyboardType: value is int || value is double
-                        ? TextInputType.number
-                        : TextInputType.text,
-                  ),
-              ],
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('취소'),
-            ),
-            TextButton(
-              onPressed: () async {
-                dynamic newValue;
-                if (value is bool) {
-                  newValue = boolValue;
-                } else if (value is int) {
-                  newValue = int.tryParse(genericController.text);
-                } else if (value is double) {
-                  newValue = double.tryParse(genericController.text);
-                } else if (value is ExchangeRate) {
-                  newValue = ExchangeRate(
-                    lastUpdatedUnix: int.tryParse(lastUpdatedUnixController.text) ?? value.lastUpdatedUnix,
-                    baseCode: baseCodeController.text,
-                    quoteCode: quoteCodeController.text,
-                    price: double.tryParse(priceController.text) ?? value.price,
-                    source: value.source, // 기존 source 값 유지
-                  );
-                } else if (value is Instrument) {
-                  newValue = Instrument(
-                    symbol: symbolController.text,
-                    baseCoin: baseCoinController.text,
-                    quoteCoin: quoteCoinController.text,
-                    exchange: exchangeController.text,
-                    status: statusController.text,
-                    category: categoryController.text.isEmpty ? null : categoryController.text,
-                    koreanName: koreanNameController.text.isEmpty ? null : koreanNameController.text,
-                    englishName: englishNameController.text.isEmpty ? null : englishNameController.text,
-                    marketWarning: marketWarningController.text.isEmpty ? null : marketWarningController.text,
-                    contractType: contractTypeController.text.isEmpty ? null : contractTypeController.text,
-                    launchTime: launchTimeController.text.isEmpty ? null : launchTimeController.text,
-                    deliveryTime: deliveryTimeController.text.isEmpty ? null : deliveryTimeController.text,
-                    deliveryFeeRate: deliveryFeeRateController.text.isEmpty ? null : deliveryFeeRateController.text,
-                    priceScale: priceScaleController.text.isEmpty ? null : priceScaleController.text,
-                    unifiedMarginTrade: unifiedMarginTradeValue,
-                    fundingInterval: int.tryParse(fundingIntervalController.text),
-                    settleCoin: settleCoinController.text.isEmpty ? null : settleCoinController.text,
-                    copyTrading: copyTradingController.text.isEmpty ? null : copyTradingController.text,
-                    upperFundingRate: upperFundingRateController.text.isEmpty ? null : upperFundingRateController.text,
-                    lowerFundingRate: lowerFundingRateController.text.isEmpty ? null : lowerFundingRateController.text,
-                    isPreListing: isPreListingValue,
-                    preListingInfo: preListingInfoController.text.isEmpty ? null : {'json': preListingInfoController.text}, // Simple JSON string for now
-                    displayName: displayNameController.text.isEmpty ? null : displayNameController.text,
-                    lastUpdated: value.lastUpdated, // Keep original lastUpdated
-                    // Preserve complex objects
-                    priceFilter: value.priceFilter,
-                    lotSizeFilter: value.lotSizeFilter,
-                    leverageFilter: value.leverageFilter,
-                    riskParameters: value.riskParameters,
-                  );
-                } else {
-                  newValue = genericController.text;
-                }
-
-                if (newValue != null) {
-                  if (!context.mounted) return;
-                  await localStorageService.updateEntry(boxName, key, newValue);
-                  ref.invalidate(allStorageDataProvider);
-                  ref.invalidate(storageUsageProvider);
-                  if (!context.mounted) return;
-                  Navigator.of(context).pop();
-                } else {
-                  final currentContext = context;
-                  if (!currentContext.mounted) return;
-                  ScaffoldMessenger.of(currentContext).showSnackBar(
-                    const SnackBar(content: Text('유효하지 않은 값입니다.')),
-                  );
-                }
-              },
-              child: const Text('저장'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  
 
   void _showInfoBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -982,8 +671,18 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                               children: [
                                 IconButton(
                                   icon: const Icon(Icons.edit),
-                                  onPressed: () => _showEditDialog(
-                                    context, ref, localStorageService, boxName, key, value),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => EditStorageEntryScreen(
+                                          boxName: boxName,
+                                          originalKey: key,
+                                          originalValue: value,
+                                        ),
+                                      ),
+                                    );
+                                  },
                                 ),
                                 IconButton(
                                   icon: const Icon(Icons.delete),

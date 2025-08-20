@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:finow/features/storage_viewer/storage_viewer_screen.dart'; // For searchQueryProvider
+import 'package:finow/features/storage_viewer/edit_api_key_screen.dart';
 
 class ApiKeysStorageView extends ConsumerStatefulWidget {
   const ApiKeysStorageView({super.key});
@@ -176,7 +177,17 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                             ),
                             IconButton(
                               icon: const Icon(Icons.edit),
-                              onPressed: () => _showApiKeyDialog(context, existingKey: apiKey, index: index),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => EditApiKeyScreen(
+                                      existingKey: apiKey,
+                                      index: index,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete),
@@ -196,7 +207,14 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showApiKeyDialog(context),
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const EditApiKeyScreen(),
+            ),
+          );
+        },
         child: const Icon(Icons.add),
       ),
     );
@@ -236,109 +254,5 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
     }
   }
 
-  void _showApiKeyDialog(BuildContext context, {ApiKeyData? existingKey, int? index}) {
-    final keyController = TextEditingController(text: existingKey?.key);
-    final lastValidatedController = TextEditingController(text: existingKey?.lastValidated?.toString());
-    ApiKeyStatus selectedStatus = existingKey?.status ?? ApiKeyStatus.unknown;
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(existingKey == null ? 'Add API Key' : 'Edit API Key'),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(
-                  controller: keyController,
-                  decoration: const InputDecoration(labelText: "API Key"),
-                ),
-                const SizedBox(height: 16),
-                DropdownButtonFormField<ApiKeyStatus>(
-                  value: selectedStatus,
-                  decoration: const InputDecoration(labelText: "Status"),
-                  items: ApiKeyStatus.values.map((status) {
-                    return DropdownMenuItem(
-                      value: status,
-                      child: Text(status.name),
-                    );
-                  }).toList(),
-                  onChanged: (ApiKeyStatus? newValue) {
-                    if (newValue != null) {
-                      selectedStatus = newValue;
-                      (context as Element).markNeedsBuild();
-                    }
-                  },
-                ),
-                const SizedBox(height: 16),
-                TextField(
-                  controller: lastValidatedController,
-                  decoration: const InputDecoration(labelText: "Last Validated (Unix Timestamp)"),
-                  keyboardType: TextInputType.number,
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            TextButton(
-              child: const Text('Save'),
-              onPressed: () async {
-                final navigator = Navigator.of(context);
-                final scaffoldMessenger = ScaffoldMessenger.of(context);
-                final newKey = keyController.text.trim();
-                final newLastValidated = int.tryParse(lastValidatedController.text);
-
-                if (newKey.isNotEmpty) {
-                  final service = ref.read(apiKeyServiceProvider);
-                  if (existingKey != null && index != null) {
-                    final updatedApiKeyData = existingKey.copyWith(
-                      key: newKey,
-                      status: selectedStatus,
-                      lastValidated: newLastValidated,
-                    );
-                    await service.updateApiKey(index, updatedApiKeyData);
-                    if (existingKey.key != newKey) {
-                      ref.read(apiKeyStatusProvider.notifier).validateKey(newKey);
-                    }
-                  } else {
-                    final newApiKeyData = ApiKeyData(
-                      key: newKey,
-                      status: selectedStatus,
-                      lastValidated: newLastValidated,
-                    );
-                    await service.addApiKey(newApiKeyData.key); 
-                    final addedKeys = service.getApiKeys().where((element) => element.key == newKey);
-                    if (addedKeys.isNotEmpty) {
-                      final addedKey = addedKeys.first;
-                      final addedIndex = service.getApiKeys().indexOf(addedKey);
-                      if (addedIndex != -1) {
-                        final updatedAddedKey = addedKey.copyWith(
-                          status: selectedStatus,
-                          lastValidated: newLastValidated,
-                        );
-                        await service.updateApiKey(addedIndex, updatedAddedKey);
-                      }
-                    }
-                    ref.read(apiKeyStatusProvider.notifier).validateKey(newKey);
-                  }
-                  if (!mounted) return;
-                  navigator.pop();
-                } else {
-                  if (!mounted) return;
-                  scaffoldMessenger.showSnackBar(
-                    const SnackBar(content: Text('API Key cannot be empty.')),
-                  );
-                }
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  
 }
