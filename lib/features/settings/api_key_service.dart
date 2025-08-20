@@ -37,6 +37,7 @@ class ApiKeyService {
   final List<String> _defaultApiKeys = const [
     '842f9ce049b12b202bc6932f',
     '9bc45de7f3b69ae2eafd2930',
+    '4b8d8f350dad8cac9d4a7e91',
   ];
 
   ApiKeyService(this._box) {
