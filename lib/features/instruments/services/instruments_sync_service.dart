@@ -28,16 +28,9 @@ class InstrumentsSyncService {
     try {
       debugPrint('통합 심볼 정보 초기 동기화를 시작합니다...');
       
-      // 저장된 데이터가 있는지 확인
-      final hasStoredData = await _repository.hasStoredData();
-      
-      if (!hasStoredData) {
-        debugPrint('전체 심볼 정보를 동기화합니다...');
-        await _repository.fetchAndSaveInstruments();
-        debugPrint('전체 심볼 정보 동기화 완료');
-      } else {
-        debugPrint('저장된 심볼 정보가 존재합니다. 초기 동기화를 건너뜁니다.');
-      }
+      debugPrint('전체 심볼 정보를 동기화합니다...');
+      await _repository.fetchAndSaveInstruments();
+      debugPrint('전체 심볼 정보 동기화 완료');
 
       _isInitialSyncCompleted = true;
       
