@@ -153,9 +153,9 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
     ref.invalidate(allStorageDataProvider);
   }
 
-  // 웹 기준 최대 저장 용량 (10MB)
-  static const double maxStorageMB = 10.0;
-  static const int maxStorageBytes = 10 * 1024 * 1024; // 10MB를 바이트로 변환
+  // 웹 기준 최대 저장 용량 (5MB)
+  static const double maxStorageMB = 5.0;
+  static const int maxStorageBytes = 5 * 1024 * 1024; // 5MB를 바이트로 변환
 
   @override
   Widget build(BuildContext context) {
