@@ -357,8 +357,8 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
       final query = _searchQuery.toLowerCase();
       filtered = filtered.where((instrument) {
         return instrument.symbol.toLowerCase().contains(query) ||
-               instrument.baseCoin.toLowerCase().contains(query) ||
-               instrument.quoteCoin.toLowerCase().contains(query) ||
+               instrument.baseCode.toLowerCase().contains(query) ||
+               instrument.quoteCode.toLowerCase().contains(query) ||
                (instrument.koreanName?.toLowerCase().contains(query) ?? false) ||
                (instrument.englishName?.toLowerCase().contains(query) ?? false);
       }).toList();
@@ -421,7 +421,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
               const SizedBox(height: 8),
               Row(
                 children: [
-                  _buildInfoChip('${instrument.baseCoin}/${instrument.quoteCoin}', colorScheme),
+                  _buildInfoChip('${instrument.baseCode}/${instrument.quoteCode}', colorScheme),
                   const SizedBox(width: 8),
                   _buildStatusChip(instrument.status, colorScheme),
                   // Bithumb은 spot만 지원하므로 카테고리 칩 생략

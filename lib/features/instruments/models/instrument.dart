@@ -9,10 +9,10 @@ class Instrument {
   final String symbol;
   
   @HiveField(1)
-  final String baseCoin;
+  final String baseCode;
   
   @HiveField(2)
-  final String quoteCoin;
+  final String quoteCode;
   
   @HiveField(3)
   final String exchange; // 'bybit' 또는 'bithumb'
@@ -91,8 +91,8 @@ class Instrument {
 
   const Instrument({
     required this.symbol,
-    required this.baseCoin,
-    required this.quoteCoin,
+    required this.baseCode,
+    required this.quoteCode,
     required this.exchange,
     required this.status,
     this.koreanName,
@@ -123,8 +123,8 @@ class Instrument {
   factory Instrument.fromBybit(Map<String, dynamic> json, {String category = 'spot'}) {
     return Instrument(
       symbol: json['symbol'] ?? '',
-      baseCoin: json['baseCoin'] ?? '',
-      quoteCoin: json['quoteCoin'] ?? '',
+      baseCode: json['baseCode'] ?? '',
+      quoteCode: json['quoteCode'] ?? '',
       exchange: 'bybit',
       status: json['status'] ?? '',
       category: category,
@@ -164,8 +164,8 @@ class Instrument {
     
     return Instrument(
       symbol: market,
-      baseCoin: parts.length > 1 ? parts[1] : '',
-      quoteCoin: parts.isNotEmpty ? parts[0] : '',
+      baseCode: parts.length > 1 ? parts[1] : '',
+      quoteCode: parts.isNotEmpty ? parts[0] : '',
       exchange: 'bithumb',
       status: 'Trading',
       category: 'spot', // Bithumb은 spot만 지원
@@ -179,8 +179,8 @@ class Instrument {
   Map<String, dynamic> toJson() {
     return {
       'symbol': symbol,
-      'baseCoin': baseCoin,
-      'quoteCoin': quoteCoin,
+      'baseCode': baseCode,
+      'quoteCode': quoteCode,
       'exchange': exchange,
       'status': status,
       'category': category,
@@ -212,8 +212,8 @@ class Instrument {
   factory Instrument.fromJson(Map<String, dynamic> json) {
     return Instrument(
       symbol: json['symbol'] ?? '',
-      baseCoin: json['baseCoin'] ?? '',
-      quoteCoin: json['quoteCoin'] ?? '',
+      baseCode: json['baseCode'] ?? '',
+      quoteCode: json['quoteCode'] ?? '',
       exchange: json['exchange'] ?? '',
       status: json['status'] ?? '',
       category: json['category'],

@@ -1,4 +1,4 @@
-import 'package:finow/features/instruments/models/instrument.dart';
+
 import 'package:finow/features/ticker/data/models/bithumb_ticker_model.dart';
 import '../models/ticker_price_data.dart';
 import '../services/ticker_api_service.dart';
@@ -57,12 +57,10 @@ class TickerRepository {
             return IntegratedTickerPriceData(
               symbol: bithumbTicker.market ?? '',
               category: 'spot',
-              baseCoin: instrument?.baseCoin ??
+              baseCode: instrument?.baseCode ??
                   bithumbTicker.market?.split('-').last ??
                   '',
-              quoteCoin: instrument?.quoteCoin ??
-                  bithumbTicker.market?.split('-').first ??
-                  '',
+                                quoteCode: instrument?.quoteCode ?? '',
               status: instrument?.status ?? 'Trading',
               exchange: 'bithumb',
               koreanName: instrument?.koreanName,
@@ -79,13 +77,13 @@ class TickerRepository {
       for (final instrument in instruments) {
         if (instrument.exchange != 'bithumb') {
           final tickerData = bybitTickerMap[instrument.symbol];
-          final parsedCoin = _parseBaseCoin(instrument.baseCoin);
+          final parsedCoin = _parseBaseCode(instrument.baseCode);
 
           integratedTickers.add(IntegratedTickerPriceData(
             symbol: instrument.symbol,
             category: instrument.category ?? 'unknown',
-            baseCoin: parsedCoin['baseCoin']!,
-            quoteCoin: instrument.quoteCoin,
+            baseCode: parsedCoin['baseCode']!,
+            quoteCode: instrument.quoteCode,
             quantity: parsedCoin['quantity']!,
             status: instrument.status,
             exchange: instrument.exchange,
@@ -127,10 +125,10 @@ class TickerRepository {
     }
   }
 
-  Map<String, dynamic> _parseBaseCoin(String baseCoinStr) {
-    // Try parsing as $quantity$baseCoin (e.g., "1000BTC")
+  Map<String, dynamic> _parseBaseCode(String baseCodeStr) {
+    // Try parsing as $quantity$baseCode (e.g., "1000BTC")
     RegExp quantityPrefixRegExp = RegExp(r'^(\d+)(.*)$');
-    Match? match = quantityPrefixRegExp.firstMatch(baseCoinStr);
+    Match? match = quantityPrefixRegExp.firstMatch(baseCodeStr);
 
     if (match != null) {
       String quantityStr = match.group(1)!;
@@ -139,15 +137,15 @@ class TickerRepository {
       if (quantity != null && quantity % 1000 == 0) {
         return {
           'quantity': quantity.toDouble(),
-          'baseCoin': coin,
+          'baseCode': coin,
         };
       }
     }
 
-    // If not $quantity$baseCoin or quantity not a multiple of 1000,
-    // try parsing as $baseCoin$quantity (e.g., "BTC1000")
+    // If not \$quantity\$baseCode or quantity not a multiple of 1000,
+    // try parsing as $baseCode$quantity (e.g., "BTC1000")
     RegExp quantitySuffixRegExp = RegExp(r'^(.*?)(\d+)$');
-    match = quantitySuffixRegExp.firstMatch(baseCoinStr);
+    match = quantitySuffixRegExp.firstMatch(baseCodeStr);
 
     if (match != null) {
       String coin = match.group(1)!;
@@ -156,7 +154,7 @@ class TickerRepository {
       if (quantity != null && quantity % 1000 == 0) {
         return {
           'quantity': quantity.toDouble(),
-          'baseCoin': coin,
+          'baseCode': coin,
         };
       }
     }
@@ -164,7 +162,7 @@ class TickerRepository {
     // Default case if no specific quantity pattern is found or valid
     return {
       'quantity': 1.0,
-      'baseCoin': baseCoinStr,
+      'baseCode': baseCodeStr,
     };
   }
 }

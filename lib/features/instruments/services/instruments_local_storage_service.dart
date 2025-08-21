@@ -185,8 +185,8 @@ class InstrumentsLocalStorageService {
       if (searchQuery != null && searchQuery.isNotEmpty) {
         final query = searchQuery.toLowerCase();
         return instrument.symbol.toLowerCase().contains(query) ||
-               instrument.baseCoin.toLowerCase().contains(query) ||
-               instrument.quoteCoin.toLowerCase().contains(query) ||
+               instrument.baseCode.toLowerCase().contains(query) ||
+               instrument.quoteCode.toLowerCase().contains(query) ||
                (instrument.koreanName?.toLowerCase().contains(query) ?? false) ||
                (instrument.englishName?.toLowerCase().contains(query) ?? false);
       }
@@ -214,8 +214,8 @@ class InstrumentsLocalStorageService {
       
       return allInstruments.where((instrument) {
         return instrument.symbol.toLowerCase().contains(lowerQuery) ||
-               instrument.baseCoin.toLowerCase().contains(lowerQuery) ||
-               instrument.quoteCoin.toLowerCase().contains(lowerQuery) ||
+               instrument.baseCode.toLowerCase().contains(lowerQuery) ||
+               instrument.quoteCode.toLowerCase().contains(lowerQuery) ||
                (instrument.koreanName?.toLowerCase().contains(lowerQuery) ?? false) ||
                (instrument.englishName?.toLowerCase().contains(lowerQuery) ?? false);
       }).toList();

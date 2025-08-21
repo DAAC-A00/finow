@@ -81,8 +81,8 @@ final symbolsItemCountProvider = Provider<AsyncValue<int>>((ref) {
       final query = searchQuery.toLowerCase();
       if (value is Instrument) {
         final symbolString = value.symbol.toLowerCase();
-        final baseCoinString = value.baseCoin.toLowerCase();
-        final quoteCoinString = value.quoteCoin.toLowerCase();
+        final baseCodeString = value.baseCode.toLowerCase();
+        final quoteCodeString = value.quoteCode.toLowerCase();
         final exchangeString = value.exchange.toLowerCase();
         final statusString = value.status.toLowerCase();
         final koreanNameString = (value.koreanName ?? '').toLowerCase();
@@ -91,8 +91,8 @@ final symbolsItemCountProvider = Provider<AsyncValue<int>>((ref) {
 
         return key.contains(query) ||
             symbolString.contains(query) ||
-            baseCoinString.contains(query) ||
-            quoteCoinString.contains(query) ||
+            baseCodeString.contains(query) ||
+            quoteCodeString.contains(query) ||
             exchangeString.contains(query) ||
             statusString.contains(query) ||
             koreanNameString.contains(query) ||
@@ -484,8 +484,8 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
           
           if (value is Instrument) {
             final symbolString = value.symbol.toLowerCase();
-            final baseCoinString = value.baseCoin.toLowerCase();
-            final quoteCoinString = value.quoteCoin.toLowerCase();
+            final baseCodeString = value.baseCode.toLowerCase();
+            final quoteCodeString = value.quoteCode.toLowerCase();
             final exchangeString = value.exchange.toLowerCase();
             final statusString = value.status.toLowerCase();
             final koreanNameString = (value.koreanName ?? '').toLowerCase();
@@ -494,8 +494,8 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
             
             return key.contains(query) ||
                 symbolString.contains(query) ||
-                baseCoinString.contains(query) ||
-                quoteCoinString.contains(query) ||
+                baseCodeString.contains(query) ||
+                quoteCodeString.contains(query) ||
                 exchangeString.contains(query) ||
                 statusString.contains(query) ||
                 koreanNameString.contains(query) ||
@@ -591,8 +591,8 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                             children: [
                               // 기본 정보
                               Text('symbol: ${value.symbol}'),
-                              Text('baseCoin: ${value.baseCoin}'),
-                              Text('quoteCoin: ${value.quoteCoin}'),
+                              Text('baseCode: ${value.baseCode}'),
+                              Text('quoteCode: ${value.quoteCode}'),
                               Text('exchange: ${value.exchange}'),
                               Text('status: ${value.status}'),
                               if (value.category != null) Text('category: ${value.category}'),

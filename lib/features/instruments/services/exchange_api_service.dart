@@ -110,8 +110,8 @@ class ExchangeApiService {
           if (warning != null) {
             return Instrument(
               symbol: instrument.symbol,
-              baseCoin: instrument.baseCoin,
-              quoteCoin: instrument.quoteCoin,
+              baseCode: instrument.baseCode,
+              quoteCode: instrument.quoteCode,
               exchange: instrument.exchange,
               status: instrument.status,
               koreanName: instrument.koreanName,

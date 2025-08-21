@@ -104,8 +104,8 @@ class LiveTickerNotifier
           final lowerQuery = query.toLowerCase();
           filtered = filtered.where((ticker) {
             return ticker.symbol.toLowerCase().contains(lowerQuery) ||
-                ticker.baseCoin.toLowerCase().contains(lowerQuery) ||
-                ticker.quoteCoin.toLowerCase().contains(lowerQuery) ||
+                ticker.baseCode.toLowerCase().contains(lowerQuery) ||
+                ticker.quoteCode.toLowerCase().contains(lowerQuery) ||
                 (ticker.koreanName?.toLowerCase().contains(lowerQuery) ?? false) ||
                 (ticker.englishName?.toLowerCase().contains(lowerQuery) ?? false);
           }).toList();

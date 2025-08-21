@@ -245,8 +245,8 @@ enum PriceDirection {
 class IntegratedTickerPriceData {
   final String symbol;
   final String category;
-  final String baseCoin;
-  final String quoteCoin;
+  final String baseCode;
+  final String quoteCode;
   final double? quantity;
   final String status;
   final String exchange;
@@ -290,8 +290,8 @@ class IntegratedTickerPriceData {
   const IntegratedTickerPriceData({
     required this.symbol,
     required this.category,
-    required this.baseCoin,
-    required this.quoteCoin,
+    required this.baseCode,
+    required this.quoteCode,
     this.quantity,
     required this.status,
     required this.exchange,

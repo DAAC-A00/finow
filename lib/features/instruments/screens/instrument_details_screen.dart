@@ -29,8 +29,8 @@ class InstrumentDetailsScreen extends StatelessWidget {
               context,
               [
                 _buildDetailRow(context, 'Exchange', instrument.exchange.toUpperCase(), icon: Icons.account_balance),
-                _buildDetailRow(context, 'Base Coin', instrument.baseCoin, icon: Icons.currency_bitcoin),
-                _buildDetailRow(context, 'Quote Coin', instrument.quoteCoin, icon: Icons.currency_exchange),
+                _buildDetailRow(context, 'Base Code', instrument.baseCode, icon: Icons.currency_bitcoin),
+                _buildDetailRow(context, 'Quote Code', instrument.quoteCode, icon: Icons.currency_exchange),
                 _buildDetailRow(context, 'Status', instrument.status, icon: Icons.info_outline),
                 if (instrument.category != null)
                   _buildDetailRow(context, 'Category', instrument.category!.toUpperCase(), icon: Icons.category),

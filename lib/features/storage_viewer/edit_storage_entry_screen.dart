@@ -33,8 +33,6 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
 
   // Instrument controllers
   late TextEditingController _symbolController;
-  late TextEditingController _baseCoinController;
-  late TextEditingController _quoteCoinController;
   late TextEditingController _exchangeController;
   late TextEditingController _statusController;
   late TextEditingController _categoryController;
@@ -75,8 +73,8 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
 
     // Initialize Instrument controllers
     _symbolController = TextEditingController();
-    _baseCoinController = TextEditingController();
-    _quoteCoinController = TextEditingController();
+    _baseCodeController = TextEditingController();
+    _quoteCodeController = TextEditingController();
     _exchangeController = TextEditingController();
     _statusController = TextEditingController();
     _categoryController = TextEditingController();
@@ -103,8 +101,8 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
       _priceController.text = value.price.toString();
     } else if (value is Instrument) {
       _symbolController.text = value.symbol;
-      _baseCoinController.text = value.baseCoin;
-      _quoteCoinController.text = value.quoteCoin;
+      _baseCodeController.text = value.baseCode;
+      _quoteCodeController.text = value.quoteCode;
       _exchangeController.text = value.exchange;
       _statusController.text = value.status;
       _categoryController.text = value.category ?? '';
@@ -136,8 +134,8 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
     _quoteCodeController.dispose();
     _priceController.dispose();
     _symbolController.dispose();
-    _baseCoinController.dispose();
-    _quoteCoinController.dispose();
+    _baseCodeController.dispose();
+    _quoteCodeController.dispose();
     _exchangeController.dispose();
     _statusController.dispose();
     _categoryController.dispose();
@@ -221,12 +219,12 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
             decoration: const InputDecoration(labelText: 'Symbol'),
           ),
           TextField(
-            controller: _baseCoinController,
-            decoration: const InputDecoration(labelText: 'Base Coin'),
+            controller: _baseCodeController,
+            decoration: const InputDecoration(labelText: 'Base Code'),
           ),
           TextField(
-            controller: _quoteCoinController,
-            decoration: const InputDecoration(labelText: 'Quote Coin'),
+            controller: _quoteCodeController,
+            decoration: const InputDecoration(labelText: 'Quote Code'),
           ),
           TextField(
             controller: _exchangeController,
@@ -358,8 +356,8 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
     } else if (value is Instrument) {
       newValue = Instrument(
         symbol: _symbolController.text,
-        baseCoin: _baseCoinController.text,
-        quoteCoin: _quoteCoinController.text,
+        baseCode: _baseCodeController.text,
+        quoteCode: _quoteCodeController.text,
         exchange: _exchangeController.text,
         status: _statusController.text,
         category: _categoryController.text.isEmpty ? null : _categoryController.text,

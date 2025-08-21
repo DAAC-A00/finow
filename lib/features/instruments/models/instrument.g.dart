@@ -18,8 +18,8 @@ class InstrumentAdapter extends TypeAdapter<Instrument> {
     };
     return Instrument(
       symbol: fields[0] as String,
-      baseCoin: fields[1] as String,
-      quoteCoin: fields[2] as String,
+      baseCode: fields[1] as String,
+      quoteCode: fields[2] as String,
       exchange: fields[3] as String,
       status: fields[4] as String,
       koreanName: fields[5] as String?,
@@ -55,9 +55,9 @@ class InstrumentAdapter extends TypeAdapter<Instrument> {
       ..writeByte(0)
       ..write(obj.symbol)
       ..writeByte(1)
-      ..write(obj.baseCoin)
+      ..write(obj.baseCode)
       ..writeByte(2)
-      ..write(obj.quoteCoin)
+      ..write(obj.quoteCode)
       ..writeByte(3)
       ..write(obj.exchange)
       ..writeByte(4)

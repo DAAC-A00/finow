@@ -368,8 +368,8 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                 children: [
                   _buildInfoChip(
                     (ticker.quantity != null && ticker.quantity != 1.0)
-                        ? '${ticker.quantity}${ticker.baseCoin}/${ticker.quoteCoin}'
-                        : '${ticker.baseCoin}/${ticker.quoteCoin}',
+                        ? '${ticker.quantity}${ticker.baseCode}/${ticker.quoteCode}'
+                        : '${ticker.baseCode}/${ticker.quoteCode}',
                     colorScheme,
                   ),
                   _buildStatusChip(ticker.status, colorScheme),
