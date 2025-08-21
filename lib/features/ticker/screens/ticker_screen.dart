@@ -450,10 +450,63 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
   }
 
   String _getIntegratedSymbol(IntegratedTickerPriceData ticker) {
+    String baseSymbol;
     if (ticker.quantity != null && ticker.quantity != 1.0) {
-      return '${ticker.quantity}${ticker.baseCode}/${ticker.quoteCode}';
+      baseSymbol = '${ticker.quantity}${ticker.baseCode}/${ticker.quoteCode}';
     } else {
-      return '${ticker.baseCode}/${ticker.quoteCode}';
+      baseSymbol = '${ticker.baseCode}/${ticker.quoteCode}';
+    }
+
+    if ((ticker.category == 'linear' || ticker.category == 'inverse') &&
+        ticker.contractType != 'Perpetual' &&
+        ticker.deliveryTime != null &&
+        ticker.deliveryTime != '0') {
+      try {
+        final expirationDate = _formatExpirationDate(ticker.deliveryTime!);
+        return '$baseSymbol-$expirationDate';
+      } catch (e) {
+        // 날짜 포맷이 예상과 다를 경우, 원본 심볼 반환
+        return baseSymbol;
+      }
+    }
+
+    return baseSymbol;
+  }
+
+  String _formatExpirationDate(String deliveryTime) {
+    // Bybit linear/inverse의 경우, "31OCT25" 형식
+    if (RegExp(r'^[0-9]{2}[A-Z]{3}[0-9]{2}$').hasMatch(deliveryTime)) {
+      final day = deliveryTime.substring(0, 2);
+      final monthStr = deliveryTime.substring(2, 5);
+      final year = deliveryTime.substring(5, 7);
+
+      const monthMap = {
+        'JAN': '01', 'FEB': '02', 'MAR': '03', 'APR': '04', 'MAY': '05', 'JUN': '06',
+        'JUL': '07', 'AUG': '08', 'SEP': '09', 'OCT': '10', 'NOV': '11', 'DEC': '12'
+      };
+
+      final month = monthMap[monthStr.toUpperCase()];
+
+      if (month != null) {
+        return '$year.$month.$day';
+      }
+    }
+
+    // Timestamp 형식 (e.g., "1729449600000")
+    final timestamp = int.tryParse(deliveryTime);
+    if (timestamp != null) {
+      final dt = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      return DateFormat('yy.MM.dd').format(dt);
+    }
+    
+    // 다른 형식의 날짜가 있다면 여기에 파싱 로직 추가
+    // 예: "2025-10-31"
+    try {
+      final dt = DateTime.parse(deliveryTime);
+      return DateFormat('yy.MM.dd').format(dt);
+    } catch (e) {
+      // 파싱 실패 시 원본 반환
+      return deliveryTime;
     }
   }
 
