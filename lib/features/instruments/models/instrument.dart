@@ -123,8 +123,8 @@ class Instrument {
   factory Instrument.fromBybit(Map<String, dynamic> json, {String category = 'spot'}) {
     return Instrument(
       symbol: json['symbol'] ?? '',
-      baseCode: json['baseCode'] ?? '',
-      quoteCode: json['quoteCode'] ?? '',
+      baseCode: json['baseCoin'] ?? '',
+      quoteCode: json['quoteCoin'] ?? '',
       exchange: 'bybit',
       status: json['status'] ?? '',
       category: category,
@@ -212,8 +212,8 @@ class Instrument {
   factory Instrument.fromJson(Map<String, dynamic> json) {
     return Instrument(
       symbol: json['symbol'] ?? '',
-      baseCode: json['baseCode'] ?? '',
-      quoteCode: json['quoteCode'] ?? '',
+      baseCode: json['baseCoin'] ?? '',
+      quoteCode: json['quoteCoin'] ?? '',
       exchange: json['exchange'] ?? '',
       status: json['status'] ?? '',
       category: json['category'],
