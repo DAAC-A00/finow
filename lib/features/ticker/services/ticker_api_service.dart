@@ -1,21 +1,88 @@
 import 'package:dio/dio.dart';
+import 'package:finow/features/instruments/services/exchange_api_service.dart';
+import 'package:finow/features/instruments/services/instruments_local_storage_service.dart';
+import 'package:flutter/foundation.dart';
+import '../data/models/bithumb_ticker_model.dart';
 import '../models/ticker_price_data.dart';
 
 /// 실시간 Ticker 가격 API 서비스 클래스
-/// Bybit의 Ticker API를 호출하여 실시간 시세 정보를 가져옵니다.
+/// Bybit과 Bithumb의 Ticker API를 호출하여 실시간 시세 정보를 가져옵니다.
 class TickerApiService {
   final Dio _dio;
-  static const String _baseUrl = 'https://api.bybit.com/v5';
+  final InstrumentsLocalStorageService _localStorageService;
+  final ExchangeApiService _exchangeApiService;
 
-  TickerApiService({Dio? dio}) : _dio = dio ?? Dio() {
-    _dio.options.baseUrl = _baseUrl;
+  static const String _bybitBaseUrl = 'https://api.bybit.com/v5';
+  // Bithumb Public API는 CORS 문제가 없으므로 프록시 제거
+  static const String _bithumbBaseUrl = 'https://api.bithumb.com';
+
+  TickerApiService({
+    Dio? dio,
+    InstrumentsLocalStorageService? localStorageService,
+    ExchangeApiService? exchangeApiService,
+  })  : _dio = dio ?? Dio(),
+        _localStorageService =
+            localStorageService ?? InstrumentsLocalStorageService(),
+        _exchangeApiService = exchangeApiService ?? ExchangeApiService() {
     _dio.options.connectTimeout = const Duration(seconds: 10);
     _dio.options.receiveTimeout = const Duration(seconds: 10);
   }
 
+  /// Bithumb의 실시간 Ticker 데이터를 가져옵니다. (ALL_KRW, ALL_BTC 통합)
+  Future<List<BithumbTicker>> fetchBithumbTickers() async {
+    try {
+
+      // KRW와 BTC 마켓 동시 호출
+      final responses = await Future.wait([
+        _dio.get('$_bithumbBaseUrl/public/ticker/ALL_KRW'),
+        _dio.get('$_bithumbBaseUrl/public/ticker/ALL_BTC'),
+      ]);
+
+      final List<BithumbTicker> allTickers = [];
+
+      // KRW 마켓 데이터 파싱
+      if (responses[0].statusCode == 200) {
+        allTickers.addAll(_parseBithumbTickerResponse(responses[0].data, 'KRW'));
+      }
+
+      // BTC 마켓 데이터 파싱
+      if (responses[1].statusCode == 200) {
+        allTickers.addAll(_parseBithumbTickerResponse(responses[1].data, 'BTC'));
+      }
+
+      return allTickers;
+    } on DioException catch (e) {
+      debugPrint('[BithumbTicker] DioException: ${e.toString()}');
+      throw Exception(
+          'Network error while fetching Bithumb tickers: ${e.message}');
+    } catch (e) {
+      debugPrint('[BithumbTicker] Unexpected error: ${e.toString()}');
+      throw Exception('Unexpected error in fetchBithumbTickers: $e');
+    }
+  }
+
+  List<BithumbTicker> _parseBithumbTickerResponse(
+      dynamic responseData, String quoteCurrency) {
+    if (responseData['status'] != '0000') {
+      return [];
+    }
+
+    final data = responseData['data'] as Map<String, dynamic>;
+    final List<BithumbTicker> tickers = [];
+
+    data.forEach((key, value) {
+      if (key == 'date') return; // 날짜 정보는 제외
+
+      final tickerData = value as Map<String, dynamic>;
+      // BithumbTicker 모델의 fromJson이 market 필드를 요구하지 않으므로, market 필드를 수동으로 채워줍니다.
+      final ticker = BithumbTicker.fromJson(tickerData);
+      ticker.market = '$quoteCurrency-$key'; // 마켓 심볼 수동 설정 (예: KRW-BTC)
+      tickers.add(ticker);
+    });
+    return tickers;
+  }
+
   /// Spot 카테고리의 실시간 Ticker 데이터를 가져옵니다.
-  /// 
-  /// [symbol]: 특정 심볼만 조회할 경우 (선택사항)
   Future<List<TickerPriceData>> getSpotTickers({String? symbol}) async {
     try {
       final queryParams = <String, dynamic>{
@@ -27,7 +94,7 @@ class TickerApiService {
       }
 
       final response = await _dio.get(
-        '/market/tickers',
+        '$_bybitBaseUrl/market/tickers',
         queryParameters: queryParams,
       );
 
@@ -56,8 +123,6 @@ class TickerApiService {
   }
 
   /// Linear 카테고리의 실시간 Ticker 데이터를 가져옵니다.
-  /// 
-  /// [symbol]: 특정 심볼만 조회할 경우 (선택사항)
   Future<List<TickerPriceData>> getLinearTickers({String? symbol}) async {
     try {
       final queryParams = <String, dynamic>{
@@ -69,7 +134,7 @@ class TickerApiService {
       }
 
       final response = await _dio.get(
-        '/market/tickers',
+        '$_bybitBaseUrl/market/tickers',
         queryParameters: queryParams,
       );
 
@@ -98,8 +163,6 @@ class TickerApiService {
   }
 
   /// Inverse 카테고리의 실시간 Ticker 데이터를 가져옵니다.
-  /// 
-  /// [symbol]: 특정 심볼만 조회할 경우 (선택사항)
   Future<List<TickerPriceData>> getInverseTickers({String? symbol}) async {
     try {
       final queryParams = <String, dynamic>{
@@ -111,7 +174,7 @@ class TickerApiService {
       }
 
       final response = await _dio.get(
-        '/market/tickers',
+        '$_bybitBaseUrl/market/tickers',
         queryParameters: queryParams,
       );
 
@@ -140,8 +203,6 @@ class TickerApiService {
   }
 
   /// 모든 카테고리의 실시간 Ticker 데이터를 가져옵니다.
-  /// 
-  /// [symbols]: 특정 심볼들만 조회할 경우 (선택사항)
   Future<List<TickerPriceData>> getAllTickers({List<String>? symbols}) async {
     try {
       final futures = <Future<List<TickerPriceData>>>[
@@ -164,9 +225,6 @@ class TickerApiService {
   }
 
   /// 특정 카테고리의 실시간 Ticker 데이터를 가져옵니다.
-  /// 
-  /// [category]: 카테고리 ('spot', 'linear', 'inverse')
-  /// [symbol]: 특정 심볼만 조회할 경우
   Future<List<TickerPriceData>> getTickersByCategory(
     String category, {
     String? symbol,

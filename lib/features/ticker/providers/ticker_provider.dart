@@ -10,19 +10,27 @@ final tickerRepositoryProvider = Provider<TickerRepository>((ref) {
 });
 
 /// 현재 정렬 옵션을 관리하는 프로바이더
-final tickerSortOptionProvider = StateProvider<TickerSortOption>((ref) => TickerSortOption.turnover24h);
+final tickerSortOptionProvider =
+    StateProvider<TickerSortOption>((ref) => TickerSortOption.turnover24h);
 
 /// 현재 정렬 방향을 관리하는 프로바이더
 final sortDirectionProvider = StateProvider<SortDirection>((ref) => SortDirection.desc);
 
 /// 실시간 통합 ticker 데이터 프로바이더
-final liveTickerProvider = StateNotifierProvider<LiveTickerNotifier, AsyncValue<List<IntegratedTickerPriceData>>>((ref) {
+final liveTickerProvider = StateNotifierProvider.autoDispose<
+    LiveTickerNotifier, AsyncValue<List<IntegratedTickerPriceData>>>((ref) {
   final repository = ref.watch(tickerRepositoryProvider);
-  return LiveTickerNotifier(repository);
+  final notifier = LiveTickerNotifier(repository);
+  // Provider가 활성화될 때 업데이트 시작
+  notifier.startLiveUpdates();
+  // Provider가 파기될 때 업데이트 중지
+  ref.onDispose(() => notifier.stopLiveUpdates());
+  return notifier;
 });
 
 /// 실시간 ticker 데이터 상태 관리 클래스
-class LiveTickerNotifier extends StateNotifier<AsyncValue<List<IntegratedTickerPriceData>>> {
+class LiveTickerNotifier
+    extends StateNotifier<AsyncValue<List<IntegratedTickerPriceData>>> {
   final TickerRepository _repository;
   Timer? _timer;
   bool _isActive = false;
@@ -32,10 +40,10 @@ class LiveTickerNotifier extends StateNotifier<AsyncValue<List<IntegratedTickerP
   /// 실시간 ticker 데이터 스트림 시작
   void startLiveUpdates() {
     if (_isActive) return;
-    
+
     _isActive = true;
     _loadLiveTickers(); // 즉시 로드
-    
+
     // 1초마다 API 호출
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_isActive) {
@@ -71,49 +79,7 @@ class LiveTickerNotifier extends StateNotifier<AsyncValue<List<IntegratedTickerP
     await _loadLiveTickers();
   }
 
-  /// 카테고리별 ticker 데이터 필터링
-  List<IntegratedTickerPriceData> getTickersByCategory(String category) {
-    return state.when(
-      data: (tickers) => category == 'all' 
-          ? tickers 
-          : tickers.where((ticker) => ticker.category.toLowerCase() == category.toLowerCase()).toList(),
-      loading: () => [],
-      error: (_, _) => [],
-    );
-  }
-
-  /// 검색어로 ticker 데이터 필터링
-  List<IntegratedTickerPriceData> searchTickers(String query) {
-    if (query.isEmpty) return state.value ?? [];
-    
-    return state.when(
-      data: (tickers) {
-        final lowerQuery = query.toLowerCase();
-        return tickers.where((ticker) =>
-            ticker.symbol.toLowerCase().contains(lowerQuery) ||
-            ticker.baseCoin.toLowerCase().contains(lowerQuery) ||
-            ticker.quoteCoin.toLowerCase().contains(lowerQuery) ||
-            (ticker.koreanName?.toLowerCase().contains(lowerQuery) ?? false) ||
-            (ticker.englishName?.toLowerCase().contains(lowerQuery) ?? false)
-        ).toList();
-      },
-      loading: () => [],
-      error: (_, _) => [],
-    );
-  }
-
-  /// 상태별 ticker 데이터 필터링
-  List<IntegratedTickerPriceData> getTickersByStatus(String status) {
-    return state.when(
-      data: (tickers) => status == 'all' 
-          ? tickers 
-          : tickers.where((ticker) => ticker.status == status).toList(),
-      loading: () => [],
-      error: (_, _) => [],
-    );
-  }
-
-  /// 복합 필터링 및 정렬
+  /// 복합 필터링 및 정렬 (UI에서 사용)
   List<IntegratedTickerPriceData> getFilteredAndSortedTickers({
     String category = 'all',
     String query = '',
@@ -124,27 +90,31 @@ class LiveTickerNotifier extends StateNotifier<AsyncValue<List<IntegratedTickerP
     return state.when(
       data: (tickers) {
         var filtered = tickers;
-        
+
         // 카테고리 필터링
         if (category != 'all') {
-          filtered = filtered.where((ticker) => ticker.category.toLowerCase() == category.toLowerCase()).toList();
+          filtered = filtered
+              .where((ticker) =>
+                  ticker.category.toLowerCase() == category.toLowerCase())
+              .toList();
         }
-        
+
         // 검색어 필터링
         if (query.isNotEmpty) {
           final lowerQuery = query.toLowerCase();
-          filtered = filtered.where((ticker) =>
-              ticker.symbol.toLowerCase().contains(lowerQuery) ||
-              ticker.baseCoin.toLowerCase().contains(lowerQuery) ||
-              ticker.quoteCoin.toLowerCase().contains(lowerQuery) ||
-              (ticker.koreanName?.toLowerCase().contains(lowerQuery) ?? false) ||
-              (ticker.englishName?.toLowerCase().contains(lowerQuery) ?? false)
-          ).toList();
+          filtered = filtered.where((ticker) {
+            return ticker.symbol.toLowerCase().contains(lowerQuery) ||
+                ticker.baseCoin.toLowerCase().contains(lowerQuery) ||
+                ticker.quoteCoin.toLowerCase().contains(lowerQuery) ||
+                (ticker.koreanName?.toLowerCase().contains(lowerQuery) ?? false) ||
+                (ticker.englishName?.toLowerCase().contains(lowerQuery) ?? false);
+          }).toList();
         }
-        
+
         // 상태 필터링
         if (status != 'all') {
-          filtered = filtered.where((ticker) => ticker.status == status).toList();
+          filtered =
+              filtered.where((ticker) => ticker.status == status).toList();
         }
 
         // 정렬
@@ -180,18 +150,11 @@ class LiveTickerNotifier extends StateNotifier<AsyncValue<List<IntegratedTickerP
           }
           return sortDirection == SortDirection.asc ? comparison : -comparison;
         });
-        
+
         return filtered;
       },
       loading: () => [],
-      error: (_, _) => [],
+      error: (_, __) => [],
     );
   }
-
-  @override
-  void dispose() {
-    stopLiveUpdates();
-    super.dispose();
-  }
 }
-

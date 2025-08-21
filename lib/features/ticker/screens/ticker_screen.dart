@@ -17,7 +17,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
-  
+
   String _selectedStatus = 'all';
   String _searchQuery = '';
 
@@ -25,17 +25,10 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
   void initState() {
     super.initState();
     _tabController = TabController(length: 4, vsync: this);
-    
-    // 실시간 ticker 데이터 스트림 시작
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(liveTickerProvider.notifier).startLiveUpdates();
-    });
   }
 
   @override
   void dispose() {
-    // 실시간 ticker 데이터 스트림 중지
-    ref.read(liveTickerProvider.notifier).stopLiveUpdates();
     _tabController.dispose();
     _searchController.dispose();
     super.dispose();
@@ -45,83 +38,77 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
-    return Consumer(
-      builder: (context, ref, child) {
-        final liveTickerState = ref.watch(liveTickerProvider);
-        
-        return Scaffold(
-          appBar: AppBar(
-            title: const Text('실시간 Ticker 정보'),
-            backgroundColor: colorScheme.surface,
-            foregroundColor: colorScheme.onSurface,
-            elevation: 0,
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: () {
-                  ref.read(liveTickerProvider.notifier).refreshTickers();
-                },
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('실시간 Ticker 정보'),
+        backgroundColor: colorScheme.surface,
+        foregroundColor: colorScheme.onSurface,
+        elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              ref.read(liveTickerProvider.notifier).refreshTickers();
+            },
+          ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: const [
+            Tab(text: 'All'),
+            Tab(text: 'Spot'),
+            Tab(text: 'Linear'),
+            Tab(text: 'Inverse'),
+          ],
+          labelColor: colorScheme.primary,
+          unselectedLabelColor: colorScheme.onSurface.withAlpha(153),
+          indicatorColor: colorScheme.primary,
+        ),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+              decoration: InputDecoration(
+                hintText: '심볼, 코인명으로 검색...',
+                border: const OutlineInputBorder(),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {
+                            _searchQuery = '';
+                          });
+                        },
+                      )
+                    : null,
               ),
-            ],
-            bottom: TabBar(
-              controller: _tabController,
-              tabs: const [
-                Tab(text: 'All'),
-                Tab(text: 'Spot'),
-                Tab(text: 'Linear'),
-                Tab(text: 'Inverse'),
-              ],
-              labelColor: colorScheme.primary,
-              unselectedLabelColor: colorScheme.onSurface.withAlpha(153),
-              indicatorColor: colorScheme.primary,
             ),
           ),
-          body: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: _searchController,
-                  onChanged: (value) {
-                    setState(() {
-                      _searchQuery = value;
-                    });
-                  },
-                  decoration: InputDecoration(
-                    hintText: '심볼, 코인명으로 검색...',
-                    border: const OutlineInputBorder(),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () {
-                              _searchController.clear();
-                              setState(() {
-                                _searchQuery = '';
-                              });
-                            },
-                          )
-                        : null,
-                  ),
-                ),
-              ),
-              _buildFilterChips(colorScheme),
-              _buildSortChips(ref),
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children: [
-                    _buildLiveTickerList(liveTickerState, 'all'),
-                    _buildLiveTickerList(liveTickerState, 'spot'),
-                    _buildLiveTickerList(liveTickerState, 'linear'),
-                    _buildLiveTickerList(liveTickerState, 'inverse'),
-                  ],
-                ),
-              ),
-            ],
+          _buildFilterChips(colorScheme),
+          _buildSortChips(ref),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildLiveTickerList('all'),
+                _buildLiveTickerList('spot'),
+                _buildLiveTickerList('linear'),
+                _buildLiveTickerList('inverse'),
+              ],
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 
@@ -179,15 +166,14 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                 label: Text(_getSortOptionName(option)),
                 onPressed: () {
                   if (isSelected) {
-                    // Toggle direction
                     ref.read(sortDirectionProvider.notifier).state =
                         sortDirection == SortDirection.asc
                             ? SortDirection.desc
                             : SortDirection.asc;
                   } else {
-                    // Change sort option
                     ref.read(tickerSortOptionProvider.notifier).state = option;
-                    ref.read(sortDirectionProvider.notifier).state = SortDirection.desc; // 기본 내림차순
+                    ref.read(sortDirectionProvider.notifier).state =
+                        SortDirection.desc;
                   }
                 },
               ),
@@ -215,14 +201,15 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     }
   }
 
-  Widget _buildLiveTickerList(AsyncValue<List<IntegratedTickerPriceData>> liveTickerState, String category) {
+  Widget _buildLiveTickerList(String category) {
+    final liveTickerState = ref.watch(liveTickerProvider);
     final sortOption = ref.watch(tickerSortOptionProvider);
     final sortDirection = ref.watch(sortDirectionProvider);
 
     return liveTickerState.when(
       data: (tickers) {
         final notifier = ref.read(liveTickerProvider.notifier);
-                final filteredTickers = notifier.getFilteredAndSortedTickers(
+        final filteredTickers = notifier.getFilteredAndSortedTickers(
           category: category,
           query: _searchQuery,
           status: _selectedStatus,
@@ -290,10 +277,11 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     );
   }
 
-  Widget _buildLiveTickerCard(IntegratedTickerPriceData ticker, ColorScheme colorScheme) {
+  Widget _buildLiveTickerCard(
+      IntegratedTickerPriceData ticker, ColorScheme colorScheme) {
     final priceData = ticker.priceData;
     final priceDirection = ticker.priceDirection;
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       elevation: 2,
@@ -405,7 +393,8 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                           color: colorScheme.onSurface.withAlpha(153),
                         ),
                       ),
-                    if (priceData.highPrice24h != null && priceData.lowPrice24h != null)
+                    if (priceData.highPrice24h != null &&
+                        priceData.lowPrice24h != null)
                       Text(
                         'H: ${priceData.highPrice24h} L: ${priceData.lowPrice24h}',
                         style: TextStyle(
@@ -437,7 +426,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
   String _formatVolume(String volume) {
     final value = double.tryParse(volume);
     if (value == null) return volume;
-    
+
     if (value >= 1000000000) {
       return '${(value / 1000000000).toStringAsFixed(2)}B';
     } else if (value >= 1000000) {
@@ -463,7 +452,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
       default:
         color = Colors.grey;
     }
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
       decoration: BoxDecoration(
