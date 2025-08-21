@@ -31,7 +31,7 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final apiKeyStatusMap = ref.watch(apiKeyStatusProvider);
+    final apiKeyDataMap = ref.watch(apiKeyStatusProvider);
     final apiKeysAsync = ref.watch(apiKeyListProvider);
 
     return Scaffold(
@@ -63,16 +63,29 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
               const Divider(),
               ...apiKeys.asMap().entries.map((entry) {
                 final index = entry.key;
-                final apiKeyData = entry.value;
-                final status = apiKeyStatusMap[apiKeyData.key] ?? apiKeyData.status;
+                final apiKeyData = apiKeyDataMap[entry.value.key] ?? entry.value;
+                final status = apiKeyData.status;
 
                 return ListTile(
                   title: Text(apiKeyData.key, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  subtitle: Row(
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Icon(status.icon, color: status.color),
-                      const SizedBox(width: 4),
-                      Text(status.label, style: TextStyle(color: status.color)),
+                      Row(
+                        children: [
+                          Icon(status.icon, color: status.color, size: 16),
+                          const SizedBox(width: 4),
+                          Text(status.label, style: TextStyle(color: status.color)),
+                        ],
+                      ),
+                      if (apiKeyData.requestsRemaining != null && apiKeyData.planQuota != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 4.0),
+                          child: Text(
+                            'Quota: ${apiKeyData.requestsRemaining} / ${apiKeyData.planQuota}',
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
                     ],
                   ),
                   trailing: Row(

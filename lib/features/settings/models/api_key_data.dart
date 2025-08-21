@@ -17,21 +17,33 @@ class ApiKeyData extends HiveObject {
   @HiveField(2)
   final int? lastValidated; // Unix timestamp (milliseconds since epoch)
 
+  @HiveField(3)
+  final int? planQuota;
+
+  @HiveField(4)
+  final int? requestsRemaining;
+
   ApiKeyData({
     required this.key,
     required this.status,
     this.lastValidated,
+    this.planQuota,
+    this.requestsRemaining,
   });
 
   ApiKeyData copyWith({
     String? key,
     ApiKeyStatus? status,
     int? lastValidated,
+    int? planQuota,
+    int? requestsRemaining,
   }) {
     return ApiKeyData(
       key: key ?? this.key,
       status: status ?? this.status,
       lastValidated: lastValidated ?? this.lastValidated,
+      planQuota: planQuota ?? this.planQuota,
+      requestsRemaining: requestsRemaining ?? this.requestsRemaining,
     );
   }
 

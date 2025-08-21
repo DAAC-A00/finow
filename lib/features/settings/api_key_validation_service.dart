@@ -1,52 +1,31 @@
-import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:finow/features/settings/api_key_service.dart';
 import 'package:finow/features/settings/api_key_status.dart';
+import 'package:finow/features/settings/api_quota_service.dart';
+import 'package:finow/features/settings/models/api_key_data.dart';
 
 final apiKeyValidationServiceProvider = Provider<ApiKeyValidationService>((ref) {
-  return ApiKeyValidationService(Dio());
+  final quotaService = ref.watch(apiQuotaServiceProvider);
+  return ApiKeyValidationService(quotaService);
 });
 
 class ApiKeyValidationService {
-  final Dio _dio;
-  final String _baseUrl = 'https://v6.exchangerate-api.com/v6';
+  final ApiQuotaService _quotaService;
 
-  ApiKeyValidationService(this._dio);
+  ApiKeyValidationService(this._quotaService);
 
-  Future<ApiKeyStatus> validateKey(String apiKey) async {
-    try {
-      final response = await _dio.get('$_baseUrl/$apiKey/latest/USD');
-      if (response.statusCode == 200 && response.data['result'] == 'success') {
-        return ApiKeyStatus.valid;
-      }
-    } on DioException catch (e) {
-      if (e.response != null && e.response?.data['result'] == 'error') {
-        final errorType = e.response?.data['error-type'];
-        switch (errorType) {
-          case 'invalid-key':
-            return ApiKeyStatus.invalidKey;
-          case 'inactive-account':
-            return ApiKeyStatus.inactiveAccount;
-          case 'quota-reached':
-            return ApiKeyStatus.quotaReached;
-          case 'unsupported-code':
-            return ApiKeyStatus.unsupportedCode;
-          case 'malformed-request':
-            return ApiKeyStatus.malformedRequest;
-        }
-      }
-    }
-    return ApiKeyStatus.unknown;
+  Future<Map<String, dynamic>> validateKey(String apiKey) async {
+    return await _quotaService.getQuota(apiKey);
   }
 }
 
-final apiKeyStatusProvider = StateNotifierProvider<ApiKeyStatusNotifier, Map<String, ApiKeyStatus>>((ref) {
+final apiKeyStatusProvider = StateNotifierProvider<ApiKeyStatusNotifier, Map<String, ApiKeyData>>((ref) {
   final validationService = ref.watch(apiKeyValidationServiceProvider);
   final apiKeyService = ref.watch(apiKeyServiceProvider);
   return ApiKeyStatusNotifier(validationService, apiKeyService);
 });
 
-class ApiKeyStatusNotifier extends StateNotifier<Map<String, ApiKeyStatus>> {
+class ApiKeyStatusNotifier extends StateNotifier<Map<String, ApiKeyData>> {
   final ApiKeyValidationService _validationService;
   final ApiKeyService _apiKeyService;
 
@@ -54,30 +33,42 @@ class ApiKeyStatusNotifier extends StateNotifier<Map<String, ApiKeyStatus>> {
     _loadStoredStatuses();
   }
 
-  /// 저장된 API 키 상태들을 로드합니다.
   void _loadStoredStatuses() {
     final apiKeys = _apiKeyService.getApiKeys();
-    final statusMap = <String, ApiKeyStatus>{};
-    
+    final statusMap = <String, ApiKeyData>{};
     for (final keyData in apiKeys) {
-      statusMap[keyData.key] = keyData.status;
+      statusMap[keyData.key] = keyData;
     }
-    
     state = statusMap;
   }
 
   Future<void> validateKey(String apiKey) async {
-    state = {...state, apiKey: ApiKeyStatus.validating};
-    final status = await _validationService.validateKey(apiKey);
-    
-    // 검증 결과를 API key 전용 box에 저장
-    await _apiKeyService.updateApiKeyStatus(apiKey, status);
-    
-    state = {...state, apiKey: status};
+    final currentData = state[apiKey] ?? ApiKeyData(key: apiKey, status: ApiKeyStatus.unknown);
+    state = {...state, apiKey: currentData.copyWith(status: ApiKeyStatus.validating)};
+
+    final result = await _validationService.validateKey(apiKey);
+    final status = result['status'] as ApiKeyStatus;
+    final planQuota = result['plan_quota'] as int?;
+    final requestsRemaining = result['requests_remaining'] as int?;
+
+    final updatedData = currentData.copyWith(
+      status: status,
+      planQuota: planQuota,
+      requestsRemaining: requestsRemaining,
+      lastValidated: DateTime.now().millisecondsSinceEpoch,
+    );
+
+    final apiKeys = _apiKeyService.getApiKeys();
+    final index = apiKeys.indexWhere((key) => key.key == apiKey);
+    if (index != -1) {
+      await _apiKeyService.updateApiKey(index, updatedData);
+    }
+
+    state = {...state, apiKey: updatedData};
   }
 
   void clearStatus(String apiKey) {
-    final newState = Map<String, ApiKeyStatus>.from(state);
+    final newState = Map<String, ApiKeyData>.from(state);
     newState.remove(apiKey);
     state = newState;
   }
@@ -86,7 +77,6 @@ class ApiKeyStatusNotifier extends StateNotifier<Map<String, ApiKeyStatus>> {
     state = {};
   }
 
-  /// API 키 목록이 변경될 때 상태를 새로고침합니다.
   void refreshStatuses() {
     _loadStoredStatuses();
   }

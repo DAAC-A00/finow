@@ -2,7 +2,6 @@ import 'package:finow/features/settings/api_key_service.dart';
 import 'package:finow/features/settings/api_key_validation_service.dart';
 import 'package:finow/features/settings/models/api_key_data.dart';
 
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -20,7 +19,7 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
   @override
   Widget build(BuildContext context) {
     final apiKeysAsync = ref.watch(apiKeyListProvider);
-    final apiKeyStatusMap = ref.watch(apiKeyStatusProvider);
+    final apiKeyDataMap = ref.watch(apiKeyStatusProvider);
 
     return Scaffold(
       body: Column(
@@ -30,9 +29,10 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
               final searchQuery = ref.watch(searchQueryProvider);
               final filteredApiKeys = apiKeys.where((apiKey) {
                 final query = searchQuery.toLowerCase();
-                return apiKey.key.toLowerCase().contains(query) ||
-                       apiKey.status.name.toLowerCase().contains(query) ||
-                       (apiKey.lastValidated?.toString().toLowerCase().contains(query) ?? false);
+                final data = apiKeyDataMap[apiKey.key] ?? apiKey;
+                return data.key.toLowerCase().contains(query) ||
+                       data.status.name.toLowerCase().contains(query) ||
+                       (data.lastValidated?.toString().toLowerCase().contains(query) ?? false);
               }).toList();
 
               return Padding(
@@ -94,9 +94,10 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                 final searchQuery = ref.watch(searchQueryProvider);
                 final filteredApiKeys = apiKeys.where((apiKey) {
                   final query = searchQuery.toLowerCase();
-                  return apiKey.key.toLowerCase().contains(query) ||
-                         apiKey.status.name.toLowerCase().contains(query) ||
-                         (apiKey.lastValidated?.toString().toLowerCase().contains(query) ?? false);
+                  final data = apiKeyDataMap[apiKey.key] ?? apiKey;
+                  return data.key.toLowerCase().contains(query) ||
+                         data.status.name.toLowerCase().contains(query) ||
+                         (data.lastValidated?.toString().toLowerCase().contains(query) ?? false);
                 }).toList();
 
                 if (filteredApiKeys.isEmpty) {
@@ -122,16 +123,17 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                   itemCount: filteredApiKeys.length,
                   itemBuilder: (context, index) {
                     final apiKey = filteredApiKeys[index];
-                    final status = apiKeyStatusMap[apiKey.key] ?? apiKey.status;
+                    final apiKeyData = apiKeyDataMap[apiKey.key] ?? apiKey;
+                    final status = apiKeyData.status;
 
                     return Card(
                       margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                       child: ListTile(
-                        title: Text('Key: ${_maskApiKey(apiKey.key)}'),
+                        title: Text('Key: ${_maskApiKey(apiKeyData.key)}'),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Full Key: ${apiKey.key}'),
+                            Text('Full Key: ${apiKeyData.key}'),
                             Row(
                               children: [
                                 const Text('Status: '),
@@ -147,17 +149,17 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                                   const SizedBox(width: 4),
                                   Text(status.label, style: TextStyle(color: status.color, fontStyle: FontStyle.italic)),
                                   const SizedBox(width: 8),
-                                  Text('(Priority: ${apiKey.priority})', style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic)),
+                                  Text('(Priority: ${apiKeyData.priority})', style: TextStyle(color: Colors.grey[600], fontStyle: FontStyle.italic)),
                                 ],
                               ),
                             ),
                             Text(
-                              'Last Validated (Unix): ${apiKey.lastValidated ?? 'N/A'}'
+                              'Last Validated (Unix): ${apiKeyData.lastValidated ?? 'N/A'}'
                             ),
                             Padding(
                               padding: const EdgeInsets.only(left: 8.0, top: 2.0),
                               child: Text(
-                                '└ Converted: ${apiKey.lastValidated != null ? DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(apiKey.lastValidated!).toLocal()) : 'N/A'} (KST)',
+                                '└ Converted: ${apiKeyData.lastValidated != null ? DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.fromMillisecondsSinceEpoch(apiKeyData.lastValidated!).toLocal()) : 'N/A'} (KST)',
                                 style: TextStyle(
                                   color: Theme.of(context).textTheme.bodySmall?.color?.withAlpha(204),
                                   fontStyle: FontStyle.italic,
@@ -172,7 +174,7 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                             IconButton(
                               icon: const Icon(Icons.sync),
                               onPressed: () {
-                                ref.read(apiKeyStatusProvider.notifier).validateKey(apiKey.key);
+                                ref.read(apiKeyStatusProvider.notifier).validateKey(apiKeyData.key);
                               },
                             ),
                             IconButton(
@@ -182,7 +184,7 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => EditApiKeyScreen(
-                                      existingKey: apiKey,
+                                      existingKey: apiKeyData,
                                       index: index,
                                     ),
                                   ),
@@ -191,7 +193,7 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete),
-                              onPressed: () => _confirmDelete(context, apiKey),
+                              onPressed: () => _confirmDelete(context, apiKeyData),
                             ),
                           ],
                         ),

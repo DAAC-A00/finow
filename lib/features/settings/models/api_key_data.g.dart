@@ -20,19 +20,25 @@ class ApiKeyDataAdapter extends TypeAdapter<ApiKeyData> {
       key: fields[0] as String,
       status: fields[1] as ApiKeyStatus,
       lastValidated: fields[2] as int?,
+      planQuota: fields[3] as int?,
+      requestsRemaining: fields[4] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ApiKeyData obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.key)
       ..writeByte(1)
       ..write(obj.status)
       ..writeByte(2)
-      ..write(obj.lastValidated);
+      ..write(obj.lastValidated)
+      ..writeByte(3)
+      ..write(obj.planQuota)
+      ..writeByte(4)
+      ..write(obj.requestsRemaining);
   }
 
   @override
@@ -54,6 +60,8 @@ ApiKeyData _$ApiKeyDataFromJson(Map<String, dynamic> json) => ApiKeyData(
       key: json['key'] as String,
       status: $enumDecode(_$ApiKeyStatusEnumMap, json['status']),
       lastValidated: (json['lastValidated'] as num?)?.toInt(),
+      planQuota: (json['planQuota'] as num?)?.toInt(),
+      requestsRemaining: (json['requestsRemaining'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$ApiKeyDataToJson(ApiKeyData instance) =>
@@ -61,6 +69,8 @@ Map<String, dynamic> _$ApiKeyDataToJson(ApiKeyData instance) =>
       'key': instance.key,
       'status': _$ApiKeyStatusEnumMap[instance.status]!,
       'lastValidated': instance.lastValidated,
+      'planQuota': instance.planQuota,
+      'requestsRemaining': instance.requestsRemaining,
     };
 
 const _$ApiKeyStatusEnumMap = {
