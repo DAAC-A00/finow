@@ -127,20 +127,14 @@ class TickerRepository {
     }
   }
 
-  Map<String, dynamic> _parseBaseCoin(String baseCoin) {
-    String quantityStr = '';
-    String coin = '';
+  Map<String, dynamic> _parseBaseCoin(String baseCoinStr) {
+    // Try parsing as $quantity$baseCoin (e.g., "1000BTC")
+    RegExp quantityPrefixRegExp = RegExp(r'^(\d+)(.*)$');
+    Match? match = quantityPrefixRegExp.firstMatch(baseCoinStr);
 
-    for (int i = 0; i < baseCoin.length; i++) {
-      if (int.tryParse(baseCoin[i]) != null) {
-        quantityStr += baseCoin[i];
-      } else {
-        coin = baseCoin.substring(i);
-        break;
-      }
-    }
-
-    if (quantityStr.isNotEmpty) {
+    if (match != null) {
+      String quantityStr = match.group(1)!;
+      String coin = match.group(2)!;
       final quantity = int.tryParse(quantityStr);
       if (quantity != null && quantity % 1000 == 0) {
         return {
@@ -150,9 +144,27 @@ class TickerRepository {
       }
     }
 
+    // If not $quantity$baseCoin or quantity not a multiple of 1000,
+    // try parsing as $baseCoin$quantity (e.g., "BTC1000")
+    RegExp quantitySuffixRegExp = RegExp(r'^(.*?)(\d+)$');
+    match = quantitySuffixRegExp.firstMatch(baseCoinStr);
+
+    if (match != null) {
+      String coin = match.group(1)!;
+      String quantityStr = match.group(2)!;
+      final quantity = int.tryParse(quantityStr);
+      if (quantity != null && quantity % 1000 == 0) {
+        return {
+          'quantity': quantity.toDouble(),
+          'baseCoin': coin,
+        };
+      }
+    }
+
+    // Default case if no specific quantity pattern is found or valid
     return {
       'quantity': 1.0,
-      'baseCoin': baseCoin,
+      'baseCoin': baseCoinStr,
     };
   }
 }
