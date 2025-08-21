@@ -321,7 +321,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              ticker.symbol,
+                              _getIntegratedSymbol(ticker),
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -367,9 +367,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                 runSpacing: 4.0,
                 children: [
                   _buildInfoChip(
-                    (ticker.quantity != null && ticker.quantity != 1.0)
-                        ? '${ticker.quantity}${ticker.baseCode}/${ticker.quoteCode}'
-                        : '${ticker.baseCode}/${ticker.quoteCode}',
+                    ticker.symbol,
                     colorScheme,
                   ),
                   _buildStatusChip(ticker.status, colorScheme),
@@ -449,6 +447,14 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     // Create a NumberFormat instance for formatting with commas.
     final formatter = NumberFormat('#,##0.########');
     return formatter.format(value);
+  }
+
+  String _getIntegratedSymbol(IntegratedTickerPriceData ticker) {
+    if (ticker.quantity != null && ticker.quantity != 1.0) {
+      return '${ticker.quantity}${ticker.baseCode}/${ticker.quoteCode}';
+    } else {
+      return '${ticker.baseCode}/${ticker.quoteCode}';
+    }
   }
 
   Widget _buildCategoryBadge(String category, ColorScheme colorScheme) {
