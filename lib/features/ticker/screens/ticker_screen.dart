@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import '../models/ticker_price_data.dart';
 import '../models/ticker_sort_option.dart';
 import '../providers/ticker_provider.dart';
@@ -339,7 +340,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                       if (priceData != null) ...[
                         const SizedBox(height: 4.0),
                         Text(
-                          priceData.lastPrice ?? '-',
+                          _formatNumberWithCommas(priceData.lastPrice),
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -396,7 +397,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                     if (priceData.highPrice24h != null &&
                         priceData.lowPrice24h != null)
                       Text(
-                        'H: ${priceData.highPrice24h} L: ${priceData.lowPrice24h}',
+                        'H: ${_formatNumberWithCommas(priceData.highPrice24h)} L: ${_formatNumberWithCommas(priceData.lowPrice24h)}',
                         style: TextStyle(
                           fontSize: 12,
                           color: colorScheme.onSurface.withAlpha(153),
@@ -435,6 +436,19 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
       return '${(value / 1000).toStringAsFixed(2)}K';
     }
     return value.toStringAsFixed(2);
+  }
+
+  String _formatNumberWithCommas(String? numberString) {
+    if (numberString == null || numberString.isEmpty) {
+      return '-';
+    }
+    final double? value = double.tryParse(numberString);
+    if (value == null) {
+      return numberString;
+    }
+    // Create a NumberFormat instance for formatting with commas.
+    final formatter = NumberFormat('#,##0.########');
+    return formatter.format(value);
   }
 
   Widget _buildCategoryBadge(String category, ColorScheme colorScheme) {
