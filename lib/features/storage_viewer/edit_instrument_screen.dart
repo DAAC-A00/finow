@@ -22,6 +22,8 @@ class _EditInstrumentScreenState extends ConsumerState<EditInstrumentScreen> {
   late final TextEditingController _baseCodeController;
   late final TextEditingController _quoteCodeController;
   late final TextEditingController _quantityController;
+  late final TextEditingController _exchangeController;
+  late final TextEditingController _categoryController;
 
   @override
   void initState() {
@@ -30,6 +32,8 @@ class _EditInstrumentScreenState extends ConsumerState<EditInstrumentScreen> {
     _baseCodeController = TextEditingController(text: widget.existingInstrument.baseCode);
     _quoteCodeController = TextEditingController(text: widget.existingInstrument.quoteCode);
     _quantityController = TextEditingController(text: widget.existingInstrument.quantity?.toString());
+    _exchangeController = TextEditingController(text: widget.existingInstrument.exchange);
+    _categoryController = TextEditingController(text: widget.existingInstrument.category);
   }
 
   @override
@@ -38,6 +42,8 @@ class _EditInstrumentScreenState extends ConsumerState<EditInstrumentScreen> {
     _baseCodeController.dispose();
     _quoteCodeController.dispose();
     _quantityController.dispose();
+    _exchangeController.dispose();
+    _categoryController.dispose();
     super.dispose();
   }
 
@@ -74,6 +80,14 @@ class _EditInstrumentScreenState extends ConsumerState<EditInstrumentScreen> {
               decoration: const InputDecoration(labelText: 'Quantity'),
               keyboardType: TextInputType.number,
             ),
+            TextField(
+              controller: _exchangeController,
+              decoration: const InputDecoration(labelText: 'Exchange'),
+            ),
+            TextField(
+              controller: _categoryController,
+              decoration: const InputDecoration(labelText: 'Category'),
+            ),
           ],
         ),
       ),
@@ -81,12 +95,31 @@ class _EditInstrumentScreenState extends ConsumerState<EditInstrumentScreen> {
   }
 
   Future<void> _saveInstrument() async {
+    final newSymbol = _symbolController.text;
+    final newCategory = _categoryController.text;
+    final newExchange = _exchangeController.text;
+
+    final oldSymbol = widget.existingInstrument.symbol;
+    final oldCategory = widget.existingInstrument.category;
+    final oldExchange = widget.existingInstrument.exchange;
+
     final updatedInstrument = widget.existingInstrument.copyWith(
-      symbol: _symbolController.text,
+      symbol: newSymbol,
       baseCode: _baseCodeController.text,
       quoteCode: _quoteCodeController.text,
       quantity: double.tryParse(_quantityController.text),
+      exchange: newExchange,
+      category: newCategory,
     );
+
+    if (newSymbol != oldSymbol || newCategory != oldCategory || newExchange != oldExchange) {
+      // Delete old instrument if key components changed
+      await ref.read(instrumentsLocalStorageServiceProvider).deleteInstrument(
+        oldSymbol,
+        oldCategory ?? 'unknown',
+        oldExchange,
+      );
+    }
 
     await ref.read(instrumentsLocalStorageServiceProvider).saveInstrument(updatedInstrument);
 

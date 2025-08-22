@@ -30,9 +30,9 @@ class InstrumentsLocalStorageService {
     return Hive.box(_settingsBoxName);
   }
 
-  /// 심볼 키 생성 (예: "BTCUSDT_bybit", "BTCKRW_bithumb")
+  /// 심볼 키 생성 (예: "BTCUSDT_spot_bybit", "BTCKRW_spot_bithumb")
   String _generateSymbolKey(Instrument instrument) {
-    return '${instrument.symbol}_${instrument.exchange}';
+    return '${instrument.symbol}_${instrument.category ?? 'unknown'}_${instrument.exchange}';
   }
 
   /// 통합 심볼 정보를 Hive Box에 개별 저장
@@ -133,10 +133,10 @@ class InstrumentsLocalStorageService {
   }
 
   /// 개별 심볼 삭제
-  Future<void> deleteInstrument(String symbol, String exchange) async {
+  Future<void> deleteInstrument(String symbol, String category, String exchange) async {
     try {
       final box = await _getBox();
-      final key = '${symbol}_$exchange';
+      final key = '${symbol}_${category}_$exchange';
       await box.delete(key);
       debugPrint('개별 심볼 삭제 완료: $symbol ($exchange)');
     } catch (e) {
@@ -145,10 +145,10 @@ class InstrumentsLocalStorageService {
   }
 
   /// 개별 심볼 조회
-  Future<Instrument?> getInstrument(String symbol, String exchange) async {
+  Future<Instrument?> getInstrument(String symbol, String category, String exchange) async {
     try {
       final box = await _getBox();
-      final key = '${symbol}_$exchange';
+      final key = '${symbol}_${category}_$exchange';
       return box.get(key);
     } catch (e) {
       debugPrint('개별 심볼 조회 중 오류 발생: $e');

@@ -46,13 +46,14 @@ class InstrumentAdapter extends TypeAdapter<Instrument> {
       riskParameters: fields[26] as InstrumentRiskParameters?,
       displayName: fields[27] as String?,
       quantity: fields[28] as double?,
+      integratedSymbol: fields[29] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, Instrument obj) {
     writer
-      ..writeByte(29)
+      ..writeByte(30)
       ..writeByte(0)
       ..write(obj.symbol)
       ..writeByte(1)
@@ -110,7 +111,9 @@ class InstrumentAdapter extends TypeAdapter<Instrument> {
       ..writeByte(27)
       ..write(obj.displayName)
       ..writeByte(28)
-      ..write(obj.quantity);
+      ..write(obj.quantity)
+      ..writeByte(29)
+      ..write(obj.integratedSymbol);
   }
 
   @override

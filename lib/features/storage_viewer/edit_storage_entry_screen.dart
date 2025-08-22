@@ -53,6 +53,8 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
   bool? _isPreListingValue;
   late TextEditingController _preListingInfoController;
   late TextEditingController _displayNameController;
+  late TextEditingController _quantityController;
+  late TextEditingController _integratedSymbolController;
 
   @override
   void initState() {
@@ -93,6 +95,8 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
     _lowerFundingRateController = TextEditingController();
     _preListingInfoController = TextEditingController();
     _displayNameController = TextEditingController();
+    _quantityController = TextEditingController();
+    _integratedSymbolController = TextEditingController();
 
     if (value is ExchangeRate) {
       _lastUpdatedUnixController.text = value.lastUpdatedUnix.toString();
@@ -123,6 +127,8 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
       _isPreListingValue = value.isPreListing;
       _preListingInfoController.text = value.preListingInfo?.toString() ?? '';
       _displayNameController.text = value.displayName ?? '';
+      _quantityController.text = value.quantity?.toString() ?? '';
+      _integratedSymbolController.text = value.integratedSymbol;
     }
   }
 
@@ -154,6 +160,8 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
     _lowerFundingRateController.dispose();
     _preListingInfoController.dispose();
     _displayNameController.dispose();
+    _quantityController.dispose();
+    _integratedSymbolController.dispose();
     super.dispose();
   }
 
@@ -321,6 +329,15 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
             controller: _displayNameController,
             decoration: const InputDecoration(labelText: 'Display Name'),
           ),
+          TextField(
+            controller: _quantityController,
+            decoration: const InputDecoration(labelText: 'Quantity'),
+            keyboardType: TextInputType.number,
+          ),
+          TextField(
+            controller: _integratedSymbolController,
+            decoration: const InputDecoration(labelText: 'Integrated Symbol'),
+          ),
         ],
       );
     } else {
@@ -383,6 +400,8 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
         lotSizeFilter: value.lotSizeFilter,
         leverageFilter: value.leverageFilter,
         riskParameters: value.riskParameters,
+        quantity: double.tryParse(_quantityController.text),
+        integratedSymbol: _integratedSymbolController.text,
       );
     } else {
       newValue = _genericController.text;
@@ -404,3 +423,4 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
     }
   }
 }
+

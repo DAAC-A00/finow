@@ -591,6 +591,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // 기본 정보
+                              Text('Integrated Symbol: ${value.integratedSymbol}'),
                               Text('symbol: ${value.symbol}'),
                               Text('baseCode: ${value.baseCode}'),
                               Text('quoteCode: ${value.quoteCode}'),

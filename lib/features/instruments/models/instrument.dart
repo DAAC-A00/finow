@@ -73,7 +73,7 @@ class Instrument {
 
   @HiveField(22)
   final String? upperFundingRate;
-
+  
   @HiveField(23)
   final String? lowerFundingRate;
 
@@ -91,6 +91,9 @@ class Instrument {
 
   @HiveField(28)
   final double? quantity;
+
+  @HiveField(29)
+  final String integratedSymbol;
 
   const Instrument({
     required this.symbol,
@@ -122,6 +125,7 @@ class Instrument {
     this.riskParameters,
     this.displayName,
     this.quantity,
+    required this.integratedSymbol,
   });
 
   Instrument copyWith({
@@ -154,6 +158,7 @@ class Instrument {
     InstrumentRiskParameters? riskParameters,
     String? displayName,
     double? quantity,
+    String? integratedSymbol,
   }) {
     return Instrument(
       symbol: symbol ?? this.symbol,
@@ -185,6 +190,7 @@ class Instrument {
       riskParameters: riskParameters ?? this.riskParameters,
       displayName: displayName ?? this.displayName,
       quantity: quantity ?? this.quantity,
+      integratedSymbol: integratedSymbol ?? this.integratedSymbol,
     );
   }
 
@@ -223,6 +229,7 @@ class Instrument {
           : null,
       displayName: json['displayName'],
       lastUpdated: DateTime.now(),
+      integratedSymbol: '', // Will be set in ExchangeApiService
     );
   }
 
@@ -241,6 +248,7 @@ class Instrument {
       englishName: json['english_name'],
       marketWarning: json['market_warning'],
       lastUpdated: DateTime.now(),
+      integratedSymbol: '', // Will be set in ExchangeApiService
     );
   }
 
@@ -275,6 +283,7 @@ class Instrument {
       'lotSizeFilter': lotSizeFilter?.toJson(),
       'lastUpdated': lastUpdated.toIso8601String(),
       'quantity': quantity,
+      'integratedSymbol': integratedSymbol,
     };
   }
 
@@ -317,6 +326,7 @@ class Instrument {
           : null,
       lastUpdated: DateTime.parse(json['lastUpdated'] ?? DateTime.now().toIso8601String()),
       quantity: json['quantity'] as double?,
+      integratedSymbol: json['integratedSymbol'] ?? '',
     );
   }
 

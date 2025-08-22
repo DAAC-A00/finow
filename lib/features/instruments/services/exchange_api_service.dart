@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import '../models/instrument.dart';
+import 'package:intl/intl.dart';
 
 /// 거래소 API 서비스 (Dio 기반)
 class ExchangeApiService {
@@ -59,6 +60,43 @@ class ExchangeApiService {
     };
   }
 
+  String _formatExpirationDate(String deliveryTime) {
+    // Bybit linear/inverse의 경우, "31OCT25" 형식
+    if (RegExp(r'^[0-9]{2}[A-Z]{3}[0-9]{2}$').hasMatch(deliveryTime)) {
+      final day = deliveryTime.substring(0, 2);
+      final monthStr = deliveryTime.substring(2, 5);
+      final year = deliveryTime.substring(5, 7);
+
+      const monthMap = {
+        'JAN': '01', 'FEB': '02', 'MAR': '03', 'APR': '04', 'MAY': '05', 'JUN': '06',
+        'JUL': '07', 'AUG': '08', 'SEP': '09', 'OCT': '10', 'NOV': '11', 'DEC': '12'
+      };
+
+      final month = monthMap[monthStr.toUpperCase()];
+
+      if (month != null) {
+        return '$year.$month.$day';
+      }
+    }
+
+    // Timestamp 형식 (e.g., "1729449600000")
+    final timestamp = int.tryParse(deliveryTime);
+    if (timestamp != null) {
+      final dt = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      return DateFormat('yy.MM.dd').format(dt);
+    }
+    
+    // 다른 형식의 날짜가 있다면 여기에 파싱 로직 추가
+    // 예: "2025-10-31"
+    try {
+      final dt = DateTime.parse(deliveryTime);
+      return DateFormat('yy.MM.dd').format(dt);
+    } catch (e) {
+      // 파싱 실패 시 원본 반환
+      return deliveryTime;
+    }
+  }
+
   /// Bybit 특정 카테고리 거래 심볼 정보 조회 (모든 페이지)
   Future<List<Instrument>> fetchBybitInstrumentsByCategory(String category) async {
     try {
@@ -92,9 +130,33 @@ class ExchangeApiService {
             final mappedInstruments = instruments.map((item) {
               final instrument = Instrument.fromBybit(item, category: resultCategory);
               final parsedCoin = _parseBaseCode(instrument.baseCode);
+
+              String integratedSymbol = '';
+              String baseSymbol;
+              if (parsedCoin['quantity'] != null && parsedCoin['quantity'] != 1.0) {
+                baseSymbol = '${parsedCoin['quantity']}${parsedCoin['baseCode']}/${instrument.quoteCode}';
+              } else {
+                baseSymbol = '${parsedCoin['baseCode']}/${instrument.quoteCode}';
+              }
+
+              if ((instrument.category == 'linear' || instrument.category == 'inverse') &&
+                  instrument.contractType != 'Perpetual' &&
+                  instrument.deliveryTime != null &&
+                  instrument.deliveryTime != '0') {
+                try {
+                  final expirationDate = _formatExpirationDate(instrument.deliveryTime!);
+                  integratedSymbol = '$baseSymbol-$expirationDate';
+                } catch (e) {
+                  integratedSymbol = baseSymbol;
+                }
+              } else {
+                integratedSymbol = baseSymbol;
+              }
+
               return instrument.copyWith(
                 baseCode: parsedCoin['baseCode']!,
                 quantity: parsedCoin['quantity']!,
+                integratedSymbol: integratedSymbol,
               );
             }).toList();
                 
@@ -149,15 +211,22 @@ class ExchangeApiService {
         return data.map((item) {
           final instrument = Instrument.fromBithumb(item);
           
+          String integratedSymbol = '';
+          String baseSymbol = '${instrument.baseCode}/${instrument.quoteCode}';
+
+          // Bithumb은 perpetual이 없으므로 deliveryTime 체크는 필요 없음
+          integratedSymbol = baseSymbol;
+
           // 경고 정보가 있다면 추가
           final warning = warningData[instrument.symbol];
           if (warning != null) {
             return instrument.copyWith(
               marketWarning: warning,
+              integratedSymbol: integratedSymbol,
             );
           }
           
-          return instrument;
+          return instrument.copyWith(integratedSymbol: integratedSymbol);
         }).toList();
       } else {
         throw Exception('Bithumb API 호출 실패: ${response.statusCode}');
