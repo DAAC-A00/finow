@@ -18,6 +18,9 @@ class EditApiKeyScreen extends ConsumerStatefulWidget {
 class _EditApiKeyScreenState extends ConsumerState<EditApiKeyScreen> {
   late final TextEditingController _keyController;
   late final TextEditingController _lastValidatedController;
+  late final TextEditingController _planQuotaController;
+  late final TextEditingController _requestsRemainingController;
+  late final TextEditingController _refreshDayOfMonthController;
   late ApiKeyStatus _selectedStatus;
 
   @override
@@ -25,6 +28,9 @@ class _EditApiKeyScreenState extends ConsumerState<EditApiKeyScreen> {
     super.initState();
     _keyController = TextEditingController(text: widget.existingKey?.key);
     _lastValidatedController = TextEditingController(text: widget.existingKey?.lastValidated?.toString());
+    _planQuotaController = TextEditingController(text: widget.existingKey?.planQuota?.toString());
+    _requestsRemainingController = TextEditingController(text: widget.existingKey?.requestsRemaining?.toString());
+    _refreshDayOfMonthController = TextEditingController(text: widget.existingKey?.refreshDayOfMonth?.toString());
     _selectedStatus = widget.existingKey?.status ?? ApiKeyStatus.unknown;
   }
 
@@ -32,6 +38,9 @@ class _EditApiKeyScreenState extends ConsumerState<EditApiKeyScreen> {
   void dispose() {
     _keyController.dispose();
     _lastValidatedController.dispose();
+    _planQuotaController.dispose();
+    _requestsRemainingController.dispose();
+    _refreshDayOfMonthController.dispose();
     super.dispose();
   }
 
@@ -76,6 +85,24 @@ class _EditApiKeyScreenState extends ConsumerState<EditApiKeyScreen> {
             ),
             const SizedBox(height: 16),
             TextField(
+              controller: _planQuotaController,
+              decoration: const InputDecoration(labelText: "Plan Quota"),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _requestsRemainingController,
+              decoration: const InputDecoration(labelText: "Requests Remaining"),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _refreshDayOfMonthController,
+              decoration: const InputDecoration(labelText: "Refresh Day Of Month"),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 16),
+            TextField(
               controller: _lastValidatedController,
               decoration: const InputDecoration(labelText: "Last Validated (Unix Timestamp)"),
               keyboardType: TextInputType.number,
@@ -89,6 +116,9 @@ class _EditApiKeyScreenState extends ConsumerState<EditApiKeyScreen> {
   Future<void> _saveApiKey() async {
     final newKey = _keyController.text.trim();
     final newLastValidated = int.tryParse(_lastValidatedController.text);
+    final newPlanQuota = int.tryParse(_planQuotaController.text);
+    final newRequestsRemaining = int.tryParse(_requestsRemainingController.text);
+    final newRefreshDayOfMonth = int.tryParse(_refreshDayOfMonthController.text);
 
     if (newKey.isNotEmpty) {
       final service = ref.read(apiKeyServiceProvider);
@@ -97,6 +127,9 @@ class _EditApiKeyScreenState extends ConsumerState<EditApiKeyScreen> {
           key: newKey,
           status: _selectedStatus,
           lastValidated: newLastValidated,
+          planQuota: newPlanQuota,
+          requestsRemaining: newRequestsRemaining,
+          refreshDayOfMonth: newRefreshDayOfMonth,
         );
         await service.updateApiKey(widget.index!, updatedApiKeyData);
         if (widget.existingKey!.key != newKey) {
@@ -107,6 +140,9 @@ class _EditApiKeyScreenState extends ConsumerState<EditApiKeyScreen> {
           key: newKey,
           status: _selectedStatus,
           lastValidated: newLastValidated,
+          planQuota: newPlanQuota,
+          requestsRemaining: newRequestsRemaining,
+          refreshDayOfMonth: newRefreshDayOfMonth,
         );
         await service.addApiKey(newApiKeyData.key);
         final addedKeys = service.getApiKeys().where((element) => element.key == newKey);
@@ -117,6 +153,9 @@ class _EditApiKeyScreenState extends ConsumerState<EditApiKeyScreen> {
             final updatedAddedKey = addedKey.copyWith(
               status: _selectedStatus,
               lastValidated: newLastValidated,
+              planQuota: newPlanQuota,
+              requestsRemaining: newRequestsRemaining,
+              refreshDayOfMonth: newRefreshDayOfMonth,
             );
             await service.updateApiKey(addedIndex, updatedAddedKey);
           }

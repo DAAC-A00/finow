@@ -22,13 +22,14 @@ class ApiKeyDataAdapter extends TypeAdapter<ApiKeyData> {
       lastValidated: fields[2] as int?,
       planQuota: fields[3] as int?,
       requestsRemaining: fields[4] as int?,
+      refreshDayOfMonth: fields[5] as int?,
     );
   }
 
   @override
   void write(BinaryWriter writer, ApiKeyData obj) {
     writer
-      ..writeByte(5)
+      ..writeByte(6)
       ..writeByte(0)
       ..write(obj.key)
       ..writeByte(1)
@@ -38,7 +39,9 @@ class ApiKeyDataAdapter extends TypeAdapter<ApiKeyData> {
       ..writeByte(3)
       ..write(obj.planQuota)
       ..writeByte(4)
-      ..write(obj.requestsRemaining);
+      ..write(obj.requestsRemaining)
+      ..writeByte(5)
+      ..write(obj.refreshDayOfMonth);
   }
 
   @override
@@ -62,6 +65,7 @@ ApiKeyData _$ApiKeyDataFromJson(Map<String, dynamic> json) => ApiKeyData(
       lastValidated: (json['lastValidated'] as num?)?.toInt(),
       planQuota: (json['planQuota'] as num?)?.toInt(),
       requestsRemaining: (json['requestsRemaining'] as num?)?.toInt(),
+      refreshDayOfMonth: (json['refreshDayOfMonth'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$ApiKeyDataToJson(ApiKeyData instance) =>
@@ -71,6 +75,7 @@ Map<String, dynamic> _$ApiKeyDataToJson(ApiKeyData instance) =>
       'lastValidated': instance.lastValidated,
       'planQuota': instance.planQuota,
       'requestsRemaining': instance.requestsRemaining,
+      'refreshDayOfMonth': instance.refreshDayOfMonth,
     };
 
 const _$ApiKeyStatusEnumMap = {

@@ -168,6 +168,9 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                                 ],
                               ),
                             ),
+                            Text('Plan Quota: ${apiKeyData.planQuota ?? 'N/A'}'),
+                            Text('Requests Remaining: ${apiKeyData.requestsRemaining ?? 'N/A'}'),
+                            Text('Refresh Day Of Month: ${apiKeyData.refreshDayOfMonth ?? 'N/A'}'),
                             Text(
                               'Last Validated (Unix): ${apiKeyData.lastValidated ?? 'N/A'}'
                             ),

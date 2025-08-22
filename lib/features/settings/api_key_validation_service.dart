@@ -48,15 +48,36 @@ class ApiKeyStatusNotifier extends StateNotifier<Map<String, ApiKeyData>> {
 
     final result = await _validationService.validateKey(apiKey);
     final status = result['status'] as ApiKeyStatus;
-    final planQuota = result['plan_quota'] as int?;
-    final requestsRemaining = result['requests_remaining'] as int?;
 
-    final updatedData = currentData.copyWith(
-      status: status,
-      planQuota: planQuota,
-      requestsRemaining: requestsRemaining,
-      lastValidated: DateTime.now().millisecondsSinceEpoch,
-    );
+    ApiKeyData updatedData;
+
+    if (status == ApiKeyStatus.valid) {
+      updatedData = currentData.copyWith(
+        status: status,
+        planQuota: result['plan_quota'] as int?,
+        requestsRemaining: result['requests_remaining'] as int?,
+        refreshDayOfMonth: result['refresh_day_of_month'] as int?,
+        lastValidated: DateTime.now().millisecondsSinceEpoch,
+      );
+    } else if (status == ApiKeyStatus.quotaReached) {
+      updatedData = currentData.copyWith(
+        status: status,
+        lastValidated: DateTime.now().millisecondsSinceEpoch,
+      );
+    } else if (status == ApiKeyStatus.inactiveAccount || status == ApiKeyStatus.invalidKey) {
+      updatedData = currentData.copyWith(
+        status: status,
+        planQuota: null,
+        requestsRemaining: null,
+        refreshDayOfMonth: null,
+        lastValidated: DateTime.now().millisecondsSinceEpoch,
+      );
+    } else {
+      updatedData = currentData.copyWith(
+        status: status,
+        lastValidated: DateTime.now().millisecondsSinceEpoch,
+      );
+    }
 
     final apiKeys = _apiKeyService.getApiKeys();
     final index = apiKeys.indexWhere((key) => key.key == apiKey);

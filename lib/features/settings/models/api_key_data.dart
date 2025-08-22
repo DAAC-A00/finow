@@ -23,12 +23,16 @@ class ApiKeyData extends HiveObject {
   @HiveField(4)
   final int? requestsRemaining;
 
+  @HiveField(5)
+  final int? refreshDayOfMonth;
+
   ApiKeyData({
     required this.key,
     required this.status,
     this.lastValidated,
     this.planQuota,
     this.requestsRemaining,
+    this.refreshDayOfMonth,
   });
 
   ApiKeyData copyWith({
@@ -37,6 +41,7 @@ class ApiKeyData extends HiveObject {
     int? lastValidated,
     int? planQuota,
     int? requestsRemaining,
+    int? refreshDayOfMonth,
   }) {
     return ApiKeyData(
       key: key ?? this.key,
@@ -44,6 +49,7 @@ class ApiKeyData extends HiveObject {
       lastValidated: lastValidated ?? this.lastValidated,
       planQuota: planQuota ?? this.planQuota,
       requestsRemaining: requestsRemaining ?? this.requestsRemaining,
+      refreshDayOfMonth: refreshDayOfMonth ?? this.refreshDayOfMonth,
     );
   }
 

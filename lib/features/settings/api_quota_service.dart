@@ -21,6 +21,7 @@ class ApiQuotaService {
           'status': ApiKeyStatus.valid,
           'plan_quota': response.data['plan_quota'],
           'requests_remaining': response.data['requests_remaining'],
+          'refresh_day_of_month': response.data['refresh_day_of_month'],
         };
       }
     } on DioException catch (e) {
