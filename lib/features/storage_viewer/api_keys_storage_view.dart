@@ -8,31 +8,11 @@ import 'package:intl/intl.dart';
 import 'package:finow/features/storage_viewer/storage_viewer_screen.dart'; // For searchQueryProvider
 import 'package:finow/features/storage_viewer/edit_api_key_screen.dart';
 
-class ApiKeysStorageView extends ConsumerStatefulWidget {
+class ApiKeysStorageView extends ConsumerWidget {
   const ApiKeysStorageView({super.key});
 
   @override
-  ConsumerState<ApiKeysStorageView> createState() => _ApiKeysStorageViewState();
-}
-
-class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _validateAllKeys();
-    });
-  }
-
-  Future<void> _validateAllKeys() async {
-    final apiKeys = ref.read(apiKeyListProvider).value ?? [];
-    for (final apiKeyData in apiKeys) {
-      await ref.read(apiKeyStatusProvider.notifier).validateKey(apiKeyData.key);
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final apiKeysAsync = ref.watch(apiKeyListProvider);
     final apiKeyDataMap = ref.watch(apiKeyStatusProvider);
 
@@ -211,7 +191,7 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete),
-                              onPressed: () => _confirmDelete(context, apiKeyData),
+                              onPressed: () => _confirmDelete(context, ref, apiKeyData),
                             ),
                           ],
                         ),
@@ -229,7 +209,7 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
-            context,
+            context, 
             MaterialPageRoute(
               builder: (context) => const EditApiKeyScreen(),
             ),
@@ -247,7 +227,7 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
     return '${key.substring(0, 4)}...${key.substring(key.length - 4)}';
   }
 
-  Future<void> _confirmDelete(BuildContext context, ApiKeyData apiKey) async {
+  Future<void> _confirmDelete(BuildContext context, WidgetRef ref, ApiKeyData apiKey) async {
     final navigator = Navigator.of(context);
     final bool? confirm = await showDialog<bool>(
       context: context,
@@ -273,6 +253,4 @@ class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
       await ref.read(apiKeyServiceProvider).deleteApiKey(apiKey.key);
     }
   }
-
-  
 }
