@@ -591,6 +591,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               // 기본 정보
+                              if (value.displayName != null) Text('displayName: ${value.displayName}'),
                               Text('Integrated Symbol: ${value.integratedSymbol}'),
                               Text('symbol: ${value.symbol}'),
                               Text('baseCode: ${value.baseCode}'),
@@ -602,7 +603,20 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                               if (value.koreanName != null) Text('koreanName: ${value.koreanName}'),
                               if (value.englishName != null) Text('englishName: ${value.englishName}'),
                               if (value.marketWarning != null) Text('marketWarning: ${value.marketWarning}'),
-                              
+                              if (value.contractType != null) Text('contractType: ${value.contractType}'),
+                              if (value.launchTime != null) Text('launchTime: ${value.launchTime}'),
+                              if (value.deliveryTime != null) Text('deliveryTime: ${value.deliveryTime}'),
+                              if (value.deliveryFeeRate != null) Text('deliveryFeeRate: ${value.deliveryFeeRate}'),
+                              if (value.priceScale != null) Text('priceScale: ${value.priceScale}'),
+                              if (value.unifiedMarginTrade != null) Text('unifiedMarginTrade: ${value.unifiedMarginTrade}'),
+                              if (value.fundingInterval != null) Text('fundingInterval: ${value.fundingInterval}'),
+                              if (value.settleCoin != null) Text('settleCoin: ${value.settleCoin}'),
+                              if (value.copyTrading != null) Text('copyTrading: ${value.copyTrading}'),
+                              if (value.upperFundingRate != null) Text('upperFundingRate: ${value.upperFundingRate}'),
+                              if (value.lowerFundingRate != null) Text('lowerFundingRate: ${value.lowerFundingRate}'),
+                              if (value.isPreListing != null) Text('isPreListing: ${value.isPreListing}'),
+                              if (value.preListingInfo != null) Text('preListingInfo: ${value.preListingInfo}'),
+
                               // Price Filter 정보
                               if (value.priceFilter != null)
                                 Padding(
@@ -613,7 +627,14 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                                       const Text('priceFilter:', style: TextStyle(fontWeight: FontWeight.bold)),
                                       Padding(
                                         padding: const EdgeInsets.only(left: 8.0),
-                                        child: Text('tickSize: ${value.priceFilter!.tickSize}'),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('tickSize: ${value.priceFilter!.tickSize}'),
+                                            if (value.priceFilter!.minPrice != null) Text('minPrice: ${value.priceFilter!.minPrice}'),
+                                            if (value.priceFilter!.maxPrice != null) Text('maxPrice: ${value.priceFilter!.maxPrice}'),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -632,12 +653,61 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                                         child: Column(
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text('basePrecision: ${value.lotSizeFilter!.basePrecision}'),
-                                            Text('quotePrecision: ${value.lotSizeFilter!.quotePrecision}'),
+                                            if (value.lotSizeFilter!.basePrecision != null) Text('basePrecision: ${value.lotSizeFilter!.basePrecision}'),
+                                            if (value.lotSizeFilter!.quotePrecision != null) Text('quotePrecision: ${value.lotSizeFilter!.quotePrecision}'),
                                             Text('minOrderQty: ${value.lotSizeFilter!.minOrderQty}'),
                                             Text('maxOrderQty: ${value.lotSizeFilter!.maxOrderQty}'),
-                                            Text('minOrderAmt: ${value.lotSizeFilter!.minOrderAmt}'),
-                                            Text('maxOrderAmt: ${value.lotSizeFilter!.maxOrderAmt}'),
+                                            if (value.lotSizeFilter!.minOrderAmt != null) Text('minOrderAmt: ${value.lotSizeFilter!.minOrderAmt}'),
+                                            if (value.lotSizeFilter!.maxOrderAmt != null) Text('maxOrderAmt: ${value.lotSizeFilter!.maxOrderAmt}'),
+                                            Text('qtyStep: ${value.lotSizeFilter!.qtyStep}'),
+                                            if (value.lotSizeFilter!.postOnlyMaxOrderQty != null) Text('postOnlyMaxOrderQty: ${value.lotSizeFilter!.postOnlyMaxOrderQty}'),
+                                            if (value.lotSizeFilter!.maxMktOrderQty != null) Text('maxMktOrderQty: ${value.lotSizeFilter!.maxMktOrderQty}'),
+                                            if (value.lotSizeFilter!.minNotionalValue != null) Text('minNotionalValue: ${value.lotSizeFilter!.minNotionalValue}'),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                              // Leverage Filter 정보
+                              if (value.leverageFilter != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('leverageFilter:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('minLeverage: ${value.leverageFilter!.minLeverage}'),
+                                            Text('maxLeverage: ${value.leverageFilter!.maxLeverage}'),
+                                            Text('leverageStep: ${value.leverageFilter!.leverageStep}'),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                              // Risk Parameters 정보
+                              if (value.riskParameters != null)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text('riskParameters:', style: TextStyle(fontWeight: FontWeight.bold)),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            if (value.riskParameters!.priceLimitRatioX != null) Text('priceLimitRatioX: ${value.riskParameters!.priceLimitRatioX}'),
+                                            if (value.riskParameters!.priceLimitRatioY != null) Text('priceLimitRatioY: ${value.riskParameters!.priceLimitRatioY}'),
                                           ],
                                         ),
                                       ),
