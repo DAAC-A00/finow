@@ -39,6 +39,17 @@ class InstrumentsNotifier extends StateNotifier<AsyncValue<List<Instrument>>> {
     }
   }
 
+  /// Binance 심볼 동기화(저장)
+  Future<void> fetchAndSaveBinanceInstruments() async {
+    try {
+      state = const AsyncValue.loading();
+      final instruments = await _repository.fetchAndSaveBinanceInstruments();
+      state = AsyncValue.data(instruments);
+    } catch (e, stackTrace) {
+      state = AsyncValue.error(e, stackTrace);
+    }
+  }
+
   /// 특정 거래소의 심볼만 조회
   Future<void> loadInstrumentsByExchange(String exchange) async {
     try {
@@ -125,4 +136,10 @@ final bybitLinearInstrumentsProvider = FutureProvider<List<Instrument>>((ref) as
 final bybitInverseInstrumentsProvider = FutureProvider<List<Instrument>>((ref) async {
   final repository = ref.watch(instrumentsRepositoryProvider);
   return await repository.getBybitInverseInstruments();
+});
+
+/// binance 심볼 동기화(저장) provider
+final binanceSyncProvider = FutureProvider<void>((ref) async {
+  final notifier = ref.read(instrumentsProvider.notifier);
+  await notifier.fetchAndSaveBinanceInstruments();
 });

@@ -200,6 +200,54 @@ class ExchangeApiService {
     }
   }
 
+  /// Binance Spot 심볼 정보 조회 및 파싱
+  Future<List<Instrument>> fetchBinanceSpotInstruments() async {
+    try {
+      final response = await _dio.get('https://api.binance.com/api/v3/exchangeInfo');
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final List<dynamic> symbols = data['symbols'] ?? [];
+        return symbols.map((item) => Instrument.fromBinanceSpot(item)).toList();
+      } else {
+        throw Exception('Binance Spot API 호출 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Binance Spot 데이터 조회 중 오류 발생: $e');
+    }
+  }
+
+  /// Binance USDⓈ-M 선물 심볼 정보 조회 및 파싱
+  Future<List<Instrument>> fetchBinanceUmInstruments() async {
+    try {
+      final response = await _dio.get('https://fapi.binance.com/fapi/v1/exchangeInfo');
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final List<dynamic> symbols = data['symbols'] ?? [];
+        return symbols.map((item) => Instrument.fromBinanceUm(item)).toList();
+      } else {
+        throw Exception('Binance UM API 호출 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Binance UM 데이터 조회 중 오류 발생: $e');
+    }
+  }
+
+  /// Binance COIN-M 선물 심볼 정보 조회 및 파싱
+  Future<List<Instrument>> fetchBinanceCmInstruments() async {
+    try {
+      final response = await _dio.get('https://dapi.binance.com/dapi/v1/exchangeInfo');
+      if (response.statusCode == 200) {
+        final data = response.data;
+        final List<dynamic> symbols = data['symbols'] ?? [];
+        return symbols.map((item) => Instrument.fromBinanceCm(item)).toList();
+      } else {
+        throw Exception('Binance CM API 호출 실패: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Binance CM 데이터 조회 중 오류 발생: $e');
+    }
+  }
+
   /// Bithumb 경고 정보 조회
   Future<Map<String, String>> _fetchBithumbWarnings() async {
     try {

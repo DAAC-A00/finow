@@ -32,6 +32,10 @@ class InstrumentsSyncService {
       await _repository.fetchAndSaveInstruments();
       debugPrint('전체 심볼 정보 동기화 완료');
 
+      debugPrint('Binance 심볼 정보를 추가로 동기화합니다...');
+      await _repository.fetchAndSaveBinanceInstruments();
+      debugPrint('Binance 심볼 정보 동기화 완료');
+
       _isInitialSyncCompleted = true;
       
       // 초기 동기화 완료 후 Bithumb 경고 정보 주기적 업데이트 시작

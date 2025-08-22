@@ -28,6 +28,23 @@ class InstrumentsRepository {
     }
   }
 
+  /// Binance Spot, UM, CM 심볼 정보를 모두 받아와 저장
+  Future<List<Instrument>> fetchAndSaveBinanceInstruments() async {
+    try {
+      final spot = await _apiService.fetchBinanceSpotInstruments();
+      final um = await _apiService.fetchBinanceUmInstruments();
+      final cm = await _apiService.fetchBinanceCmInstruments();
+      final all = <Instrument>[];
+      all.addAll(spot);
+      all.addAll(um);
+      all.addAll(cm);
+      await _storageService.saveInstruments(all);
+      return all;
+    } catch (e) {
+      throw Exception('Binance 심볼 정보 조회 및 저장 중 오류 발생: $e');
+    }
+  }
+
   /// 로컬 스토리지에서 심볼 정보 불러오기
   Future<List<Instrument>> getStoredInstruments() async {
     return await _storageService.loadInstruments();

@@ -109,6 +109,9 @@ class Instrument {
     final contractType = json['contractType'] as String?;
     final symbol = json['symbol'] as String? ?? '';
     String? endDate;
+    String mappedCategory = category;
+    if (category == 'linear') mappedCategory = 'um';
+    if (category == 'inverse') mappedCategory = 'cm';
 
     if (contractType != null) {
       if (contractType.contains('Perpetual')) {
@@ -127,7 +130,7 @@ class Instrument {
       quoteCode: json['quoteCoin'] ?? '',
       exchange: 'bybit',
       status: json['status'] ?? '',
-      category: category,
+      category: mappedCategory,
       endDate: endDate,
       launchTime: json['launchTime']?.toString(),
       settleCoin: json['settleCoin'],
@@ -172,6 +175,62 @@ class Instrument {
       marketWarning: json['market_warning'],
       lastUpdated: DateTime.now(),
       integratedSymbol: '', // Will be set in ExchangeApiService
+    );
+  }
+
+  factory Instrument.fromBinanceSpot(Map<String, dynamic> json) {
+    // symbols의 각 item
+    return Instrument(
+      symbol: json['symbol'] ?? '',
+      baseCode: json['baseAsset'] ?? '',
+      quoteCode: json['quoteAsset'] ?? '',
+      exchange: 'binance',
+      status: json['status'] ?? '',
+      lastUpdated: DateTime.now(),
+      category: 'spot',
+      integratedSymbol: '${json['baseAsset'] ?? ''}/${json['quoteAsset'] ?? ''}',
+    );
+  }
+
+  factory Instrument.fromBinanceUm(Map<String, dynamic> json) {
+    // USDⓈ-M 선물
+    String endDate = '';
+    if (json['contractType'] == 'PERPETUAL') {
+      endDate = 'perpetual';
+    } else if (json['contractType'] == 'CURRENT_QUARTER' || json['contractType'] == 'NEXT_QUARTER') {
+      endDate = json['symbol'] ?? '';
+    }
+    return Instrument(
+      symbol: json['symbol'] ?? '',
+      baseCode: json['baseAsset'] ?? '',
+      quoteCode: json['quoteAsset'] ?? '',
+      exchange: 'binance',
+      status: json['status'] ?? '',
+      lastUpdated: DateTime.now(),
+      category: 'um',
+      endDate: endDate,
+      integratedSymbol: '${json['baseAsset'] ?? ''}/${json['quoteAsset'] ?? ''}${endDate.isNotEmpty && endDate != 'perpetual' ? '-$endDate' : ''}',
+    );
+  }
+
+  factory Instrument.fromBinanceCm(Map<String, dynamic> json) {
+    // COIN-M 선물
+    String endDate = '';
+    if (json['contractType'] == 'PERPETUAL') {
+      endDate = 'perpetual';
+    } else if (json['contractType'] == 'CURRENT_QUARTER' || json['contractType'] == 'NEXT_QUARTER') {
+      endDate = json['symbol'] ?? '';
+    }
+    return Instrument(
+      symbol: json['symbol'] ?? '',
+      baseCode: json['baseAsset'] ?? '',
+      quoteCode: json['quoteAsset'] ?? '',
+      exchange: 'binance',
+      status: json['contractStatus'] ?? json['status'] ?? '',
+      lastUpdated: DateTime.now(),
+      category: 'cm',
+      endDate: endDate,
+      integratedSymbol: '${json['baseAsset'] ?? ''}/${json['quoteAsset'] ?? ''}${endDate.isNotEmpty && endDate != 'perpetual' ? '-$endDate' : ''}',
     );
   }
 
