@@ -1,4 +1,5 @@
 import '../../instruments/models/instrument.dart';
+import 'package:finow/features/ticker/data/models/bithumb_ticker_model.dart';
 
 /// 실시간 Ticker 가격 정보 모델 (로컬 저장 없음)
 class TickerPriceData {
@@ -157,6 +158,21 @@ class TickerPriceData {
       preOpenPrice: json['preOpenPrice'],
       preQty: json['preQty'],
       curPreListingPhase: json['curPreListingPhase'],
+      lastUpdated: DateTime.now(),
+    );
+  }
+
+  factory TickerPriceData.fromBithumbTicker(BithumbTicker ticker) {
+    return TickerPriceData(
+      symbol: ticker.market ?? '',
+      category: 'spot',
+      lastPrice: ticker.closingPrice,
+      prevPrice24h: ticker.prevClosingPrice,
+      price24hPcnt: ticker.fluctuateRate24H,
+      highPrice24h: ticker.maxPrice,
+      lowPrice24h: ticker.minPrice,
+      turnover24h: ticker.accTradeValue24H,
+      volume24h: ticker.unitsTraded24H,
       lastUpdated: DateTime.now(),
     );
   }

@@ -3,6 +3,7 @@ import 'package:finow/features/instruments/models/instrument.dart';
 import 'package:finow/features/storage_viewer/local_storage_service.dart';
 import 'package:finow/features/settings/api_key_service.dart';
 import 'package:finow/features/storage_viewer/api_keys_storage_view.dart';
+import 'package:finow/features/storage_viewer/edit_instrument_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -118,7 +119,7 @@ class StorageViewerScreen extends ConsumerStatefulWidget {
   ConsumerState<StorageViewerScreen> createState() => _StorageViewerScreenState();
 }
 
-class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen> 
+class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
     with RouteAware, TickerProviderStateMixin {
   late final TextEditingController _controller;
   late final TabController _tabController;
@@ -593,6 +594,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                               Text('symbol: ${value.symbol}'),
                               Text('baseCode: ${value.baseCode}'),
                               Text('quoteCode: ${value.quoteCode}'),
+                              Text('quantity: ${value.quantity ?? 'N/A'}'),
                               Text('exchange: ${value.exchange}'),
                               Text('status: ${value.status}'),
                               if (value.category != null) Text('category: ${value.category}'),
@@ -672,16 +674,28 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                                 IconButton(
                                   icon: const Icon(Icons.edit),
                                   onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => EditStorageEntryScreen(
-                                          boxName: boxName,
-                                          originalKey: key,
-                                          originalValue: value,
+                                    if (value is Instrument) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditInstrumentScreen(
+                                            originalKey: key,
+                                            existingInstrument: value,
+                                          ),
                                         ),
-                                      ),
-                                    );
+                                      );
+                                    } else {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditStorageEntryScreen(
+                                            boxName: boxName,
+                                            originalKey: key,
+                                            originalValue: value,
+                                          ),
+                                        ),
+                                      );
+                                    }
                                   },
                                 ),
                                 IconButton(

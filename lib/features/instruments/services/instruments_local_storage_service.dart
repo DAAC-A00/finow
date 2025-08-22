@@ -1,6 +1,11 @@
-import 'package:hive_flutter/hive_flutter.dart';
-import '../models/instrument.dart';
+import 'package:finow/features/instruments/models/instrument.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
+final instrumentsLocalStorageServiceProvider = Provider<InstrumentsLocalStorageService>((ref) {
+  return InstrumentsLocalStorageService();
+});
 
 /// 통합 심볼 정보 로컬 스토리지 관리 서비스 (Hive 기반)
 /// 각 심볼을 개별 키-값으로 저장하여 Storage Viewer에서 개별 관리 가능

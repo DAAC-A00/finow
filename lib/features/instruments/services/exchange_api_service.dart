@@ -18,6 +18,47 @@ class ExchangeApiService {
     ));
   }
 
+  Map<String, dynamic> _parseBaseCode(String baseCodeStr) {
+    // Try parsing as $quantity$baseCode (e.g., "1000BTC")
+    RegExp quantityPrefixRegExp = RegExp(r'^(\d+)(.*)$');
+    Match? match = quantityPrefixRegExp.firstMatch(baseCodeStr);
+
+    if (match != null) {
+      String quantityStr = match.group(1)!;
+      String coin = match.group(2)!;
+      final quantity = int.tryParse(quantityStr);
+      if (quantity != null && quantity % 1000 == 0) {
+        return {
+          'quantity': quantity.toDouble(),
+          'baseCode': coin,
+        };
+      }
+    }
+
+    // If not \$quantity\$baseCode or quantity not a multiple of 1000,
+    // try parsing as $baseCode$quantity (e.g., "BTC1000")
+    RegExp quantitySuffixRegExp = RegExp(r'^(.*?)(\d+)$');
+    match = quantitySuffixRegExp.firstMatch(baseCodeStr);
+
+    if (match != null) {
+      String coin = match.group(1)!;
+      String quantityStr = match.group(2)!;
+      final quantity = int.tryParse(quantityStr);
+      if (quantity != null && quantity % 1000 == 0) {
+        return {
+          'quantity': quantity.toDouble(),
+          'baseCode': coin,
+        };
+      }
+    }
+
+    // Default case if no specific quantity pattern is found or valid
+    return {
+      'quantity': 1.0,
+      'baseCode': baseCodeStr,
+    };
+  }
+
   /// Bybit 특정 카테고리 거래 심볼 정보 조회 (모든 페이지)
   Future<List<Instrument>> fetchBybitInstrumentsByCategory(String category) async {
     try {
@@ -48,12 +89,15 @@ class ExchangeApiService {
               nextCursor = null;
             }
             
-            final mappedInstruments = instruments
-                .map((item) => Instrument.fromBybit(item, category: resultCategory))
-                .toList();
+            final mappedInstruments = instruments.map((item) {
+              final instrument = Instrument.fromBybit(item, category: resultCategory);
+              final parsedCoin = _parseBaseCode(instrument.baseCode);
+              return instrument.copyWith(
+                baseCode: parsedCoin['baseCode']!,
+                quantity: parsedCoin['quantity']!,
+              );
+            }).toList();
                 
-            
-            
             allInstruments.addAll(mappedInstruments);
           } else {
             throw Exception('Bybit API 오류: ${data['retMsg']}');
@@ -108,16 +152,8 @@ class ExchangeApiService {
           // 경고 정보가 있다면 추가
           final warning = warningData[instrument.symbol];
           if (warning != null) {
-            return Instrument(
-              symbol: instrument.symbol,
-              baseCode: instrument.baseCode,
-              quoteCode: instrument.quoteCode,
-              exchange: instrument.exchange,
-              status: instrument.status,
-              koreanName: instrument.koreanName,
-              englishName: instrument.englishName,
+            return instrument.copyWith(
               marketWarning: warning,
-              lastUpdated: instrument.lastUpdated,
             );
           }
           

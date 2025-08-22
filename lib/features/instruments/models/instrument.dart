@@ -89,6 +89,9 @@ class Instrument {
   @HiveField(27)
   final String? displayName;
 
+  @HiveField(28)
+  final double? quantity;
+
   const Instrument({
     required this.symbol,
     required this.baseCode,
@@ -118,7 +121,72 @@ class Instrument {
     this.preListingInfo,
     this.riskParameters,
     this.displayName,
+    this.quantity,
   });
+
+  Instrument copyWith({
+    String? symbol,
+    String? baseCode,
+    String? quoteCode,
+    String? exchange,
+    String? status,
+    String? koreanName,
+    String? englishName,
+    String? marketWarning,
+    InstrumentPriceFilter? priceFilter,
+    InstrumentLotSizeFilter? lotSizeFilter,
+    DateTime? lastUpdated,
+    String? category,
+    String? contractType,
+    String? launchTime,
+    String? deliveryTime,
+    String? deliveryFeeRate,
+    String? priceScale,
+    InstrumentLeverageFilter? leverageFilter,
+    bool? unifiedMarginTrade,
+    int? fundingInterval,
+    String? settleCoin,
+    String? copyTrading,
+    String? upperFundingRate,
+    String? lowerFundingRate,
+    bool? isPreListing,
+    Map<String, dynamic>? preListingInfo,
+    InstrumentRiskParameters? riskParameters,
+    String? displayName,
+    double? quantity,
+  }) {
+    return Instrument(
+      symbol: symbol ?? this.symbol,
+      baseCode: baseCode ?? this.baseCode,
+      quoteCode: quoteCode ?? this.quoteCode,
+      exchange: exchange ?? this.exchange,
+      status: status ?? this.status,
+      koreanName: koreanName ?? this.koreanName,
+      englishName: englishName ?? this.englishName,
+      marketWarning: marketWarning ?? this.marketWarning,
+      priceFilter: priceFilter ?? this.priceFilter,
+      lotSizeFilter: lotSizeFilter ?? this.lotSizeFilter,
+      lastUpdated: lastUpdated ?? this.lastUpdated,
+      category: category ?? this.category,
+      contractType: contractType ?? this.contractType,
+      launchTime: launchTime ?? this.launchTime,
+      deliveryTime: deliveryTime ?? this.deliveryTime,
+      deliveryFeeRate: deliveryFeeRate ?? this.deliveryFeeRate,
+      priceScale: priceScale ?? this.priceScale,
+      leverageFilter: leverageFilter ?? this.leverageFilter,
+      unifiedMarginTrade: unifiedMarginTrade ?? this.unifiedMarginTrade,
+      fundingInterval: fundingInterval ?? this.fundingInterval,
+      settleCoin: settleCoin ?? this.settleCoin,
+      copyTrading: copyTrading ?? this.copyTrading,
+      upperFundingRate: upperFundingRate ?? this.upperFundingRate,
+      lowerFundingRate: lowerFundingRate ?? this.lowerFundingRate,
+      isPreListing: isPreListing ?? this.isPreListing,
+      preListingInfo: preListingInfo ?? this.preListingInfo,
+      riskParameters: riskParameters ?? this.riskParameters,
+      displayName: displayName ?? this.displayName,
+      quantity: quantity ?? this.quantity,
+    );
+  }
 
   factory Instrument.fromBybit(Map<String, dynamic> json, {String category = 'spot'}) {
     return Instrument(
@@ -206,6 +274,7 @@ class Instrument {
       'priceFilter': priceFilter?.toJson(),
       'lotSizeFilter': lotSizeFilter?.toJson(),
       'lastUpdated': lastUpdated.toIso8601String(),
+      'quantity': quantity,
     };
   }
 
@@ -247,6 +316,7 @@ class Instrument {
           ? InstrumentLotSizeFilter.fromJson(json['lotSizeFilter'])
           : null,
       lastUpdated: DateTime.parse(json['lastUpdated'] ?? DateTime.now().toIso8601String()),
+      quantity: json['quantity'] as double?,
     );
   }
 

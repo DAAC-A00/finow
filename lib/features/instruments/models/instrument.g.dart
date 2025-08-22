@@ -45,13 +45,14 @@ class InstrumentAdapter extends TypeAdapter<Instrument> {
       preListingInfo: (fields[25] as Map?)?.cast<String, dynamic>(),
       riskParameters: fields[26] as InstrumentRiskParameters?,
       displayName: fields[27] as String?,
+      quantity: fields[28] as double?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Instrument obj) {
     writer
-      ..writeByte(28)
+      ..writeByte(29)
       ..writeByte(0)
       ..write(obj.symbol)
       ..writeByte(1)
@@ -107,7 +108,9 @@ class InstrumentAdapter extends TypeAdapter<Instrument> {
       ..writeByte(26)
       ..write(obj.riskParameters)
       ..writeByte(27)
-      ..write(obj.displayName);
+      ..write(obj.displayName)
+      ..writeByte(28)
+      ..write(obj.quantity);
   }
 
   @override
