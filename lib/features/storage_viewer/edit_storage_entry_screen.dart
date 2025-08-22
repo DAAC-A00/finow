@@ -41,18 +41,7 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
   late TextEditingController _marketWarningController;
   late TextEditingController _contractTypeController;
   late TextEditingController _launchTimeController;
-  late TextEditingController _deliveryTimeController;
-  late TextEditingController _deliveryFeeRateController;
-  late TextEditingController _priceScaleController;
-  bool? _unifiedMarginTradeValue;
-  late TextEditingController _fundingIntervalController;
   late TextEditingController _settleCoinController;
-  late TextEditingController _copyTradingController;
-  late TextEditingController _upperFundingRateController;
-  late TextEditingController _lowerFundingRateController;
-  bool? _isPreListingValue;
-  late TextEditingController _preListingInfoController;
-  late TextEditingController _displayNameController;
   late TextEditingController _quantityController;
   late TextEditingController _integratedSymbolController;
 
@@ -85,16 +74,7 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
     _marketWarningController = TextEditingController();
     _contractTypeController = TextEditingController();
     _launchTimeController = TextEditingController();
-    _deliveryTimeController = TextEditingController();
-    _deliveryFeeRateController = TextEditingController();
-    _priceScaleController = TextEditingController();
-    _fundingIntervalController = TextEditingController();
     _settleCoinController = TextEditingController();
-    _copyTradingController = TextEditingController();
-    _upperFundingRateController = TextEditingController();
-    _lowerFundingRateController = TextEditingController();
-    _preListingInfoController = TextEditingController();
-    _displayNameController = TextEditingController();
     _quantityController = TextEditingController();
     _integratedSymbolController = TextEditingController();
 
@@ -115,18 +95,7 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
       _marketWarningController.text = value.marketWarning ?? '';
       _contractTypeController.text = value.contractType ?? '';
       _launchTimeController.text = value.launchTime ?? '';
-      _deliveryTimeController.text = value.deliveryTime ?? '';
-      _deliveryFeeRateController.text = value.deliveryFeeRate ?? '';
-      _priceScaleController.text = value.priceScale ?? '';
-      _unifiedMarginTradeValue = value.unifiedMarginTrade;
-      _fundingIntervalController.text = value.fundingInterval?.toString() ?? '';
       _settleCoinController.text = value.settleCoin ?? '';
-      _copyTradingController.text = value.copyTrading ?? '';
-      _upperFundingRateController.text = value.upperFundingRate ?? '';
-      _lowerFundingRateController.text = value.lowerFundingRate ?? '';
-      _isPreListingValue = value.isPreListing;
-      _preListingInfoController.text = value.preListingInfo?.toString() ?? '';
-      _displayNameController.text = value.displayName ?? '';
       _quantityController.text = value.quantity?.toString() ?? '';
       _integratedSymbolController.text = value.integratedSymbol;
     }
@@ -150,16 +119,7 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
     _marketWarningController.dispose();
     _contractTypeController.dispose();
     _launchTimeController.dispose();
-    _deliveryTimeController.dispose();
-    _deliveryFeeRateController.dispose();
-    _priceScaleController.dispose();
-    _fundingIntervalController.dispose();
     _settleCoinController.dispose();
-    _copyTradingController.dispose();
-    _upperFundingRateController.dispose();
-    _lowerFundingRateController.dispose();
-    _preListingInfoController.dispose();
-    _displayNameController.dispose();
     _quantityController.dispose();
     _integratedSymbolController.dispose();
     super.dispose();
@@ -267,67 +227,8 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
             decoration: const InputDecoration(labelText: 'Launch Time'),
           ),
           TextField(
-            controller: _deliveryTimeController,
-            decoration: const InputDecoration(labelText: 'Delivery Time'),
-          ),
-          TextField(
-            controller: _deliveryFeeRateController,
-            decoration: const InputDecoration(labelText: 'Delivery Fee Rate'),
-            keyboardType: TextInputType.number,
-          ),
-          TextField(
-            controller: _priceScaleController,
-            decoration: const InputDecoration(labelText: 'Price Scale'),
-          ),
-          SwitchListTile(
-            title: const Text('Unified Margin Trade'),
-            value: _unifiedMarginTradeValue ?? false,
-            onChanged: (newValue) {
-              setState(() {
-                _unifiedMarginTradeValue = newValue;
-              });
-            },
-          ),
-          TextField(
-            controller: _fundingIntervalController,
-            decoration: const InputDecoration(labelText: 'Funding Interval'),
-            keyboardType: TextInputType.number,
-          ),
-          TextField(
             controller: _settleCoinController,
             decoration: const InputDecoration(labelText: 'Settle Coin'),
-          ),
-          TextField(
-            controller: _copyTradingController,
-            decoration: const InputDecoration(labelText: 'Copy Trading'),
-          ),
-          TextField(
-            controller: _upperFundingRateController,
-            decoration: const InputDecoration(labelText: 'Upper Funding Rate'),
-            keyboardType: TextInputType.number,
-          ),
-          TextField(
-            controller: _lowerFundingRateController,
-            decoration: const InputDecoration(labelText: 'Lower Funding Rate'),
-            keyboardType: TextInputType.number,
-          ),
-          SwitchListTile(
-            title: const Text('Is Pre-Listing'),
-            value: _isPreListingValue ?? false,
-            onChanged: (newValue) {
-              setState(() {
-                _isPreListingValue = newValue;
-              });
-            },
-          ),
-          TextField(
-            controller: _preListingInfoController,
-            decoration: const InputDecoration(labelText: 'Pre-Listing Info (JSON)'),
-            maxLines: 3,
-          ),
-          TextField(
-            controller: _displayNameController,
-            decoration: const InputDecoration(labelText: 'Display Name'),
           ),
           TextField(
             controller: _quantityController,
@@ -383,23 +284,8 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
         marketWarning: _marketWarningController.text.isEmpty ? null : _marketWarningController.text,
         contractType: _contractTypeController.text.isEmpty ? null : _contractTypeController.text,
         launchTime: _launchTimeController.text.isEmpty ? null : _launchTimeController.text,
-        deliveryTime: _deliveryTimeController.text.isEmpty ? null : _deliveryTimeController.text,
-        deliveryFeeRate: _deliveryFeeRateController.text.isEmpty ? null : _deliveryFeeRateController.text,
-        priceScale: _priceScaleController.text.isEmpty ? null : _priceScaleController.text,
-        unifiedMarginTrade: _unifiedMarginTradeValue,
-        fundingInterval: int.tryParse(_fundingIntervalController.text),
         settleCoin: _settleCoinController.text.isEmpty ? null : _settleCoinController.text,
-        copyTrading: _copyTradingController.text.isEmpty ? null : _copyTradingController.text,
-        upperFundingRate: _upperFundingRateController.text.isEmpty ? null : _upperFundingRateController.text,
-        lowerFundingRate: _lowerFundingRateController.text.isEmpty ? null : _lowerFundingRateController.text,
-        isPreListing: _isPreListingValue,
-        preListingInfo: _preListingInfoController.text.isEmpty ? null : {'json': _preListingInfoController.text},
-        displayName: _displayNameController.text.isEmpty ? null : _displayNameController.text,
         lastUpdated: value.lastUpdated, // Keep original lastUpdated
-        priceFilter: value.priceFilter,
-        lotSizeFilter: value.lotSizeFilter,
-        leverageFilter: value.leverageFilter,
-        riskParameters: value.riskParameters,
         quantity: double.tryParse(_quantityController.text),
         integratedSymbol: _integratedSymbolController.text,
       );

@@ -40,8 +40,6 @@ class InstrumentDetailsScreen extends StatelessWidget {
                   _buildDetailRow(context, 'Settle Coin', instrument.settleCoin!, icon: Icons.account_balance_wallet),
                 if (instrument.englishName != null)
                   _buildDetailRow(context, 'English Name', instrument.englishName!, icon: Icons.language),
-                if (instrument.displayName != null && instrument.displayName!.isNotEmpty)
-                  _buildDetailRow(context, 'Display Name', instrument.displayName!, icon: Icons.label),
                 if (instrument.marketWarning != null && instrument.marketWarning != 'NONE')
                   _buildDetailRow(context, 'Warning', instrument.marketWarning!, icon: Icons.warning, isWarning: true),
               ],
@@ -53,96 +51,8 @@ class InstrumentDetailsScreen extends StatelessWidget {
               [
                 if (instrument.launchTime != null)
                   _buildDetailRow(context, 'Launch Time', _formatTimestamp(instrument.launchTime!), icon: Icons.rocket_launch),
-                if (instrument.deliveryTime != null && instrument.deliveryTime != '0')
-                  _buildDetailRow(context, 'Delivery Time', _formatTimestamp(instrument.deliveryTime!), icon: Icons.delivery_dining),
-                if (instrument.deliveryFeeRate != null && instrument.deliveryFeeRate!.isNotEmpty)
-                  _buildDetailRow(context, 'Delivery Fee Rate', instrument.deliveryFeeRate!, icon: Icons.percent),
-                if (instrument.priceScale != null)
-                  _buildDetailRow(context, 'Price Scale', instrument.priceScale!, icon: Icons.scale),
-                if (instrument.unifiedMarginTrade != null)
-                  _buildDetailRow(context, 'Unified Margin Trade', instrument.unifiedMarginTrade! ? 'Yes' : 'No', icon: Icons.account_balance),
-                if (instrument.fundingInterval != null)
-                  _buildDetailRow(context, 'Funding Interval', '${instrument.fundingInterval} minutes', icon: Icons.schedule),
-                if (instrument.copyTrading != null)
-                  _buildDetailRow(context, 'Copy Trading', instrument.copyTrading!, icon: Icons.content_copy),
-                if (instrument.isPreListing != null)
-                  _buildDetailRow(context, 'Pre-listing', instrument.isPreListing! ? 'Yes' : 'No', icon: Icons.preview),
               ],
             ),
-            const SizedBox(height: 24),
-            _buildSectionTitle(context, 'Price Filters'),
-            _buildInfoCard(
-              context,
-              [
-                if (instrument.priceFilter != null) ...[
-                  _buildDetailRow(context, 'Tick Size', instrument.priceFilter!.tickSize, icon: Icons.precision_manufacturing),
-                  if (instrument.priceFilter!.minPrice != null)
-                    _buildDetailRow(context, 'Min Price', instrument.priceFilter!.minPrice!, icon: Icons.trending_down),
-                  if (instrument.priceFilter!.maxPrice != null)
-                    _buildDetailRow(context, 'Max Price', instrument.priceFilter!.maxPrice!, icon: Icons.trending_up),
-                ],
-              ],
-            ),
-            const SizedBox(height: 24),
-            _buildSectionTitle(context, 'Lot Size Filters'),
-            _buildInfoCard(
-              context,
-              [
-                if (instrument.lotSizeFilter != null) ...[
-                  _buildDetailRow(context, 'Min Order Qty', instrument.lotSizeFilter!.minOrderQty, icon: Icons.add_shopping_cart),
-                  _buildDetailRow(context, 'Max Order Qty', instrument.lotSizeFilter!.maxOrderQty, icon: Icons.shopping_cart),
-                  _buildDetailRow(context, 'Qty Step', instrument.lotSizeFilter!.qtyStep, icon: Icons.linear_scale),
-                  if (instrument.lotSizeFilter!.postOnlyMaxOrderQty != null)
-                    _buildDetailRow(context, 'Post-Only Max Qty', instrument.lotSizeFilter!.postOnlyMaxOrderQty!, icon: Icons.post_add),
-                  if (instrument.lotSizeFilter!.maxMktOrderQty != null)
-                    _buildDetailRow(context, 'Max Market Order Qty', instrument.lotSizeFilter!.maxMktOrderQty!, icon: Icons.speed),
-                  if (instrument.lotSizeFilter!.minNotionalValue != null)
-                    _buildDetailRow(context, 'Min Notional Value', instrument.lotSizeFilter!.minNotionalValue!, icon: Icons.attach_money),
-                  if (instrument.lotSizeFilter!.minOrderAmt != null)
-                    _buildDetailRow(context, 'Min Order Amount', instrument.lotSizeFilter!.minOrderAmt!, icon: Icons.money),
-                  if (instrument.lotSizeFilter!.maxOrderAmt != null)
-                    _buildDetailRow(context, 'Max Order Amount', instrument.lotSizeFilter!.maxOrderAmt!, icon: Icons.monetization_on),
-                ],
-              ],
-            ),
-            if (instrument.leverageFilter != null) ...[
-              const SizedBox(height: 24),
-              _buildSectionTitle(context, 'Leverage'),
-              _buildInfoCard(
-                context,
-                [
-                  _buildDetailRow(context, 'Min Leverage', '${instrument.leverageFilter!.minLeverage}x', icon: Icons.trending_up),
-                  _buildDetailRow(context, 'Max Leverage', '${instrument.leverageFilter!.maxLeverage}x', icon: Icons.trending_up),
-                  _buildDetailRow(context, 'Leverage Step', instrument.leverageFilter!.leverageStep, icon: Icons.linear_scale),
-                ],
-              ),
-            ],
-            if (instrument.upperFundingRate != null || instrument.lowerFundingRate != null) ...[
-              const SizedBox(height: 24),
-              _buildSectionTitle(context, 'Funding Rates'),
-              _buildInfoCard(
-                context,
-                [
-                  if (instrument.upperFundingRate != null)
-                    _buildDetailRow(context, 'Upper Funding Rate', _formatFundingRate(instrument.upperFundingRate!), icon: Icons.arrow_upward),
-                  if (instrument.lowerFundingRate != null)
-                    _buildDetailRow(context, 'Lower Funding Rate', _formatFundingRate(instrument.lowerFundingRate!), icon: Icons.arrow_downward),
-                ],
-              ),
-            ],
-            if (instrument.riskParameters != null) ...[
-              const SizedBox(height: 24),
-              _buildSectionTitle(context, 'Risk Parameters'),
-              _buildInfoCard(
-                context,
-                [
-                  if (instrument.riskParameters!.priceLimitRatioX != null)
-                    _buildDetailRow(context, 'Price Limit Ratio X', _formatPercentage(instrument.riskParameters!.priceLimitRatioX!), icon: Icons.security),
-                  if (instrument.riskParameters!.priceLimitRatioY != null)
-                    _buildDetailRow(context, 'Price Limit Ratio Y', _formatPercentage(instrument.riskParameters!.priceLimitRatioY!), icon: Icons.security),
-                ],
-              ),
-            ],
             const SizedBox(height: 24),
             _buildSectionTitle(context, 'Last Updated'),
             _buildInfoCard(

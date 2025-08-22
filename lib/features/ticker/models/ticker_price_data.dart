@@ -295,32 +295,11 @@ class IntegratedTickerPriceData {
   final String? koreanName;
   final String? englishName;
   final String? marketWarning;
-  final String? displayName;
   
   // 계약 정보
   final String? contractType;
   final String? launchTime;
-  final String? deliveryTime;
-  final String? deliveryFeeRate;
-  final String? priceScale;
-  
-  // 거래 설정
-  final String? marginTrading;
-  final String? innovation;
-  final bool? unifiedMarginTrade;
-  final int? fundingInterval;
   final String? settleCoin;
-  final String? copyTrading;
-  final String? upperFundingRate;
-  final String? lowerFundingRate;
-  final bool? isPreListing;
-  final Map<String, dynamic>? preListingInfo;
-  
-  // 필터 정보
-  final InstrumentPriceFilter? priceFilter;
-  final InstrumentLotSizeFilter? lotSizeFilter;
-  final InstrumentLeverageFilter? leverageFilter;
-  final InstrumentRiskParameters? riskParameters;
   
   // Ticker 가격 정보
   final TickerPriceData? priceData;
@@ -338,26 +317,9 @@ class IntegratedTickerPriceData {
     this.koreanName,
     this.englishName,
     this.marketWarning,
-    this.displayName,
     this.contractType,
     this.launchTime,
-    this.deliveryTime,
-    this.deliveryFeeRate,
-    this.priceScale,
-    this.marginTrading,
-    this.innovation,
-    this.unifiedMarginTrade,
-    this.fundingInterval,
     this.settleCoin,
-    this.copyTrading,
-    this.upperFundingRate,
-    this.lowerFundingRate,
-    this.isPreListing,
-    this.preListingInfo,
-    this.priceFilter,
-    this.lotSizeFilter,
-    this.leverageFilter,
-    this.riskParameters,
     this.priceData,
     required this.lastUpdated,
   });

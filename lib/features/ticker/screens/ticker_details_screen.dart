@@ -42,15 +42,6 @@ class TickerDetailsScreen extends StatelessWidget {
             const SizedBox(height: 16.0),
             _buildInstrumentInfoSection(colorScheme),
             const SizedBox(height: 16.0),
-            if (ticker.priceFilter != null) _buildPriceFilterInfo(colorScheme),
-            const SizedBox(height: 16.0),
-            if (ticker.lotSizeFilter != null) _buildLotSizeFilterInfo(colorScheme),
-            const SizedBox(height: 16.0),
-            if (ticker.leverageFilter != null) _buildLeverageFilterInfo(colorScheme),
-            const SizedBox(height: 16.0),
-            if (ticker.riskParameters != null) _buildRiskParametersInfo(colorScheme),
-            const SizedBox(height: 16.0),
-            _buildTradingInfo(colorScheme),
           ],
         ),
       ),
@@ -182,195 +173,15 @@ class TickerDetailsScreen extends StatelessWidget {
             ),
             SizedBox(height: 16.0),
             _buildInfoRow('거래소', ticker.exchange, colorScheme),
-            if (ticker.displayName != null)
-              _buildInfoRow('표시명', ticker.displayName!, colorScheme),
             _buildInfoRow('마지막 업데이트', 
               '${ticker.lastUpdated.hour.toString().padLeft(2, '0')}:${ticker.lastUpdated.minute.toString().padLeft(2, '0')}:${ticker.lastUpdated.second.toString().padLeft(2, '0')}', 
               colorScheme),
             if (ticker.contractType != null)
               _buildInfoRow('계약 유형', ticker.contractType!, colorScheme),
-            if (ticker.marginTrading != null)
-              _buildInfoRow('마진 거래', ticker.marginTrading!, colorScheme),
-            if (ticker.innovation != null && ticker.innovation != '0')
-              _buildInfoRow('혁신 구역', ticker.innovation!, colorScheme),
-          ],
-        ),
-      ),
-    );
-  }
-
-  
-
-
-  
-
-  Widget _buildPriceFilterInfo(ColorScheme colorScheme) {
-    final priceFilter = ticker.priceFilter!;
-    
-    return Card(
-      elevation: 2,
-      color: colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '가격 필터',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            _buildInfoRow('틱 크기', priceFilter.tickSize, colorScheme),
-            if (priceFilter.minPrice != null)
-              _buildInfoRow('최소 가격', priceFilter.minPrice!, colorScheme),
-            if (priceFilter.maxPrice != null)
-              _buildInfoRow('최대 가격', priceFilter.maxPrice!, colorScheme),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLotSizeFilterInfo(ColorScheme colorScheme) {
-    final lotSizeFilter = ticker.lotSizeFilter!;
-    
-    return Card(
-      elevation: 2,
-      color: colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '로트 크기 필터',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            _buildInfoRow('최소 주문 수량', lotSizeFilter.minOrderQty, colorScheme),
-            _buildInfoRow('최대 주문 수량', lotSizeFilter.maxOrderQty, colorScheme),
-            _buildInfoRow('수량 단계', lotSizeFilter.qtyStep, colorScheme),
-            if (lotSizeFilter.minNotionalValue != null)
-              _buildInfoRow('최소 명목 가치', lotSizeFilter.minNotionalValue!, colorScheme),
-            if (lotSizeFilter.postOnlyMaxOrderQty != null)
-              _buildInfoRow('포스트 온리 최대 수량', lotSizeFilter.postOnlyMaxOrderQty!, colorScheme),
-            if (lotSizeFilter.maxMktOrderQty != null)
-              _buildInfoRow('최대 마켓 주문 수량', lotSizeFilter.maxMktOrderQty!, colorScheme),
-            if (lotSizeFilter.basePrecision != null)
-              _buildInfoRow('베이스 정밀도', lotSizeFilter.basePrecision!, colorScheme),
-            if (lotSizeFilter.quotePrecision != null)
-              _buildInfoRow('쿼트 정밀도', lotSizeFilter.quotePrecision!, colorScheme),
-            if (lotSizeFilter.minOrderAmt != null)
-              _buildInfoRow('최소 주문 금액', lotSizeFilter.minOrderAmt!, colorScheme),
-            if (lotSizeFilter.maxOrderAmt != null)
-              _buildInfoRow('최대 주문 금액', lotSizeFilter.maxOrderAmt!, colorScheme),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLeverageFilterInfo(ColorScheme colorScheme) {
-    final leverageFilter = ticker.leverageFilter!;
-    
-    return Card(
-      elevation: 2,
-      color: colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '레버리지 필터',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            _buildInfoRow('최소 레버리지', '${leverageFilter.minLeverage}x', colorScheme),
-            _buildInfoRow('최대 레버리지', '${leverageFilter.maxLeverage}x', colorScheme),
-            _buildInfoRow('레버리지 단계', leverageFilter.leverageStep, colorScheme),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildRiskParametersInfo(ColorScheme colorScheme) {
-    final riskParams = ticker.riskParameters!;
-    
-    return Card(
-      elevation: 2,
-      color: colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '리스크 매개변수',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            if (riskParams.priceLimitRatioX != null)
-              _buildInfoRow('가격 제한 비율 X', riskParams.priceLimitRatioX!, colorScheme),
-            if (riskParams.priceLimitRatioY != null)
-              _buildInfoRow('가격 제한 비율 Y', riskParams.priceLimitRatioY!, colorScheme),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTradingInfo(ColorScheme colorScheme) {
-    return Card(
-      elevation: 2,
-      color: colorScheme.surface,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '거래 설정',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: 12.0),
-            if (ticker.unifiedMarginTrade != null)
-              _buildInfoRow('통합 마진 거래', ticker.unifiedMarginTrade! ? '지원' : '미지원', colorScheme),
-            if (ticker.fundingInterval != null)
-              _buildInfoRow('펀딩 간격', '${ticker.fundingInterval}분', colorScheme),
             if (ticker.settleCoin != null)
               _buildInfoRow('정산 코인', ticker.settleCoin!, colorScheme),
-            if (ticker.copyTrading != null)
-              _buildInfoRow('카피 트레이딩', ticker.copyTrading!, colorScheme),
-            if (ticker.upperFundingRate != null)
-              _buildInfoRow('상한 펀딩 비율', '${ticker.upperFundingRate}%', colorScheme),
-            if (ticker.lowerFundingRate != null)
-              _buildInfoRow('하한 펀딩 비율', '${ticker.lowerFundingRate}%', colorScheme),
-            if (ticker.isPreListing != null)
-              _buildInfoRow('프리 리스팅', ticker.isPreListing! ? '예' : '아니오', colorScheme),
-            if (ticker.preListingInfo != null && ticker.preListingInfo!.isNotEmpty)
-              _buildInfoRow('프리 리스팅 정보', ticker.preListingInfo.toString(), colorScheme),
+            if (ticker.launchTime != null)
+              _buildInfoRow('런칭 시간', ticker.launchTime!, colorScheme),
           ],
         ),
       ),

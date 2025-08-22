@@ -21,10 +21,7 @@ void main() async {
   // Hive 어댑터 등록
   Hive.registerAdapter(ExchangeRateAdapter());
   Hive.registerAdapter(InstrumentAdapter());
-  Hive.registerAdapter(InstrumentPriceFilterAdapter());
-  Hive.registerAdapter(InstrumentLotSizeFilterAdapter());
-  Hive.registerAdapter(InstrumentLeverageFilterAdapter());
-  Hive.registerAdapter(InstrumentRiskParametersAdapter());
+  
   // ticker 데이터는 실시간으로만 사용하므로 Hive 어댑터 불필요
   Hive.registerAdapter(ApiKeyDataAdapter());
   Hive.registerAdapter(ApiKeyStatusAdapter());
