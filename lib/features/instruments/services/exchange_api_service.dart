@@ -104,7 +104,15 @@ class ExchangeApiService {
                 baseSymbol = '${parsedCoin['baseCode']}/${instrument.quoteCode}';
               }
 
-              integratedSymbol = baseSymbol;
+              if (instrument.endDate != null && instrument.endDate!.isNotEmpty) {
+                if (instrument.endDate != 'perpetual' && instrument.endDate!.length > 2) {
+                  integratedSymbol = '$baseSymbol-${instrument.endDate!.substring(2)}';
+                } else {
+                  integratedSymbol = '$baseSymbol-${instrument.endDate}';
+                }
+              } else {
+                integratedSymbol = baseSymbol;
+              }
 
               return instrument.copyWith(
                 baseCode: parsedCoin['baseCode']!,
