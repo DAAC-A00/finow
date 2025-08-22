@@ -66,6 +66,14 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
                 final apiKeyData = apiKeyDataMap[entry.value.key] ?? entry.value;
                 final status = apiKeyData.status;
 
+                String quotaString = '';
+                if (apiKeyData.requestsRemaining != null && apiKeyData.planQuota != null) {
+                  final percentage = apiKeyData.planQuota! > 0
+                      ? (apiKeyData.requestsRemaining! / apiKeyData.planQuota! * 100)
+                      : 0;
+                  quotaString = 'Quota: ${apiKeyData.requestsRemaining} / ${apiKeyData.planQuota} (${percentage.toStringAsFixed(1)}%)';
+                }
+
                 return ListTile(
                   title: Text(apiKeyData.key, maxLines: 1, overflow: TextOverflow.ellipsis),
                   subtitle: Column(
@@ -78,11 +86,11 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
                           Text(status.label, style: TextStyle(color: status.color)),
                         ],
                       ),
-                      if (apiKeyData.requestsRemaining != null && apiKeyData.planQuota != null)
+                      if (quotaString.isNotEmpty)
                         Padding(
                           padding: const EdgeInsets.only(top: 4.0),
                           child: Text(
-                            'Quota: ${apiKeyData.requestsRemaining} / ${apiKeyData.planQuota}',
+                            quotaString,
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ),

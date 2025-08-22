@@ -17,6 +17,21 @@ class ApiKeysStorageView extends ConsumerStatefulWidget {
 
 class _ApiKeysStorageViewState extends ConsumerState<ApiKeysStorageView> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _validateAllKeys();
+    });
+  }
+
+  Future<void> _validateAllKeys() async {
+    final apiKeys = ref.read(apiKeyListProvider).value ?? [];
+    for (final apiKeyData in apiKeys) {
+      await ref.read(apiKeyStatusProvider.notifier).validateKey(apiKeyData.key);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final apiKeysAsync = ref.watch(apiKeyListProvider);
     final apiKeyDataMap = ref.watch(apiKeyStatusProvider);
