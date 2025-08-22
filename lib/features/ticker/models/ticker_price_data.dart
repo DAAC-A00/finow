@@ -72,6 +72,18 @@ class TickerPriceData {
     required this.lastUpdated,
   });
 
+  /// Bybit API의 price24hPcnt 값을 조정하는 헬퍼 함수
+  static String? _adjustBybitPriceChangePercent(String? price24hPcnt) {
+    if (price24hPcnt == null || price24hPcnt.isEmpty) return null;
+    try {
+      final parsedValue = double.parse(price24hPcnt);
+      return (parsedValue * 100).toStringAsFixed(2);
+    } catch (e) {
+      // 파싱 실패 시 원본 값 반환
+      return price24hPcnt;
+    }
+  }
+
   /// Spot 카테고리용 팩토리 생성자
   factory TickerPriceData.fromSpot(Map<String, dynamic> json) {
     return TickerPriceData(
@@ -79,7 +91,7 @@ class TickerPriceData {
       category: 'spot',
       lastPrice: json['lastPrice'],
       prevPrice24h: json['prevPrice24h'],
-      price24hPcnt: json['price24hPcnt'],
+      price24hPcnt: _adjustBybitPriceChangePercent(json['price24hPcnt']),
       highPrice24h: json['highPrice24h'],
       lowPrice24h: json['lowPrice24h'],
       turnover24h: json['turnover24h'],
@@ -99,7 +111,7 @@ class TickerPriceData {
       category: 'linear',
       lastPrice: json['lastPrice'],
       prevPrice24h: json['prevPrice24h'],
-      price24hPcnt: json['price24hPcnt'],
+      price24hPcnt: _adjustBybitPriceChangePercent(json['price24hPcnt']),
       highPrice24h: json['highPrice24h'],
       lowPrice24h: json['lowPrice24h'],
       turnover24h: json['turnover24h'],
@@ -134,7 +146,7 @@ class TickerPriceData {
       category: 'inverse',
       lastPrice: json['lastPrice'],
       prevPrice24h: json['prevPrice24h'],
-      price24hPcnt: json['price24hPcnt'],
+      price24hPcnt: _adjustBybitPriceChangePercent(json['price24hPcnt']),
       highPrice24h: json['highPrice24h'],
       lowPrice24h: json['lowPrice24h'],
       turnover24h: json['turnover24h'],
@@ -162,13 +174,25 @@ class TickerPriceData {
     );
   }
 
+  /// Bithumb API의 price24hPcnt 값을 조정하는 헬퍼 함수
+  static String? _formatBithumbPriceChangePercent(String? price24hPcnt) {
+    if (price24hPcnt == null || price24hPcnt.isEmpty) return null;
+    try {
+      final parsedValue = double.parse(price24hPcnt);
+      return parsedValue.toStringAsFixed(2);
+    } catch (e) {
+      // 파싱 실패 시 원본 값 반환
+      return price24hPcnt;
+    }
+  }
+
   factory TickerPriceData.fromBithumbTicker(BithumbTicker ticker) {
     return TickerPriceData(
       symbol: ticker.market ?? '',
       category: 'spot',
       lastPrice: ticker.closingPrice,
       prevPrice24h: ticker.prevClosingPrice,
-      price24hPcnt: ticker.fluctuateRate24H,
+      price24hPcnt: _formatBithumbPriceChangePercent(ticker.fluctuateRate24H),
       highPrice24h: ticker.maxPrice,
       lowPrice24h: ticker.minPrice,
       turnover24h: ticker.accTradeValue24H,
