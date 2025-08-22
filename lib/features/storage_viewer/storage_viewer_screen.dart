@@ -599,7 +599,7 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
                               if (value.settleCoin != null) Text('settleCoin: ${value.settleCoin}'),
                               Text('exchange: ${value.exchange}'),
                               if (value.category != null) Text('category: ${value.category}'),
-                              if (value.contractType != null) Text('contractType: ${value.contractType}'),
+                              if (value.endDate != null) Text('endDate: ${value.endDate}'),
                               if (value.launchTime != null) Text('launchTime: ${value.launchTime}'),
                               Text('status: ${value.status}'),
                               if (value.marketWarning != null) Text('marketWarning: ${value.marketWarning}'),

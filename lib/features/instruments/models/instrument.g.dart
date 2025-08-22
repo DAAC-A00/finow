@@ -27,7 +27,7 @@ class InstrumentAdapter extends TypeAdapter<Instrument> {
       marketWarning: fields[7] as String?,
       lastUpdated: fields[8] as DateTime,
       category: fields[9] as String?,
-      contractType: fields[10] as String?,
+      endDate: fields[10] as String?,
       launchTime: fields[11] as String?,
       settleCoin: fields[12] as String?,
       quantity: fields[13] as double?,
@@ -60,7 +60,7 @@ class InstrumentAdapter extends TypeAdapter<Instrument> {
       ..writeByte(9)
       ..write(obj.category)
       ..writeByte(10)
-      ..write(obj.contractType)
+      ..write(obj.endDate)
       ..writeByte(11)
       ..write(obj.launchTime)
       ..writeByte(12)

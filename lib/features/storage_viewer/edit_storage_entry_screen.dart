@@ -39,7 +39,7 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
   late TextEditingController _koreanNameController;
   late TextEditingController _englishNameController;
   late TextEditingController _marketWarningController;
-  late TextEditingController _contractTypeController;
+  late TextEditingController _endDateController;
   late TextEditingController _launchTimeController;
   late TextEditingController _settleCoinController;
   late TextEditingController _quantityController;
@@ -72,7 +72,7 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
     _koreanNameController = TextEditingController();
     _englishNameController = TextEditingController();
     _marketWarningController = TextEditingController();
-    _contractTypeController = TextEditingController();
+    _endDateController = TextEditingController();
     _launchTimeController = TextEditingController();
     _settleCoinController = TextEditingController();
     _quantityController = TextEditingController();
@@ -93,7 +93,7 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
       _koreanNameController.text = value.koreanName ?? '';
       _englishNameController.text = value.englishName ?? '';
       _marketWarningController.text = value.marketWarning ?? '';
-      _contractTypeController.text = value.contractType ?? '';
+      _endDateController.text = value.endDate ?? '';
       _launchTimeController.text = value.launchTime ?? '';
       _settleCoinController.text = value.settleCoin ?? '';
       _quantityController.text = value.quantity?.toString() ?? '';
@@ -117,7 +117,7 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
     _koreanNameController.dispose();
     _englishNameController.dispose();
     _marketWarningController.dispose();
-    _contractTypeController.dispose();
+    _endDateController.dispose();
     _launchTimeController.dispose();
     _settleCoinController.dispose();
     _quantityController.dispose();
@@ -219,8 +219,8 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
             decoration: const InputDecoration(labelText: 'Market Warning'),
           ),
           TextField(
-            controller: _contractTypeController,
-            decoration: const InputDecoration(labelText: 'Contract Type'),
+            controller: _endDateController,
+            decoration: const InputDecoration(labelText: 'End Date'),
           ),
           TextField(
             controller: _launchTimeController,
@@ -282,7 +282,7 @@ class _EditStorageEntryScreenState extends ConsumerState<EditStorageEntryScreen>
         koreanName: _koreanNameController.text.isEmpty ? null : _koreanNameController.text,
         englishName: _englishNameController.text.isEmpty ? null : _englishNameController.text,
         marketWarning: _marketWarningController.text.isEmpty ? null : _marketWarningController.text,
-        contractType: _contractTypeController.text.isEmpty ? null : _contractTypeController.text,
+        endDate: _endDateController.text.isEmpty ? null : _endDateController.text,
         launchTime: _launchTimeController.text.isEmpty ? null : _launchTimeController.text,
         settleCoin: _settleCoinController.text.isEmpty ? null : _settleCoinController.text,
         lastUpdated: value.lastUpdated, // Keep original lastUpdated

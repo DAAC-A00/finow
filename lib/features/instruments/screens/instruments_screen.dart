@@ -430,10 +430,10 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                       const SizedBox(width: 8),
                       _buildCategoryChip(instrument.category!, colorScheme),
                     ],
-                  if (instrument.contractType != null)
+                  if (instrument.endDate != null)
                     ...[
                       const SizedBox(width: 8),
-                      _buildContractTypeChip(instrument.contractType!, colorScheme),
+                      _buildEndDateChip(instrument.endDate!, colorScheme),
                     ],
                   if (instrument.marketWarning != null && instrument.marketWarning != 'NONE')
                     ...[
@@ -558,7 +558,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
     );
   }
 
-  Widget _buildContractTypeChip(String contractType, ColorScheme colorScheme) {
+  Widget _buildEndDateChip(String endDate, ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -566,7 +566,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        contractType,
+        endDate,
         style: TextStyle(
           fontSize: 10,
           color: colorScheme.onSurface.withAlpha((255 * 0.7).round()),

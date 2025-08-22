@@ -76,7 +76,7 @@ class TickerRepository {
             koreanName: instrument.koreanName,
             englishName: instrument.englishName,
             marketWarning: instrument.marketWarning,
-            contractType: instrument.contractType,
+            endDate: instrument.endDate,
             launchTime: instrument.launchTime,
             settleCoin: instrument.settleCoin,
             priceData: tickerData,

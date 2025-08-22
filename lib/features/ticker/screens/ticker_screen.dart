@@ -371,8 +371,8 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                     colorScheme,
                   ),
                   _buildStatusChip(ticker.status, colorScheme),
-                  if (ticker.contractType != null)
-                    _buildContractTypeChip(ticker.contractType!, colorScheme),
+                  if (ticker.endDate != null)
+                    _buildEndDateChip(ticker.endDate!, colorScheme),
                 ],
               ),
               if (priceData != null) ...[
@@ -529,7 +529,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     );
   }
 
-  Widget _buildContractTypeChip(String contractType, ColorScheme colorScheme) {
+  Widget _buildEndDateChip(String endDate, ColorScheme colorScheme) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       decoration: BoxDecoration(
@@ -538,7 +538,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
         border: Border.all(color: Colors.blue.withAlpha(76)),
       ),
       child: Text(
-        contractType,
+        endDate,
         style: const TextStyle(
           fontSize: 12,
           fontWeight: FontWeight.bold,

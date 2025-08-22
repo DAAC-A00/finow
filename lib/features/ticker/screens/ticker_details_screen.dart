@@ -176,8 +176,8 @@ class TickerDetailsScreen extends StatelessWidget {
             _buildInfoRow('마지막 업데이트', 
               '${ticker.lastUpdated.hour.toString().padLeft(2, '0')}:${ticker.lastUpdated.minute.toString().padLeft(2, '0')}:${ticker.lastUpdated.second.toString().padLeft(2, '0')}', 
               colorScheme),
-            if (ticker.contractType != null)
-              _buildInfoRow('계약 유형', ticker.contractType!, colorScheme),
+            if (ticker.endDate != null)
+              _buildInfoRow('종료일', ticker.endDate!, colorScheme),
             if (ticker.settleCoin != null)
               _buildInfoRow('정산 코인', ticker.settleCoin!, colorScheme),
             if (ticker.launchTime != null)

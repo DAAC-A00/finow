@@ -34,8 +34,8 @@ class InstrumentDetailsScreen extends StatelessWidget {
                 _buildDetailRow(context, 'Status', instrument.status, icon: Icons.info_outline),
                 if (instrument.category != null)
                   _buildDetailRow(context, 'Category', instrument.category!.toUpperCase(), icon: Icons.category),
-                if (instrument.contractType != null)
-                  _buildDetailRow(context, 'Contract Type', instrument.contractType!, icon: Icons.article),
+                if (instrument.endDate != null)
+                  _buildDetailRow(context, 'End Date', instrument.endDate!, icon: Icons.article),
                 if (instrument.settleCoin != null)
                   _buildDetailRow(context, 'Settle Coin', instrument.settleCoin!, icon: Icons.account_balance_wallet),
                 if (instrument.englishName != null)

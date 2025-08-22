@@ -297,7 +297,7 @@ class IntegratedTickerPriceData {
   final String? marketWarning;
   
   // 계약 정보
-  final String? contractType;
+  final String? endDate;
   final String? launchTime;
   final String? settleCoin;
   
@@ -317,7 +317,7 @@ class IntegratedTickerPriceData {
     this.koreanName,
     this.englishName,
     this.marketWarning,
-    this.contractType,
+    this.endDate,
     this.launchTime,
     this.settleCoin,
     this.priceData,
