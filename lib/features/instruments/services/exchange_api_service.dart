@@ -104,12 +104,8 @@ class ExchangeApiService {
                 baseSymbol = '${parsedCoin['baseCode']}/${instrument.quoteCode}';
               }
 
-              if (instrument.endDate != null && instrument.endDate!.isNotEmpty) {
-                if (instrument.endDate != 'perpetual' && instrument.endDate!.length > 2) {
-                  integratedSymbol = '$baseSymbol-${instrument.endDate!.substring(2)}';
-                } else {
-                  integratedSymbol = '$baseSymbol-${instrument.endDate}';
-                }
+              if (instrument.endDate != null && RegExp(r'^\d{4}\.\d{2}\.\d{2}$').hasMatch(instrument.endDate!)) {
+                integratedSymbol = '$baseSymbol-${instrument.endDate!.substring(2)}';
               } else {
                 integratedSymbol = baseSymbol;
               }

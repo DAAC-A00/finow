@@ -209,7 +209,7 @@ class Instrument {
       lastUpdated: DateTime.now(),
       category: 'um',
       endDate: endDate,
-      integratedSymbol: '${json['baseAsset'] ?? ''}/${json['quoteAsset'] ?? ''}${endDate.isNotEmpty && endDate != 'perpetual' ? '-$endDate' : ''}',
+      integratedSymbol: '${json['baseAsset'] ?? ''}/${json['quoteAsset'] ?? ''}${RegExp(r'^\d{4}\.\d{2}\.\d{2}$').hasMatch(endDate) ? '-$endDate' : ''}',
     );
   }
 
@@ -230,7 +230,7 @@ class Instrument {
       lastUpdated: DateTime.now(),
       category: 'cm',
       endDate: endDate,
-      integratedSymbol: '${json['baseAsset'] ?? ''}/${json['quoteAsset'] ?? ''}${endDate.isNotEmpty && endDate != 'perpetual' ? '-$endDate' : ''}',
+      integratedSymbol: '${json['baseAsset'] ?? ''}/${json['quoteAsset'] ?? ''}${RegExp(r'^\d{4}\.\d{2}\.\d{2}$').hasMatch(endDate) ? '-$endDate' : ''}',
     );
   }
 
