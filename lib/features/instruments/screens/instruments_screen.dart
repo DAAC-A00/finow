@@ -20,7 +20,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String _selectedExchange = 'all';
-  String _selectedCategory = 'all'; // spot, linear, inverse, all
+  String _selectedCategory = 'all'; // spot, um, cm, all
 
   @override
   void initState() {
@@ -256,9 +256,9 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                   const SizedBox(width: 8),
                   _buildCategoryFilterChip('Spot', 'spot', colorScheme),
                   const SizedBox(width: 8),
-                  _buildCategoryFilterChip('Linear', 'linear', colorScheme),
+                  _buildCategoryFilterChip('UM', 'um', colorScheme),
                   const SizedBox(width: 8),
-                  _buildCategoryFilterChip('Inverse', 'inverse', colorScheme),
+                  _buildCategoryFilterChip('CM', 'cm', colorScheme),
                 ],
               ),
             ),
@@ -357,6 +357,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
       final query = _searchQuery.toLowerCase();
       filtered = filtered.where((instrument) {
         return instrument.symbol.toLowerCase().contains(query) ||
+               instrument.integratedSymbol.toLowerCase().contains(query) ||
                instrument.baseCode.toLowerCase().contains(query) ||
                instrument.quoteCode.toLowerCase().contains(query) ||
                (instrument.koreanName?.toLowerCase().contains(query) ?? false) ||
@@ -399,7 +400,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          instrument.symbol,
+                          instrument.integratedSymbol,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colorScheme.onSurface,
@@ -421,9 +422,9 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
               const SizedBox(height: 8),
               Row(
                 children: [
-                  _buildInfoChip('${instrument.baseCode}/${instrument.quoteCode}', colorScheme),
-                  const SizedBox(width: 8),
                   _buildStatusChip(instrument.status, colorScheme),
+                  const SizedBox(width: 8),
+                  _buildInfoChip(instrument.symbol, colorScheme),
                   // Bithumb은 spot만 지원하므로 카테고리 칩 생략
                   if (instrument.category != null && instrument.exchange != 'bithumb')
                     ...[
@@ -531,10 +532,10 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
       case 'spot':
         chipColor = Colors.green;
         break;
-      case 'linear':
+      case 'um':
         chipColor = Colors.blue;
         break;
-      case 'inverse':
+      case 'cm':
         chipColor = Colors.purple;
         break;
       default:
@@ -734,8 +735,8 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
             SizedBox(height: 12),
             Text('🟠 Bybit (바이비트):'),
             Text('  • Spot (현물 거래)'),
-            Text('  • Linear (선물 거래)'),
-            Text('  • Inverse (역선물 거래)'),
+            Text('  • UM (선물 거래)'),
+            Text('  • CM (역선물 거래)'),
             SizedBox(height: 12),
             Text('🔵 Bithumb (빗썸):'),
             Text('  • Spot Only (현물 거래만)'),

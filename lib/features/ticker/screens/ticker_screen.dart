@@ -59,8 +59,8 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
           tabs: const [
             Tab(text: 'All'),
             Tab(text: 'Spot'),
-            Tab(text: 'Linear'),
-            Tab(text: 'Inverse'),
+            Tab(text: 'UM'),
+            Tab(text: 'CM'),
           ],
           labelColor: colorScheme.primary,
           unselectedLabelColor: colorScheme.onSurface.withAlpha(153),
@@ -103,8 +103,8 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
               children: [
                 _buildLiveTickerList('all'),
                 _buildLiveTickerList('spot'),
-                _buildLiveTickerList('linear'),
-                _buildLiveTickerList('inverse'),
+                _buildLiveTickerList('um'),
+                _buildLiveTickerList('cm'),
               ],
             ),
           ),
@@ -464,10 +464,10 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
       case 'spot':
         color = Colors.green;
         break;
-      case 'linear':
+      case 'um':
         color = Colors.blue;
         break;
-      case 'inverse':
+      case 'cm':
         color = Colors.purple;
         break;
       default:
