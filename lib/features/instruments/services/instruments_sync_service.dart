@@ -25,27 +25,37 @@ class InstrumentsSyncService {
       return;
     }
 
+    debugPrint('🚀 통합 심볼 정보 초기 동기화를 시작합니다...');
+    
     try {
-      debugPrint('통합 심볼 정보 초기 동기화를 시작합니다...');
+      debugPrint('📡 모든 거래소 심볼 정보를 동기화합니다 (Bybit, Bithumb, Binance)...');
+      final instruments = await _repository.apiService.fetchAllInstruments();
       
-      debugPrint('전체 심볼 정보를 동기화합니다...');
-      await _repository.fetchAndSaveInstruments();
-      debugPrint('전체 심볼 정보 동기화 완료');
-
-      debugPrint('Binance 심볼 정보를 추가로 동기화합니다...');
-      await _repository.fetchAndSaveBinanceInstruments();
-      debugPrint('Binance 심볼 정보 동기화 완료');
+      // 데이터가 있으면 저장
+      if (instruments.isNotEmpty) {
+        await _repository.storageService.saveInstruments(instruments);
+        debugPrint('✅ 심볼 정보 저장 완료 (총 ${instruments.length}개 심볼)');
+      } else {
+        debugPrint('⚠️ 조회된 심볼 정보가 없습니다.');
+      }
 
       _isInitialSyncCompleted = true;
-      
-      // 초기 동기화 완료 후 Bithumb 경고 정보 주기적 업데이트 시작
-      startPeriodicWarningUpdates();
+      debugPrint('🎉 통합 심볼 정보 초기 동기화 완료');
       
     } catch (e) {
-      debugPrint('통합 심볼 정보 초기 동기화 중 오류 발생: $e');
-      // 오류가 발생해도 주기적 업데이트는 시작
-      startPeriodicWarningUpdates();
+      debugPrint('❌ 통합 심볼 정보 초기 동기화 중 오류 발생: $e');
+      
+      // 기존 저장된 데이터가 있는지 확인
+      final hasExistingData = await _repository.hasStoredData();
+      if (hasExistingData) {
+        debugPrint('📦 기존 저장된 데이터가 있어 앱을 계속 실행합니다.');
+      } else {
+        debugPrint('⚠️ 기존 데이터도 없고 새 데이터도 가져올 수 없습니다.');
+      }
     }
+    
+    // 성공/실패 여부와 관계없이 Bithumb 경고 정보 주기적 업데이트는 시작
+    startPeriodicWarningUpdates();
   }
 
   /// Bithumb 경고 정보 주기적 업데이트 시작 (1분마다)
@@ -129,6 +139,39 @@ class InstrumentsSyncService {
       debugPrint('수동 전체 동기화 완료');
     } catch (e) {
       debugPrint('수동 전체 동기화 중 오류 발생: $e');
+      rethrow;
+    }
+  }
+
+  /// Binance 전용 동기화 실행
+  Future<void> performBinanceOnlySync() async {
+    try {
+      debugPrint('Binance 전용 동기화를 시작합니다...');
+      
+      debugPrint('Binance Spot 심볼 정보를 동기화합니다...');
+      final spotInstruments = await _repository.apiService.fetchBinanceSpotInstruments();
+      debugPrint('Binance Spot 심볼 정보 동기화 완료 (${spotInstruments.length}개 심볼)');
+      
+      debugPrint('Binance USDⓈ-M 선물 심볼 정보를 동기화합니다...');
+      final umInstruments = await _repository.apiService.fetchBinanceUmInstruments();
+      debugPrint('Binance USDⓈ-M 선물 심볼 정보 동기화 완료 (${umInstruments.length}개 심볼)');
+      
+      debugPrint('Binance COIN-M 선물 심볼 정보를 동기화합니다...');
+      final cmInstruments = await _repository.apiService.fetchBinanceCmInstruments();
+      debugPrint('Binance COIN-M 선물 심볼 정보 동기화 완료 (${cmInstruments.length}개 심볼)');
+      
+      // 모든 Binance 심볼 정보를 통합하여 저장
+      final allBinanceInstruments = <Instrument>[];
+      allBinanceInstruments.addAll(spotInstruments);
+      allBinanceInstruments.addAll(umInstruments);
+      allBinanceInstruments.addAll(cmInstruments);
+      
+      await _repository.storageService.saveInstruments(allBinanceInstruments);
+      
+      debugPrint('Binance 전용 동기화 완료 (총 ${allBinanceInstruments.length}개 심볼)');
+      
+    } catch (e) {
+      debugPrint('Binance 전용 동기화 중 오류 발생: $e');
       rethrow;
     }
   }

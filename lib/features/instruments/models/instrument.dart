@@ -195,42 +195,72 @@ class Instrument {
   factory Instrument.fromBinanceUm(Map<String, dynamic> json) {
     // USDⓈ-M 선물
     String endDate = '';
-    if (json['contractType'] == 'PERPETUAL') {
+    final contractType = json['contractType'] as String?;
+    final deliveryDate = json['deliveryDate'] as int?;
+    
+    if (contractType == 'PERPETUAL' || (deliveryDate != null && deliveryDate == 4133404800000)) {
       endDate = 'perpetual';
-    } else if (json['contractType'] == 'CURRENT_QUARTER' || json['contractType'] == 'NEXT_QUARTER') {
-      endDate = json['symbol'] ?? '';
+    } else if (deliveryDate != null && deliveryDate != 4133404800000) {
+      // deliveryDate를 실제 날짜로 변환
+      final date = DateTime.fromMillisecondsSinceEpoch(deliveryDate);
+      endDate = DateFormat('yyyy.MM.dd').format(date);
     }
+    
+    final baseAsset = json['baseAsset'] ?? '';
+    final quoteAsset = json['quoteAsset'] ?? '';
+    String integratedSymbol = '$baseAsset/$quoteAsset';
+    
+    // endDate가 실제 날짜 포맷이면 추가
+    if (endDate.isNotEmpty && endDate != 'perpetual' && RegExp(r'^\d{4}\.\d{2}\.\d{2}$').hasMatch(endDate)) {
+      integratedSymbol = '$integratedSymbol-${endDate.substring(2)}'; // yyyy.MM.dd -> yy.MM.dd
+    }
+    
     return Instrument(
       symbol: json['symbol'] ?? '',
-      baseCode: json['baseAsset'] ?? '',
-      quoteCode: json['quoteAsset'] ?? '',
+      baseCode: baseAsset,
+      quoteCode: quoteAsset,
       exchange: 'binance',
       status: json['status'] ?? '',
       lastUpdated: DateTime.now(),
       category: 'um',
       endDate: endDate,
-      integratedSymbol: '${json['baseAsset'] ?? ''}/${json['quoteAsset'] ?? ''}${RegExp(r'^\d{4}\.\d{2}\.\d{2}$').hasMatch(endDate) ? '-$endDate' : ''}',
+      integratedSymbol: integratedSymbol,
     );
   }
 
   factory Instrument.fromBinanceCm(Map<String, dynamic> json) {
     // COIN-M 선물
     String endDate = '';
-    if (json['contractType'] == 'PERPETUAL') {
+    final contractType = json['contractType'] as String?;
+    final deliveryDate = json['deliveryDate'] as int?;
+    
+    if (contractType == 'PERPETUAL' || (deliveryDate != null && deliveryDate == 4133404800000)) {
       endDate = 'perpetual';
-    } else if (json['contractType'] == 'CURRENT_QUARTER' || json['contractType'] == 'NEXT_QUARTER') {
-      endDate = json['symbol'] ?? '';
+    } else if (deliveryDate != null && deliveryDate != 4133404800000) {
+      // deliveryDate를 실제 날짜로 변환
+      final date = DateTime.fromMillisecondsSinceEpoch(deliveryDate);
+      endDate = DateFormat('yyyy.MM.dd').format(date);
     }
+    
+    final baseAsset = json['baseAsset'] ?? '';
+    final quoteAsset = json['quoteAsset'] ?? '';
+    String integratedSymbol = '$baseAsset/$quoteAsset';
+    
+    // endDate가 실제 날짜 포맷이면 추가
+    if (endDate.isNotEmpty && endDate != 'perpetual' && RegExp(r'^\d{4}\.\d{2}\.\d{2}$').hasMatch(endDate)) {
+      integratedSymbol = '$integratedSymbol-${endDate.substring(2)}'; // yyyy.MM.dd -> yy.MM.dd
+    }
+    
     return Instrument(
       symbol: json['symbol'] ?? '',
-      baseCode: json['baseAsset'] ?? '',
-      quoteCode: json['quoteAsset'] ?? '',
+      baseCode: baseAsset,
+      quoteCode: quoteAsset,
       exchange: 'binance',
       status: json['contractStatus'] ?? json['status'] ?? '',
       lastUpdated: DateTime.now(),
       category: 'cm',
       endDate: endDate,
-      integratedSymbol: '${json['baseAsset'] ?? ''}/${json['quoteAsset'] ?? ''}${RegExp(r'^\d{4}\.\d{2}\.\d{2}$').hasMatch(endDate) ? '-$endDate' : ''}',
+      integratedSymbol: integratedSymbol,
     );
   }
 

@@ -28,7 +28,9 @@ class InstrumentsRepository {
     }
   }
 
-  /// Binance Spot, UM, CM 심볼 정보를 모두 받아와 저장
+  /// Binance 전용 동기화: Binance Spot, UM, CM 심볼 정보를 모두 받아와 저장
+  /// 주의: 이 메소드는 Binance 데이터만 저장하므로 기존 다른 거래소 데이터를 덮어씁니다.
+  /// 전체 거래소 데이터가 필요하다면 fetchAndSaveInstruments()를 사용하세요.
   Future<List<Instrument>> fetchAndSaveBinanceInstruments() async {
     try {
       final spot = await _apiService.fetchBinanceSpotInstruments();
@@ -82,6 +84,11 @@ class InstrumentsRepository {
     return await getInstrumentsByExchange('bithumb');
   }
 
+  /// Binance 심볼만 조회
+  Future<List<Instrument>> getBinanceInstruments() async {
+    return await getInstrumentsByExchange('binance');
+  }
+
   /// 특정 카테고리의 심볼만 조회
   Future<List<Instrument>> getInstrumentsByCategory(String category) async {
     return await _storageService.loadInstrumentsByCategory(category);
@@ -107,6 +114,28 @@ class InstrumentsRepository {
   /// Bybit Inverse 심볼만 조회
   Future<List<Instrument>> getBybitInverseInstruments() async {
     return await getBybitInstrumentsByCategory('inverse');
+  }
+
+  /// Binance 특정 카테고리 심볼만 조회
+  Future<List<Instrument>> getBinanceInstrumentsByCategory(String category) async {
+    final instruments = await _storageService.loadInstruments();
+    return instruments.where((instrument) => 
+        instrument.exchange == 'binance' && instrument.category == category).toList();
+  }
+
+  /// Binance Spot 심볼만 조회
+  Future<List<Instrument>> getBinanceSpotInstruments() async {
+    return await getBinanceInstrumentsByCategory('spot');
+  }
+
+  /// Binance USDⓈ-M 선물 심볼만 조회
+  Future<List<Instrument>> getBinanceUmInstruments() async {
+    return await getBinanceInstrumentsByCategory('um');
+  }
+
+  /// Binance COIN-M 선물 심볼만 조회
+  Future<List<Instrument>> getBinanceCmInstruments() async {
+    return await getBinanceInstrumentsByCategory('cm');
   }
 
   /// 데이터 새로고침 (API 재조회 후 저장)
