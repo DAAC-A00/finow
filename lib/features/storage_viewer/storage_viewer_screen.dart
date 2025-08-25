@@ -484,24 +484,8 @@ class _StorageViewerScreenState extends ConsumerState<StorageViewerScreen>
           }
           
           if (value is Instrument) {
-            final symbolString = value.symbol.toLowerCase();
-            final baseCodeString = value.baseCode.toLowerCase();
-            final quoteCodeString = value.quoteCode.toLowerCase();
-            final exchangeString = value.exchange.toLowerCase();
-            final statusString = value.status.toLowerCase();
-            final koreanNameString = (value.koreanName ?? '').toLowerCase();
-            final englishNameString = (value.englishName ?? '').toLowerCase();
-            final categoryString = (value.category ?? '').toLowerCase();
-            
-            return key.contains(query) ||
-                symbolString.contains(query) ||
-                baseCodeString.contains(query) ||
-                quoteCodeString.contains(query) ||
-                exchangeString.contains(query) ||
-                statusString.contains(query) ||
-                koreanNameString.contains(query) ||
-                englishNameString.contains(query) ||
-                categoryString.contains(query);
+            final instrumentJsonString = value.toJson().toString().toLowerCase();
+            return key.contains(query) || instrumentJsonString.contains(query);
           }
           
           final valueString = value.toString().toLowerCase();
