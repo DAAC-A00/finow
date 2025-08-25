@@ -321,7 +321,7 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              _getIntegratedSymbol(ticker),
+                              ticker.integratedSymbol,
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -444,19 +444,6 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     final formatter = NumberFormat('#,##0.########');
     return formatter.format(value);
   }
-
-  String _getIntegratedSymbol(IntegratedTickerPriceData ticker) {
-    String baseSymbol;
-    if (ticker.quantity != null && ticker.quantity != 1.0) {
-      baseSymbol = '${ticker.quantity}${ticker.baseCode}/${ticker.quoteCode}';
-    } else {
-      baseSymbol = '${ticker.baseCode}/${ticker.quoteCode}';
-    }
-
-    return baseSymbol;
-  }
-
-  
 
   Widget _buildCategoryBadge(String category, ColorScheme colorScheme) {
     Color color;

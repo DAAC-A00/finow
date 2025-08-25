@@ -1,4 +1,3 @@
-
 import 'package:finow/features/ticker/data/models/bithumb_ticker_model.dart';
 import '../models/ticker_price_data.dart';
 import '../services/ticker_api_service.dart';
@@ -43,6 +42,7 @@ class TickerRepository {
             final instrument = instrumentMap[bithumbTicker.market];
             return IntegratedTickerPriceData(
               symbol: bithumbTicker.market ?? '',
+              integratedSymbol: instrument?.integratedSymbol ?? '',
               category: 'spot',
               baseCode: instrument?.baseCode ??
                   bithumbTicker.market?.split('-').last ??
@@ -67,6 +67,7 @@ class TickerRepository {
 
           integratedTickers.add(IntegratedTickerPriceData(
             symbol: instrument.symbol,
+            integratedSymbol: instrument.integratedSymbol,
             category: instrument.category ?? 'unknown',
             baseCode: instrument.baseCode,
             quoteCode: instrument.quoteCode,

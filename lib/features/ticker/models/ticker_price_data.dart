@@ -284,6 +284,7 @@ enum PriceDirection {
 /// 통합 Ticker 데이터 (instrument + ticker 가격 정보)
 class IntegratedTickerPriceData {
   final String symbol;
+  final String integratedSymbol;
   final String category;
   final String baseCode;
   final String quoteCode;
@@ -308,6 +309,7 @@ class IntegratedTickerPriceData {
 
   const IntegratedTickerPriceData({
     required this.symbol,
+    required this.integratedSymbol,
     required this.category,
     required this.baseCode,
     required this.quoteCode,
