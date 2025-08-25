@@ -180,14 +180,28 @@ class Instrument {
 
   factory Instrument.fromBinanceSpot(Map<String, dynamic> json) {
     // symbols의 각 item
+    final baseAsset = json['baseAsset'] ?? '';
+    final quoteAsset = json['quoteAsset'] ?? '';
+    String baseCode = baseAsset;
+    double? quantity;
+
+    // Parse quantity and baseCode from baseAsset (e.g., '1000000MOG' -> quantity: 1000000, baseCode: 'MOG')
+    final regex = RegExp(r'^(\d+)([A-Z]+)$');
+    final match = regex.firstMatch(baseAsset);
+    if (match != null) {
+      quantity = double.tryParse(match.group(1)!);
+      baseCode = match.group(2)!;
+    }
+
     return Instrument(
       symbol: json['symbol'] ?? '',
-      baseCode: json['baseAsset'] ?? '',
-      quoteCode: json['quoteAsset'] ?? '',
+      baseCode: baseCode,
+      quoteCode: quoteAsset,
       exchange: 'binance',
       status: json['status'] ?? '',
       lastUpdated: DateTime.now(),
       category: 'spot',
+      quantity: quantity,
       integratedSymbol: '${json['baseAsset'] ?? ''}/${json['quoteAsset'] ?? ''}',
     );
   }
@@ -197,7 +211,7 @@ class Instrument {
     String endDate = '';
     final contractType = json['contractType'] as String?;
     final deliveryDate = json['deliveryDate'] as int?;
-    
+
     if (contractType == 'PERPETUAL' || (deliveryDate != null && deliveryDate == 4133404800000)) {
       endDate = 'perpetual';
     } else if (deliveryDate != null && deliveryDate != 4133404800000) {
@@ -205,25 +219,37 @@ class Instrument {
       final date = DateTime.fromMillisecondsSinceEpoch(deliveryDate);
       endDate = DateFormat('yyyy.MM.dd').format(date);
     }
-    
+
     final baseAsset = json['baseAsset'] ?? '';
     final quoteAsset = json['quoteAsset'] ?? '';
+    String baseCode = baseAsset;
+    double? quantity;
+
+    // Parse quantity and baseCode from baseAsset (e.g., '1000000MOG' -> quantity: 1000000, baseCode: 'MOG')
+    final regex = RegExp(r'^(\d+)([A-Z]+)$');
+    final match = regex.firstMatch(baseAsset);
+    if (match != null) {
+      quantity = double.tryParse(match.group(1)!);
+      baseCode = match.group(2)!;
+    }
+
     String integratedSymbol = '$baseAsset/$quoteAsset';
-    
+
     // endDate가 실제 날짜 포맷이면 추가
     if (endDate.isNotEmpty && endDate != 'perpetual' && RegExp(r'^\d{4}\.\d{2}\.\d{2}$').hasMatch(endDate)) {
       integratedSymbol = '$integratedSymbol-${endDate.substring(2)}'; // yyyy.MM.dd -> yy.MM.dd
     }
-    
+
     return Instrument(
       symbol: json['symbol'] ?? '',
-      baseCode: baseAsset,
+      baseCode: baseCode,
       quoteCode: quoteAsset,
       exchange: 'binance',
       status: json['status'] ?? '',
       lastUpdated: DateTime.now(),
       category: 'um',
       endDate: endDate,
+      quantity: quantity,
       integratedSymbol: integratedSymbol,
     );
   }
@@ -233,7 +259,7 @@ class Instrument {
     String endDate = '';
     final contractType = json['contractType'] as String?;
     final deliveryDate = json['deliveryDate'] as int?;
-    
+
     if (contractType == 'PERPETUAL' || (deliveryDate != null && deliveryDate == 4133404800000)) {
       endDate = 'perpetual';
     } else if (deliveryDate != null && deliveryDate != 4133404800000) {
@@ -241,25 +267,49 @@ class Instrument {
       final date = DateTime.fromMillisecondsSinceEpoch(deliveryDate);
       endDate = DateFormat('yyyy.MM.dd').format(date);
     }
-    
+
     final baseAsset = json['baseAsset'] ?? '';
     final quoteAsset = json['quoteAsset'] ?? '';
-    String integratedSymbol = '$baseAsset/$quoteAsset';
+    final contractSize = json['contractSize'] as int?;
+    String baseCode = baseAsset;
+    double? quantity;
+
+    // contractSize 필드가 있으면 우선적으로 사용
+    if (contractSize != null) {
+      quantity = contractSize.toDouble();
+    }
+
+    // 정규식을 사용하여 baseAsset에서 숫자 부분을 분리 (예: 'BTC100' -> 'BTC', 100)
+    // contractSize가 없는 경우를 위한 대비책
+    if (quantity == null) {
+      final regex = RegExp(r'^([A-Z]+)(\d+)$');
+      final match = regex.firstMatch(baseAsset);
+      if (match != null) {
+        baseCode = match.group(1)!;
+        final quantityString = match.group(2);
+        if (quantityString != null && quantityString.isNotEmpty) {
+          quantity = double.tryParse(quantityString);
+        }
+      }
+    }
     
+    String integratedSymbol = '$baseAsset/$quoteAsset';
+
     // endDate가 실제 날짜 포맷이면 추가
     if (endDate.isNotEmpty && endDate != 'perpetual' && RegExp(r'^\d{4}\.\d{2}\.\d{2}$').hasMatch(endDate)) {
       integratedSymbol = '$integratedSymbol-${endDate.substring(2)}'; // yyyy.MM.dd -> yy.MM.dd
     }
-    
+
     return Instrument(
       symbol: json['symbol'] ?? '',
-      baseCode: baseAsset,
+      baseCode: baseCode,
       quoteCode: quoteAsset,
       exchange: 'binance',
       status: json['contractStatus'] ?? json['status'] ?? '',
       lastUpdated: DateTime.now(),
       category: 'cm',
       endDate: endDate,
+      quantity: quantity,
       integratedSymbol: integratedSymbol,
     );
   }

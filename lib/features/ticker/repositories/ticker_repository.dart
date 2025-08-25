@@ -48,6 +48,7 @@ class TickerRepository {
                   bithumbTicker.market?.split('-').last ??
                   '',
               quoteCode: instrument?.quoteCode ?? '',
+              quantity: instrument?.quantity,
               status: instrument?.status ?? 'Trading',
               exchange: 'bithumb',
               koreanName: instrument?.koreanName,
