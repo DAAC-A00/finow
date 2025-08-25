@@ -25,7 +25,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
     
     // 탭 변경 시 카테고리 필터 초기화
     _tabController.addListener(() {
@@ -137,6 +137,9 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
             labelColor: colorScheme.primary,
             unselectedLabelColor: colorScheme.onSurface.withAlpha((255 * 0.6).round()),
             indicatorColor: colorScheme.primary,
+            isScrollable: true,
+            tabAlignment: TabAlignment.start, // 왼쪽 여백 제거
+            labelPadding: const EdgeInsets.symmetric(horizontal: 12), // 탭 간격 조정
             tabs: const [
               Tab(
                 child: Column(
@@ -165,11 +168,20 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                   ],
                 ),
               ),
+              Tab(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.monetization_on),
+                    Text('Binance'),
+                  ],
+                ),
+              ),
             ],
           ),
           _buildFilterChips(colorScheme),
-          // All 탭 또는 Bybit 탭일 때 카테고리 필터 표시 (Bithumb은 spot만이므로 제외)
-          if (_tabController.index == 0 || _tabController.index == 1) 
+          // All, Bybit, Binance 탭에서 카테고리 필터 표시 (Bithumb은 spot만이므로 제외)
+          if (_tabController.index == 0 || _tabController.index == 1 || _tabController.index == 3) 
             _buildCategoryFilterChips(colorScheme),
           Expanded(
             child: TabBarView(
@@ -178,6 +190,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                 _buildInstrumentsList('all'),
                 _buildInstrumentsList('bybit'),
                 _buildInstrumentsList('bithumb'),
+                _buildInstrumentsList('binance'),
               ],
             ),
           ),
@@ -341,13 +354,16 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
       filtered = filtered.where((instrument) => instrument.exchange == exchange).toList();
     }
     
-    // Category filtering (All 탭과 Bybit 탭에서만 적용)
+    // Category filtering (All, Bybit, Binance 탭에서 적용)
     if (_selectedCategory != 'all') {
       if (exchange == 'all') {
         // All 탭에서는 모든 거래소의 해당 카테고리 표시
         filtered = filtered.where((instrument) => instrument.category == _selectedCategory).toList();
       } else if (exchange == 'bybit') {
         // Bybit 탭에서는 Bybit의 해당 카테고리만 표시
+        filtered = filtered.where((instrument) => instrument.category == _selectedCategory).toList();
+      } else if (exchange == 'binance') {
+        // Binance 탭에서는 Binance의 해당 카테고리만 표시
         filtered = filtered.where((instrument) => instrument.category == _selectedCategory).toList();
       }
     }
@@ -425,7 +441,7 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
                   _buildStatusChip(instrument.status, colorScheme),
                   const SizedBox(width: 8),
                   _buildInfoChip(instrument.symbol, colorScheme),
-                  // Bithumb은 spot만 지원하므로 카테고리 칩 생략
+                  // Bithumb은 spot만 지원하므로 카테고리 칩 생략, Bybit과 Binance는 표시
                   if (instrument.category != null && instrument.exchange != 'bithumb')
                     ...[
                       const SizedBox(width: 8),
@@ -451,7 +467,20 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
   }
 
   Widget _buildExchangeBadge(String exchange, ColorScheme colorScheme) {
-    final color = exchange == 'bybit' ? Colors.orange : Colors.blue;
+    Color color;
+    switch (exchange) {
+      case 'bybit':
+        color = Colors.orange;
+        break;
+      case 'bithumb':
+        color = Colors.blue;
+        break;
+      case 'binance':
+        color = Colors.amber;
+        break;
+      default:
+        color = Colors.grey;
+    }
     
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -726,32 +755,41 @@ class _InstrumentsScreenState extends ConsumerState<InstrumentsScreen>
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('거래소별 지원 카테고리'),
-        content: const Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('📊 지원 거래소 및 카테고리:', 
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 12),
-            Text('🟠 Bybit (바이비트):'),
-            Text('  • Spot (현물 거래)'),
-            Text('  • UM (선물 거래)'),
-            Text('  • CM (역선물 거래)'),
-            SizedBox(height: 12),
-            Text('🔵 Bithumb (빗썸):'),
-            Text('  • Spot Only (현물 거래만)'),
-            SizedBox(height: 16),
-            Text('💾 주요 기능:', 
-                style: TextStyle(fontWeight: FontWeight.bold)),
-            SizedBox(height: 8),
-            Text('• 로컬 저장소에 데이터 저장 (오프라인 조회 가능)'),
-            SizedBox(height: 4),
-            Text('• 새로고침으로 최신 데이터 업데이트'),
-            SizedBox(height: 4),
-            Text('• 검색 및 카테고리별 필터링 기능'),
-            SizedBox(height: 4),
-            Text('• 실시간 거래 상태 및 계약 유형 표시'),
-          ],
+        content: const SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('📊 지원 거래소 및 카테고리:', 
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 12),
+              Text('🟠 Bybit (바이비트):'),
+              Text('  • Spot (현물 거래)'),
+              Text('  • UM (선물 거래)'),
+              Text('  • CM (역선물 거래)'),
+              SizedBox(height: 12),
+              Text('🔵 Bithumb (빗썸):'),
+              Text('  • Spot Only (현물 거래만)'),
+              SizedBox(height: 12),
+              Text('🟡 Binance (바이낸스):'),
+              Text('  • Spot (현물 거래)'),
+              Text('  • UM (USDⓈ-M 선물 거래)'),
+              Text('  • CM (COIN-M 선물 거래)'),
+              SizedBox(height: 16),
+              Text('💾 주요 기능:', 
+                  style: TextStyle(fontWeight: FontWeight.bold)),
+              SizedBox(height: 8),
+              Text('• 로컬 저장소에 데이터 저장 (오프라인 조회 가능)'),
+              SizedBox(height: 4),
+              Text('• 새로고침으로 최신 데이터 업데이트'),
+              SizedBox(height: 4),
+              Text('• 검색 및 카테고리별 필터링 기능'),
+              SizedBox(height: 4),
+              Text('• 실시간 거래 상태 및 계약 유형 표시'),
+              SizedBox(height: 4),
+              Text('• 자동 재시도 및 부분 실패 허용'),
+            ],
+          ),
         ),
         actions: [
           TextButton(
