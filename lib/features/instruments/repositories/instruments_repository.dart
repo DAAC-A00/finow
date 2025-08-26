@@ -47,6 +47,32 @@ class InstrumentsRepository {
     }
   }
 
+  /// Bitget 전용 동기화: Bitget Spot, UM 심볼 정보를 모두 받아와 저장
+  Future<List<Instrument>> fetchAndSaveBitgetInstruments() async {
+    try {
+      final spot = await _apiService.fetchBitgetSpotInstruments();
+      final um = await _apiService.fetchBitgetUmInstruments();
+      final all = <Instrument>[];
+      all.addAll(spot);
+      all.addAll(um);
+      await _storageService.saveInstruments(all);
+      return all;
+    } catch (e) {
+      throw Exception('Bitget 심볼 정보 조회 및 저장 중 오류 발생: $e');
+    }
+  }
+
+  /// Coinbase 전용 동기화: Coinbase 심볼 정보를 모두 받아와 저장
+  Future<List<Instrument>> fetchAndSaveCoinbaseInstruments() async {
+    try {
+      final instruments = await _apiService.fetchCoinbaseInstruments();
+      await _storageService.saveInstruments(instruments);
+      return instruments;
+    } catch (e) {
+      throw Exception('Coinbase 심볼 정보 조회 및 저장 중 오류 발생: $e');
+    }
+  }
+
   /// 로컬 스토리지에서 심볼 정보 불러오기
   Future<List<Instrument>> getStoredInstruments() async {
     return await _storageService.loadInstruments();

@@ -314,6 +314,70 @@ class Instrument {
     );
   }
 
+  factory Instrument.fromBitgetSpot(Map<String, dynamic> json) {
+    return Instrument(
+      symbol: json['symbol'] ?? '',
+      baseCode: json['baseCoin'] ?? '',
+      quoteCode: json['quoteCoin'] ?? '',
+      exchange: 'bitget',
+      status: json['status'] ?? '',
+      lastUpdated: DateTime.now(),
+      category: 'spot',
+      integratedSymbol: '${json['baseCoin'] ?? ''}/${json['quoteCoin'] ?? ''}',
+    );
+  }
+
+  factory Instrument.fromBitgetUm(Map<String, dynamic> json) {
+    String? endDate;
+    if (json['type'] == 'perpetual') {
+      endDate = 'perpetual';
+    } else if (json['deliveryTime'] != null) {
+      // deliveryTime is a timestamp in milliseconds
+      final deliveryTime = int.tryParse(json['deliveryTime'].toString());
+      if (deliveryTime != null) {
+        final date = DateTime.fromMillisecondsSinceEpoch(deliveryTime);
+        endDate = DateFormat('yyyy.MM.dd').format(date);
+      }
+    }
+
+    String integratedSymbol = '${json['baseCoin'] ?? ''}/${json['quoteCoin'] ?? ''}';
+    if (endDate != null && endDate != 'perpetual' && RegExp(r'^\d{4}\.\d{2}\.\d{2}$').hasMatch(endDate)) {
+      integratedSymbol = '$integratedSymbol-${endDate.substring(2)}'; // yyyy.MM.dd -> yy.MM.dd
+    }
+
+    return Instrument(
+      symbol: json['symbol'] ?? '',
+      baseCode: json['baseCoin'] ?? '',
+      quoteCode: json['quoteCoin'] ?? '',
+      exchange: 'bitget',
+      status: json['status'] ?? '',
+      lastUpdated: DateTime.now(),
+      category: 'um',
+      endDate: endDate,
+      launchTime: json['launchTime']?.toString(),
+      integratedSymbol: integratedSymbol,
+    );
+  }
+
+  factory Instrument.fromCoinbase(Map<String, dynamic> json) {
+    String? endDate;
+    if (json['type'] == 'PERP') {
+      endDate = 'perpetual';
+    }
+
+    return Instrument(
+      symbol: json['symbol'] ?? '',
+      baseCode: json['base_asset_name'] ?? '',
+      quoteCode: json['quote_asset_name'] ?? '',
+      exchange: 'coinbase',
+      status: json['trading_state'] ?? '',
+      lastUpdated: DateTime.now(),
+      category: json['type']?.toLowerCase(), // PERP -> perp
+      endDate: endDate,
+      integratedSymbol: '${json['base_asset_name'] ?? ''}/${json['quote_asset_name'] ?? ''}',
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'symbol': symbol,

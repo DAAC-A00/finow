@@ -5,6 +5,7 @@ import 'package:finow/features/settings/api_key_status.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ApiSettingsScreen extends ConsumerStatefulWidget {
   const ApiSettingsScreen({super.key});
@@ -131,6 +132,14 @@ class _ApiSettingsScreenState extends ConsumerState<ApiSettingsScreen> {
                 title: const Text('Add API Key'),
                 trailing: const Icon(Icons.add),
                 onTap: () => _showApiKeyDialog(context, ref),
+              ),
+              const Divider(),
+              ListTile(
+                title: const Text('API Status'),
+                trailing: const Icon(Icons.network_check),
+                onTap: () {
+                  context.push('/api-status');
+                },
               ),
             ],
           ),

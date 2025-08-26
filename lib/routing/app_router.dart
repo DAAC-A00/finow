@@ -11,6 +11,7 @@ import 'package:finow/features/ticker/screens/ticker_details_screen.dart';
 import 'package:finow/features/menu/menu_screen.dart';
 import 'package:finow/features/settings/api_settings_screen.dart';
 import 'package:finow/features/settings/settings_screen.dart';
+import 'package:finow/features/settings/api_status_screen.dart';
 import 'package:finow/features/storage_viewer/storage_viewer_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -80,6 +81,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       ...topLevelRoutes,
+      GoRoute(
+        path: '/api-status',
+        builder: (context, state) => const ApiStatusScreen(),
+      ),
     ],
   );
 });

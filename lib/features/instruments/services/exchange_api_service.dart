@@ -1,6 +1,12 @@
 import 'package:dio/dio.dart';
 import '../models/instrument.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+/// 거래소 API 서비스 프로바이더
+final exchangeApiServiceProvider = Provider<ExchangeApiService>((ref) {
+  return ExchangeApiService();
+});
 
 /// 거래소 API 서비스 (Dio 기반)
 class ExchangeApiService {
@@ -275,6 +281,64 @@ class ExchangeApiService {
     );
   }
 
+  /// Bitget Spot 심볼 정보 조회 및 파싱
+  Future<List<Instrument>> fetchBitgetSpotInstruments() async {
+    return await _retryApiCall(
+      () async {
+        final response = await _dio.get('https://api.bitget.com/api/v3/market/instruments?category=SPOT');
+        if (response.statusCode == 200) {
+          final data = response.data;
+          if (data['code'] == '00000') {
+            final List<dynamic> symbols = data['data'] ?? [];
+            return symbols.map((item) => Instrument.fromBitgetSpot(item)).toList();
+          } else {
+            throw Exception('Bitget Spot API 오류: ${data['msg']}');
+          }
+        } else {
+          throw Exception('Bitget Spot API 호출 실패: ${response.statusCode}');
+        }
+      },
+      'Bitget Spot',
+    );
+  }
+
+  /// Bitget USDT-FUTURES 심볼 정보 조회 및 파싱
+  Future<List<Instrument>> fetchBitgetUmInstruments() async {
+    return await _retryApiCall(
+      () async {
+        final response = await _dio.get('https://api.bitget.com/api/v3/market/instruments?category=USDT-FUTURES');
+        if (response.statusCode == 200) {
+          final data = response.data;
+          if (data['code'] == '00000') {
+            final List<dynamic> symbols = data['data'] ?? [];
+            return symbols.map((item) => Instrument.fromBitgetUm(item)).toList();
+          } else {
+            throw Exception('Bitget UM API 오류: ${data['msg']}');
+          }
+        } else {
+          throw Exception('Bitget UM API 호출 실패: ${response.statusCode}');
+        }
+      },
+      'Bitget USDT-FUTURES',
+    );
+  }
+
+  /// Coinbase International Exchange 심볼 정보 조회 및 파싱
+  Future<List<Instrument>> fetchCoinbaseInstruments() async {
+    return await _retryApiCall(
+      () async {
+        final response = await _dio.get('https://api.international.coinbase.com/api/v1/instruments');
+        if (response.statusCode == 200) {
+          final List<dynamic> symbols = response.data ?? [];
+          return symbols.map((item) => Instrument.fromCoinbase(item)).toList();
+        } else {
+          throw Exception('Coinbase API 호출 실패: ${response.statusCode}');
+        }
+      },
+      'Coinbase',
+    );
+  }
+
   /// Bithumb 경고 정보 조회
   Future<Map<String, String>> _fetchBithumbWarnings() async {
     try {
@@ -305,9 +369,8 @@ class ExchangeApiService {
   }
 
   /// 모든 거래소의 통합 심볼 정보 조회 (오류 허용)
-  Future<List<Instrument>> fetchAllInstruments() async {
+  Future<List<Instrument>> fetchAllInstruments({Function(String, bool)? onStatusUpdate}) async {
     final List<Instrument> allInstruments = [];
-    final List<String> failedExchanges = [];
     
     // 각 거래소별로 개별 처리하여 일부 실패해도 나머지는 계속 진행
     final exchangeOperations = [
@@ -316,9 +379,10 @@ class ExchangeApiService {
           final instruments = await fetchBybitInstruments();
           allInstruments.addAll(instruments);
           print('✅ Bybit Spot 데이터 조회 성공 (${instruments.length}개 심볼)');
+          onStatusUpdate?.call('Bybit Spot', true);
         } catch (e) {
-          failedExchanges.add('Bybit Spot');
           print('❌ Bybit Spot 데이터 조회 실패: $e');
+          onStatusUpdate?.call('Bybit Spot', false);
         }
       },
       () async {
@@ -326,9 +390,10 @@ class ExchangeApiService {
           final instruments = await fetchBybitLinearInstruments();
           allInstruments.addAll(instruments);
           print('✅ Bybit Linear 데이터 조회 성공 (${instruments.length}개 심볼)');
+          onStatusUpdate?.call('Bybit Linear', true);
         } catch (e) {
-          failedExchanges.add('Bybit Linear');
           print('❌ Bybit Linear 데이터 조회 실패: $e');
+          onStatusUpdate?.call('Bybit Linear', false);
         }
       },
       () async {
@@ -336,9 +401,10 @@ class ExchangeApiService {
           final instruments = await fetchBybitInverseInstruments();
           allInstruments.addAll(instruments);
           print('✅ Bybit Inverse 데이터 조회 성공 (${instruments.length}개 심볼)');
+          onStatusUpdate?.call('Bybit Inverse', true);
         } catch (e) {
-          failedExchanges.add('Bybit Inverse');
           print('❌ Bybit Inverse 데이터 조회 실패: $e');
+          onStatusUpdate?.call('Bybit Inverse', false);
         }
       },
       () async {
@@ -346,9 +412,10 @@ class ExchangeApiService {
           final instruments = await fetchBithumbInstruments();
           allInstruments.addAll(instruments);
           print('✅ Bithumb 데이터 조회 성공 (${instruments.length}개 심볼)');
+          onStatusUpdate?.call('Bithumb', true);
         } catch (e) {
-          failedExchanges.add('Bithumb');
           print('❌ Bithumb 데이터 조회 실패: $e');
+          onStatusUpdate?.call('Bithumb', false);
         }
       },
       () async {
@@ -356,9 +423,10 @@ class ExchangeApiService {
           final instruments = await fetchBinanceSpotInstruments();
           allInstruments.addAll(instruments);
           print('✅ Binance Spot 데이터 조회 성공 (${instruments.length}개 심볼)');
+          onStatusUpdate?.call('Binance Spot', true);
         } catch (e) {
-          failedExchanges.add('Binance Spot');
           print('❌ Binance Spot 데이터 조회 실패: $e');
+          onStatusUpdate?.call('Binance Spot', false);
         }
       },
       () async {
@@ -366,9 +434,10 @@ class ExchangeApiService {
           final instruments = await fetchBinanceUmInstruments();
           allInstruments.addAll(instruments);
           print('✅ Binance USDⓈ-M 데이터 조회 성공 (${instruments.length}개 심볼)');
+          onStatusUpdate?.call('Binance USDⓈ-M', true);
         } catch (e) {
-          failedExchanges.add('Binance USDⓈ-M');
           print('❌ Binance USDⓈ-M 데이터 조회 실패: $e');
+          onStatusUpdate?.call('Binance USDⓈ-M', false);
         }
       },
       () async {
@@ -376,27 +445,49 @@ class ExchangeApiService {
           final instruments = await fetchBinanceCmInstruments();
           allInstruments.addAll(instruments);
           print('✅ Binance COIN-M 데이터 조회 성공 (${instruments.length}개 심볼)');
+          onStatusUpdate?.call('Binance COIN-M', true);
         } catch (e) {
-          failedExchanges.add('Binance COIN-M');
           print('❌ Binance COIN-M 데이터 조회 실패: $e');
+          onStatusUpdate?.call('Binance COIN-M', false);
+        }
+      },
+      () async {
+        try {
+          final instruments = await fetchBitgetSpotInstruments();
+          allInstruments.addAll(instruments);
+          print('✅ Bitget Spot 데이터 조회 성공 (${instruments.length}개 심볼)');
+          onStatusUpdate?.call('Bitget Spot', true);
+        } catch (e) {
+          print('❌ Bitget Spot 데이터 조회 실패: $e');
+          onStatusUpdate?.call('Bitget Spot', false);
+        }
+      },
+      () async {
+        try {
+          final instruments = await fetchBitgetUmInstruments();
+          allInstruments.addAll(instruments);
+          print('✅ Bitget USDT-FUTURES 데이터 조회 성공 (${instruments.length}개 심볼)');
+          onStatusUpdate?.call('Bitget USDT-FUTURES', true);
+        } catch (e) {
+          print('❌ Bitget USDT-FUTURES 데이터 조회 실패: $e');
+          onStatusUpdate?.call('Bitget USDT-FUTURES', false);
+        }
+      },
+      () async {
+        try {
+          final instruments = await fetchCoinbaseInstruments();
+          allInstruments.addAll(instruments);
+          print('✅ Coinbase 데이터 조회 성공 (${instruments.length}개 심볼)');
+          onStatusUpdate?.call('Coinbase', true);
+        } catch (e) {
+          print('❌ Coinbase 데이터 조회 실패: $e');
+          onStatusUpdate?.call('Coinbase', false);
         }
       },
     ];
     
     // 모든 작업을 병렬로 실행
     await Future.wait(exchangeOperations.map((operation) => operation()));
-    
-    // 결과 요약
-    final successCount = 7 - failedExchanges.length;
-    print('📊 거래소 데이터 조회 완료: 성공 $successCount/7, 실패 ${failedExchanges.length}/7');
-    
-    if (failedExchanges.isNotEmpty) {
-      print('⚠️  실패한 거래소: ${failedExchanges.join(', ')}');
-    }
-    
-    if (allInstruments.isEmpty) {
-      throw Exception('모든 거래소에서 데이터 조회에 실패했습니다. 네트워크 연결을 확인해주세요.');
-    }
     
     print('✨ 총 ${allInstruments.length}개 심볼 데이터 조회 완료');
     return allInstruments;
