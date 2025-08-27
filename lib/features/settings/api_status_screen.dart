@@ -44,11 +44,17 @@ class _ApiStatusScreenState extends ConsumerState<ApiStatusScreen> {
               itemBuilder: (context, index) {
                 final exchange = statuses.keys.elementAt(index);
                 final status = statuses[exchange];
+                final isDarkMode = Theme.of(context).brightness == Brightness.dark;
                 return ListTile(
                   title: Text(exchange),
-                  trailing: Icon(
-                    status == ApiStatus.success ? Icons.check_circle : Icons.error,
-                    color: status == ApiStatus.success ? Colors.green : Colors.red,
+                  trailing: Text(
+                    status == ApiStatus.success
+                        ? '🟢'
+                        : status == ApiStatus.failure
+                            ? '🔴'
+                            : isDarkMode
+                                ? '⚫'
+                                : '⚪',
                   ),
                 );
               },

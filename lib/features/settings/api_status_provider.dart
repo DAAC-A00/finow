@@ -41,7 +41,7 @@ class ApiStatusNotifier extends StateNotifier<ApiStatusState> {
 
     await _apiService.fetchAllInstruments(
       onStatusUpdate: (exchange, status) {
-        newStatuses[exchange] = status ? ApiStatus.success : ApiStatus.failure;
+        newStatuses[exchange] = status;
         state = state.copyWith(statuses: newStatuses);
       },
     );
