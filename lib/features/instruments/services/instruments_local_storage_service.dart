@@ -11,7 +11,7 @@ final instrumentsLocalStorageServiceProvider = Provider<InstrumentsLocalStorageS
 /// 각 심볼을 개별 키-값으로 저장하여 Storage Viewer에서 개별 관리 가능
 class InstrumentsLocalStorageService {
   static const String _boxName = 'instruments';
-  static const String _settingsBoxName = 'settings';
+  
   
 
   /// Hive Box 가져오기 (없으면 생성)
@@ -22,13 +22,7 @@ class InstrumentsLocalStorageService {
     return Hive.box<Instrument>(_boxName);
   }
 
-  /// Settings Box 가져오기 (마지막 업데이트 시간 저장용)
-  Future<Box> _getSettingsBox() async {
-    if (!Hive.isBoxOpen(_settingsBoxName)) {
-      return await Hive.openBox(_settingsBoxName);
-    }
-    return Hive.box(_settingsBoxName);
-  }
+  
 
   /// 심볼 키 생성 (예: "BTCUSDT_spot_bybit", "BTCKRW_spot_bithumb")
   String _generateSymbolKey(Instrument instrument) {

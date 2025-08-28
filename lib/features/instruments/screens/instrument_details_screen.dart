@@ -147,21 +147,5 @@ class InstrumentDetailsScreen extends StatelessWidget {
     }
   }
 
-  String _formatFundingRate(String rate) {
-    try {
-      final rateValue = double.parse(rate);
-      return '${(rateValue * 100).toStringAsFixed(4)}%';
-    } catch (e) {
-      return rate;
-    }
-  }
-
-  String _formatPercentage(String percentage) {
-    try {
-      final percentageValue = double.parse(percentage);
-      return '${(percentageValue * 100).toStringAsFixed(2)}%';
-    } catch (e) {
-      return percentage;
-    }
-  }
+  
 }

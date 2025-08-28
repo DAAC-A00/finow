@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import '../models/instrument.dart';
-import 'package:intl/intl.dart';
+
 import 'package:finow/features/settings/api_status_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,18 +39,18 @@ class ExchangeApiService {
       try {
         final result = await apiCall();
         if (attempt > 0) {
-          print('✅ $exchangeName API 재시도 성공 (${attempt + 1}번째 시도)');
+          
         }
         return result;
       } catch (e) {
         attempt++;
         
         if (attempt >= maxRetries) {
-          print('❌ $exchangeName API $maxRetries회 재시도 후 최종 실패: $e');
+          
           rethrow;
         }
         
-        print('⚠️ $exchangeName API ${attempt}번째 시도 실패, ${delayBetweenRetries.inSeconds}초 후 재시도...');
+        
         await Future.delayed(delayBetweenRetries);
       }
     }
@@ -379,10 +379,10 @@ class ExchangeApiService {
         try {
           final instruments = await fetchBybitInstruments();
           allInstruments.addAll(instruments);
-          print('✅ Bybit Spot 데이터 조회 성공 (${instruments.length}개 심볼)');
+          
           onStatusUpdate?.call('Bybit Spot', ApiStatus.success);
         } catch (e) {
-          print('❌ Bybit Spot 데이터 조회 실패: $e');
+          
           onStatusUpdate?.call('Bybit Spot', ApiStatus.failure);
         }
       },
@@ -390,10 +390,10 @@ class ExchangeApiService {
         try {
           final instruments = await fetchBybitLinearInstruments();
           allInstruments.addAll(instruments);
-          print('✅ Bybit Linear 데이터 조회 성공 (${instruments.length}개 심볼)');
+          
           onStatusUpdate?.call('Bybit Linear', ApiStatus.success);
         } catch (e) {
-          print('❌ Bybit Linear 데이터 조회 실패: $e');
+          
           onStatusUpdate?.call('Bybit Linear', ApiStatus.failure);
         }
       },
@@ -401,10 +401,10 @@ class ExchangeApiService {
         try {
           final instruments = await fetchBybitInverseInstruments();
           allInstruments.addAll(instruments);
-          print('✅ Bybit Inverse 데이터 조회 성공 (${instruments.length}개 심볼)');
+          
           onStatusUpdate?.call('Bybit Inverse', ApiStatus.success);
         } catch (e) {
-          print('❌ Bybit Inverse 데이터 조회 실패: $e');
+          
           onStatusUpdate?.call('Bybit Inverse', ApiStatus.failure);
         }
       },
@@ -412,10 +412,10 @@ class ExchangeApiService {
         try {
           final instruments = await fetchBithumbInstruments();
           allInstruments.addAll(instruments);
-          print('✅ Bithumb 데이터 조회 성공 (${instruments.length}개 심볼)');
+          
           onStatusUpdate?.call('Bithumb', ApiStatus.success);
         } catch (e) {
-          print('❌ Bithumb 데이터 조회 실패: $e');
+          
           onStatusUpdate?.call('Bithumb', ApiStatus.failure);
         }
       },
@@ -423,10 +423,10 @@ class ExchangeApiService {
         try {
           final instruments = await fetchBinanceSpotInstruments();
           allInstruments.addAll(instruments);
-          print('✅ Binance Spot 데이터 조회 성공 (${instruments.length}개 심볼)');
+          
           onStatusUpdate?.call('Binance Spot', ApiStatus.success);
         } catch (e) {
-          print('❌ Binance Spot 데이터 조회 실패: $e');
+          
           onStatusUpdate?.call('Binance Spot', ApiStatus.failure);
         }
       },
@@ -434,10 +434,10 @@ class ExchangeApiService {
         try {
           final instruments = await fetchBinanceUmInstruments();
           allInstruments.addAll(instruments);
-          print('✅ Binance USDⓈ-M 데이터 조회 성공 (${instruments.length}개 심볼)');
+          
           onStatusUpdate?.call('Binance USDⓈ-M', ApiStatus.success);
         } catch (e) {
-          print('❌ Binance USDⓈ-M 데이터 조회 실패: $e');
+          
           onStatusUpdate?.call('Binance USDⓈ-M', ApiStatus.failure);
         }
       },
@@ -445,10 +445,10 @@ class ExchangeApiService {
         try {
           final instruments = await fetchBinanceCmInstruments();
           allInstruments.addAll(instruments);
-          print('✅ Binance COIN-M 데이터 조회 성공 (${instruments.length}개 심볼)');
+          
           onStatusUpdate?.call('Binance COIN-M', ApiStatus.success);
         } catch (e) {
-          print('❌ Binance COIN-M 데이터 조회 실패: $e');
+          
           onStatusUpdate?.call('Binance COIN-M', ApiStatus.failure);
         }
       },
@@ -456,10 +456,10 @@ class ExchangeApiService {
         try {
           final instruments = await fetchBitgetSpotInstruments();
           allInstruments.addAll(instruments);
-          print('✅ Bitget Spot 데이터 조회 성공 (${instruments.length}개 심볼)');
+          
           onStatusUpdate?.call('Bitget Spot', ApiStatus.success);
         } catch (e) {
-          print('❌ Bitget Spot 데이터 조회 실패: $e');
+          
           onStatusUpdate?.call('Bitget Spot', ApiStatus.failure);
         }
       },
@@ -467,10 +467,10 @@ class ExchangeApiService {
         try {
           final instruments = await fetchBitgetUmInstruments();
           allInstruments.addAll(instruments);
-          print('✅ Bitget USDT-FUTURES 데이터 조회 성공 (${instruments.length}개 심볼)');
+          
           onStatusUpdate?.call('Bitget USDT-FUTURES', ApiStatus.success);
         } catch (e) {
-          print('❌ Bitget USDT-FUTURES 데이터 조회 실패: $e');
+          
           onStatusUpdate?.call('Bitget USDT-FUTURES', ApiStatus.failure);
         }
       },
@@ -478,10 +478,10 @@ class ExchangeApiService {
         try {
           final instruments = await fetchCoinbaseInstruments();
           allInstruments.addAll(instruments);
-          print('✅ Coinbase 데이터 조회 성공 (${instruments.length}개 심볼)');
+          
           onStatusUpdate?.call('Coinbase', ApiStatus.success);
         } catch (e) {
-          print('❌ Coinbase 데이터 조회 실패: $e');
+          
           onStatusUpdate?.call('Coinbase', ApiStatus.failure);
         }
       },
@@ -490,7 +490,7 @@ class ExchangeApiService {
     // 모든 작업을 병렬로 실행
     await Future.wait(exchangeOperations.map((operation) => operation()));
     
-    print('✨ 총 ${allInstruments.length}개 심볼 데이터 조회 완료');
+    
     return allInstruments;
   }
 

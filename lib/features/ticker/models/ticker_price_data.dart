@@ -1,4 +1,4 @@
-import '../../instruments/models/instrument.dart';
+
 import 'package:finow/features/ticker/data/models/bithumb_ticker_model.dart';
 
 /// 실시간 Ticker 가격 정보 모델 (로컬 저장 없음)

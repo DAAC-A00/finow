@@ -154,7 +154,7 @@ class LiveTickerNotifier
         return filtered;
       },
       loading: () => [],
-      error: (_, __) => [],
+      error: (_, _) => [],
     );
   }
 }

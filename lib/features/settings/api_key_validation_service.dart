@@ -1,104 +1,68 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'dart:async';
+
+import 'package:dio/dio.dart';
 import 'package:finow/features/settings/api_key_service.dart';
-import 'package:finow/features/settings/api_key_status.dart';
-import 'package:finow/features/settings/api_quota_service.dart';
 import 'package:finow/features/settings/models/api_key_data.dart';
+import 'package:finow/features/settings/api_key_status.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final apiKeyValidationServiceProvider = Provider<ApiKeyValidationService>((ref) {
-  final quotaService = ref.watch(apiQuotaServiceProvider);
-  return ApiKeyValidationService(quotaService);
+  return ApiKeyValidationService(ref);
 });
 
-class ApiKeyValidationService {
-  final ApiQuotaService _quotaService;
-
-  ApiKeyValidationService(this._quotaService);
-
-  Future<Map<String, dynamic>> validateKey(String apiKey) async {
-    return await _quotaService.getQuota(apiKey);
-  }
-}
-
 final apiKeyStatusProvider = StateNotifierProvider<ApiKeyStatusNotifier, Map<String, ApiKeyData>>((ref) {
-  final validationService = ref.watch(apiKeyValidationServiceProvider);
-  final apiKeyService = ref.watch(apiKeyServiceProvider);
-  return ApiKeyStatusNotifier(validationService, apiKeyService);
+  return ApiKeyStatusNotifier(ref);
 });
 
 class ApiKeyStatusNotifier extends StateNotifier<Map<String, ApiKeyData>> {
-  final ApiKeyValidationService _validationService;
-  final ApiKeyService _apiKeyService;
+  final Ref _ref;
 
-  ApiKeyStatusNotifier(this._validationService, this._apiKeyService) : super({}) {
-    _loadStoredStatuses();
+  ApiKeyStatusNotifier(this._ref) : super({});
+
+  Future<void> validateKey(String key) async {
+    await _ref.read(apiKeyValidationServiceProvider).validateKey(key);
   }
 
-  void _loadStoredStatuses() {
-    final apiKeys = _apiKeyService.getApiKeys();
-    final statusMap = <String, ApiKeyData>{};
-    for (final keyData in apiKeys) {
-      statusMap[keyData.key] = keyData;
+  void updateApiKeys(List<ApiKeyData> apiKeyList) {
+    final newMap = { for (var apiKey in apiKeyList) apiKey.key : apiKey };
+    state = newMap;
+  }
+}
+
+class ApiKeyValidationService {
+  final Ref _ref;
+  final Dio _dio = Dio();
+
+  ApiKeyValidationService(this._ref);
+
+  Future<void> validateKey(String key) async {
+    try {
+      final response = await _dio.get('https://v6.exchangerate-api.com/v6/$key/quota');
+      final data = response.data;
+
+      if (data['result'] == 'success') {
+        final apiKeyService = _ref.read(apiKeyServiceProvider);
+        final apiKeyData = apiKeyService.getApiKeys().firstWhere((element) => element.key == key);
+
+        final updatedApiKeyData = apiKeyData.copyWith(
+          status: ApiKeyStatus.valid,
+          lastValidated: DateTime.now().millisecondsSinceEpoch,
+          planQuota: data['plan_quota'],
+          requestsRemaining: data['requests_remaining'],
+          refreshDayOfMonth: data['refresh_day_of_month'],
+        );
+        
+        final index = apiKeyService.getApiKeys().indexWhere((element) => element.key == key);
+        await apiKeyService.updateApiKey(index, updatedApiKeyData);
+
+      } else if (data['error-type'] == 'invalid-key') {
+        await _ref.read(apiKeyServiceProvider).updateApiKeyStatus(key, ApiKeyStatus.invalidKey);
+      } else {
+        await _ref.read(apiKeyServiceProvider).updateApiKeyStatus(key, ApiKeyStatus.unknown);
+      }
+    } catch (e) {
+      await _ref.read(apiKeyServiceProvider).updateApiKeyStatus(key, ApiKeyStatus.unknown);
     }
-    state = statusMap;
-  }
-
-  Future<void> validateKey(String apiKey) async {
-    final currentData = state[apiKey] ?? ApiKeyData(key: apiKey, status: ApiKeyStatus.unknown);
-    state = {...state, apiKey: currentData.copyWith(status: ApiKeyStatus.validating)};
-
-    final result = await _validationService.validateKey(apiKey);
-    final status = result['status'] as ApiKeyStatus;
-
-    ApiKeyData updatedData;
-
-    if (status == ApiKeyStatus.valid) {
-      updatedData = currentData.copyWith(
-        status: status,
-        planQuota: result['plan_quota'] as int?,
-        requestsRemaining: result['requests_remaining'] as int?,
-        refreshDayOfMonth: result['refresh_day_of_month'] as int?,
-        lastValidated: DateTime.now().millisecondsSinceEpoch,
-      );
-    } else if (status == ApiKeyStatus.quotaReached) {
-      updatedData = currentData.copyWith(
-        status: status,
-        lastValidated: DateTime.now().millisecondsSinceEpoch,
-      );
-    } else if (status == ApiKeyStatus.inactiveAccount || status == ApiKeyStatus.invalidKey) {
-      updatedData = currentData.copyWith(
-        status: status,
-        planQuota: null,
-        requestsRemaining: null,
-        refreshDayOfMonth: null,
-        lastValidated: DateTime.now().millisecondsSinceEpoch,
-      );
-    } else {
-      updatedData = currentData.copyWith(
-        status: status,
-        lastValidated: DateTime.now().millisecondsSinceEpoch,
-      );
-    }
-
-    final apiKeys = _apiKeyService.getApiKeys();
-    final index = apiKeys.indexWhere((key) => key.key == apiKey);
-    if (index != -1) {
-      await _apiKeyService.updateApiKey(index, updatedData);
-    }
-
-    state = {...state, apiKey: updatedData};
-  }
-
-  void clearStatus(String apiKey) {
-    final newState = Map<String, ApiKeyData>.from(state);
-    newState.remove(apiKey);
-    state = newState;
-  }
-
-  void clearAllStatuses() {
-    state = {};
-  }
-
-  void refreshStatuses() {
-    _loadStoredStatuses();
   }
 }

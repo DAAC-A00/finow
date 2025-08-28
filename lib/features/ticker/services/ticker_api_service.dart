@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:finow/features/instruments/services/exchange_api_service.dart';
-import 'package:finow/features/instruments/services/instruments_local_storage_service.dart';
+
 import 'package:flutter/foundation.dart';
 import '../data/models/bithumb_ticker_model.dart';
 import '../models/ticker_price_data.dart';
@@ -9,8 +8,7 @@ import '../models/ticker_price_data.dart';
 /// Bybit과 Bithumb의 Ticker API를 호출하여 실시간 시세 정보를 가져옵니다.
 class TickerApiService {
   final Dio _dio;
-  final InstrumentsLocalStorageService _localStorageService;
-  final ExchangeApiService _exchangeApiService;
+  
 
   static const String _bybitBaseUrl = 'https://api.bybit.com/v5';
   // Bithumb Public API는 CORS 문제가 없으므로 프록시 제거
@@ -18,12 +16,7 @@ class TickerApiService {
 
   TickerApiService({
     Dio? dio,
-    InstrumentsLocalStorageService? localStorageService,
-    ExchangeApiService? exchangeApiService,
-  })  : _dio = dio ?? Dio(),
-        _localStorageService =
-            localStorageService ?? InstrumentsLocalStorageService(),
-        _exchangeApiService = exchangeApiService ?? ExchangeApiService() {
+  })  : _dio = dio ?? Dio() {
     _dio.options.connectTimeout = const Duration(seconds: 10);
     _dio.options.receiveTimeout = const Duration(seconds: 10);
   }

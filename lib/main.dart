@@ -52,7 +52,7 @@ class __AppInitializerState extends ConsumerState<_AppInitializer> {
 
   Future<void> _initializeProviders() async {
     // 1. v6 API를 통해 부족한 환율 정보를 한 번 가져옴
-    await ref.read(exchangeRateUpdateServiceProvider).updateRatesIfNeeded();
+    await ref.read(exchangeRateUpdateServiceProvider).updateRatesAndValidateKeys();
 
     // 2. ExConvert API를 통해 1분마다 주기적으로 환율 정보 업데이트 시작
     ref.read(exConvertPeriodicUpdateServiceProvider).startPeriodicUpdates();
