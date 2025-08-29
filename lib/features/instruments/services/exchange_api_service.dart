@@ -26,36 +26,19 @@ class ExchangeApiService {
     ));
   }
 
-  /// 재시도 로직이 포함된 API 호출 헬퍼
+  /// 재시도 로직이 제거된 API 호출 헬퍼 (1회만 시도)
   Future<T> _retryApiCall<T>(
     Future<T> Function() apiCall,
     String exchangeName, {
-    int maxRetries = 2,
+    int maxRetries = 1, // 기본값 1회 시도
     Duration delayBetweenRetries = const Duration(seconds: 2),
   }) async {
-    int attempt = 0;
-    
-    while (attempt < maxRetries) {
-      try {
-        final result = await apiCall();
-        if (attempt > 0) {
-          
-        }
-        return result;
-      } catch (e) {
-        attempt++;
-        
-        if (attempt >= maxRetries) {
-          
-          rethrow;
-        }
-        
-        
-        await Future.delayed(delayBetweenRetries);
-      }
+    try {
+      final result = await apiCall();
+      return result;
+    } catch (e) {
+      rethrow;
     }
-    
-    throw Exception('$exchangeName API 호출 실패');
   }
 
   Map<String, dynamic> _parseBaseCode(String baseCodeStr) {
