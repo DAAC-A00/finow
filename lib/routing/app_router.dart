@@ -22,6 +22,7 @@ import 'package:finow/routing/app_transitions.dart';
 import 'package:finow/screens/main_screen.dart';
 import 'package:finow/screens/placeholder_screen.dart';
 import 'package:finow/features/ui_guide/ui_guide_screen.dart';
+import 'package:finow/features/home/home_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -96,7 +97,7 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
       Widget screen;
       switch (menu.path) {
         case '/home': // Added '/home' case
-          screen = PlaceholderScreen(title: menu.name, showBackButton: isTopLevel);
+          screen = const HomeScreen();
           break;
         case '/menu':
           screen = const MenuScreen();
@@ -150,9 +151,9 @@ CustomTransitionPage<void> buildPageWithCustomTransition({
 
   if (fromIndex != null && toIndex != null) {
     if (fromIndex < toIndex) {
-      return AppTransitions.slideRight(state, child);
-    } else if (fromIndex > toIndex) {
       return AppTransitions.slideLeft(state, child);
+    } else if (fromIndex > toIndex) {
+      return AppTransitions.slideRight(state, child);
     }
   }
   return AppTransitions.fade(state, child);
