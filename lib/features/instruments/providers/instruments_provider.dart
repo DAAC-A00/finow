@@ -30,8 +30,10 @@ class InstrumentsNotifier extends StateNotifier<AsyncValue<List<Instrument>>> {
 
   /// API에서 최신 데이터 조회 후 저장
   Future<void> fetchAndSaveInstruments() async {
-    try {
+    if (!state.hasValue) {
       state = const AsyncValue.loading();
+    }
+    try {
       final instruments = await _repository.fetchAndSaveInstruments();
       state = AsyncValue.data(instruments);
     } catch (e, stackTrace) {
@@ -41,8 +43,10 @@ class InstrumentsNotifier extends StateNotifier<AsyncValue<List<Instrument>>> {
 
   /// Binance 심볼 동기화(저장)
   Future<void> fetchAndSaveBinanceInstruments() async {
-    try {
+    if (!state.hasValue) {
       state = const AsyncValue.loading();
+    }
+    try {
       final instruments = await _repository.fetchAndSaveBinanceInstruments();
       state = AsyncValue.data(instruments);
     } catch (e, stackTrace) {
@@ -52,8 +56,10 @@ class InstrumentsNotifier extends StateNotifier<AsyncValue<List<Instrument>>> {
 
   /// 특정 거래소의 심볼만 조회
   Future<void> loadInstrumentsByExchange(String exchange) async {
-    try {
+    if (!state.hasValue) {
       state = const AsyncValue.loading();
+    }
+    try {
       final instruments = await _repository.getInstrumentsByExchange(exchange);
       state = AsyncValue.data(instruments);
     } catch (e, stackTrace) {
@@ -63,8 +69,10 @@ class InstrumentsNotifier extends StateNotifier<AsyncValue<List<Instrument>>> {
 
   /// 심볼 검색
   Future<void> searchInstruments(String query) async {
-    try {
+    if (!state.hasValue) {
       state = const AsyncValue.loading();
+    }
+    try {
       final instruments = await _repository.searchInstruments(query);
       state = AsyncValue.data(instruments);
     } catch (e, stackTrace) {
