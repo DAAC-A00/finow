@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:finow/features/home/home_provider.dart';
 import 'package:finow/features/home/home_model.dart';
+import 'package:intl/intl.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -55,44 +56,67 @@ class HomeScreen extends ConsumerWidget {
             elevation: 2,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    '${premium.name} (${premium.symbol})',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 12.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _buildPriceInfo('Bybit', premium.bybitPrice, 'USD', colorScheme),
-                      _buildPriceInfo('Bithumb', premium.bithumbPrice, 'USD', colorScheme),
-                    ],
-                  ),
-                  const SizedBox(height: 12.0),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                  // Left side - Symbols
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Premium: ',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: colorScheme.onSurface.withAlpha(153),
-                        ),
-                      ),
-                      Text(
-                        '${premiumValue.toStringAsFixed(2)}%',
-                        style: TextStyle(
-                          fontSize: 16,
+                        premium.symbol,
+                        style: const TextStyle(
+                          fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: premiumColor,
                         ),
                       ),
+                      if (premium.koreanName != null)
+                        Text(
+                          premium.koreanName!,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: colorScheme.onSurface.withAlpha(153),
+                          ),
+                        ),
                     ],
+                  ),
+                  // Right side - Prices and Premium
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Text(
+                              '${_formatPrice(premium.bithumbPriceKRW)} KRW',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 4.0),
+                            Text(
+                              '${_formatPrice(premium.bybitPrice)} USD',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: colorScheme.onSurface.withAlpha(153),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 8.0),
+                        Text(
+                          '${premiumValue.toStringAsFixed(2)}%',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: premiumColor,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -101,6 +125,14 @@ class HomeScreen extends ConsumerWidget {
         },
       ),
     );
+  }
+
+  String _formatPrice(double? price) {
+    if (price == null) return '-';
+    if (price >= 1000) {
+      return NumberFormat('#,##0').format(price);
+    }
+    return price.toStringAsFixed(2);
   }
 
   Widget _buildSortChips(WidgetRef ref) {
@@ -166,49 +198,5 @@ class HomeScreen extends ConsumerWidget {
         return 'Premium %';
     }
   }
-
-  Widget _buildPriceInfo(String exchange, double? price, String currency, ColorScheme colorScheme) {
-    Widget leadingWidget;
-
-    switch (exchange.toLowerCase()) {
-      case 'bybit':
-        leadingWidget = const Text(
-          '🌎',
-          style: TextStyle(fontSize: 16), // Adjust size as needed
-        );
-        break;
-      case 'bithumb':
-        leadingWidget = const Text(
-          '🇰🇷',
-          style: TextStyle(fontSize: 16), // Adjust size as needed
-        );
-        break;
-      default:
-        // Fallback to image or text if not Bybit or Bithumb
-        // This part is technically not needed as we only pass 'Bybit' and 'Bithumb'
-        // but kept for robustness.
-        leadingWidget = Text(
-          exchange,
-          style: TextStyle(
-            fontSize: 14,
-            color: colorScheme.onSurface.withAlpha(153),
-          ),
-        );
-        break;
-    }
-
-    return Row(
-      children: [
-        leadingWidget,
-        const SizedBox(width: 8.0),
-        Text(
-          '${price?.toStringAsFixed(2) ?? '-'} $currency',
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
 }
+

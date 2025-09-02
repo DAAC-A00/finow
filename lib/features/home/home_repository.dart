@@ -88,8 +88,10 @@ class HomeRepository {
                 CryptoPremium(
                   symbol: baseCode,
                   name: bithumbInstrument.koreanName ?? baseCode,
+                  koreanName: bithumbInstrument.koreanName,
                   bybitPrice: bybitPrice,
                   bithumbPrice: bithumbPriceUSD,
+                  bithumbPriceKRW: bithumbPriceKRW,
                   premium: premium,
                 ),
               );
