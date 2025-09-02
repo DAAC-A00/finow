@@ -97,17 +97,33 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildPriceInfo(String exchange, double? price, String currency, ColorScheme colorScheme) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
+    Widget leadingWidget;
+
+    switch (exchange.toLowerCase()) {
+      case 'bybit':
+        leadingWidget = const Text(
+          '🌎',
+        );
+        break;
+      case 'bithumb':
+        leadingWidget = const Text(
+          '🇰🇷',
+        );
+        break;
+      default:
+        // Fallback to image or text if not Bybit or Bithumb
+        // This part is technically not needed as we only pass 'Bybit' and 'Bithumb'
+        // but kept for robustness.
+        leadingWidget = Text(
           exchange,
-          style: TextStyle(
-            fontSize: 14,
-            color: colorScheme.onSurface.withAlpha(153),
-          ),
-        ),
-        const SizedBox(height: 4.0),
+        );
+        break;
+    }
+
+    return Row(
+      children: [
+        leadingWidget,
+        const SizedBox(width: 8.0),
         Text(
           '${price?.toStringAsFixed(2) ?? '-'} $currency',
           style: const TextStyle(
