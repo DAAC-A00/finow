@@ -67,7 +67,7 @@ class _EditApiKeyScreenState extends ConsumerState<EditApiKeyScreen> {
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<ApiKeyStatus>(
-              value: _selectedStatus,
+              initialValue: _selectedStatus,
               decoration: const InputDecoration(labelText: "Status"),
               items: ApiKeyStatus.values.map((status) {
                 return DropdownMenuItem(

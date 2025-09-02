@@ -95,6 +95,9 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
     pageBuilder: (context, state) {
       Widget screen;
       switch (menu.path) {
+        case '/home': // Added '/home' case
+          screen = PlaceholderScreen(title: menu.name, showBackButton: isTopLevel);
+          break;
         case '/menu':
           screen = const MenuScreen();
           break;
@@ -130,4 +133,27 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
       );
     },
   );
+}
+
+CustomTransitionPage<void> buildPageWithCustomTransition({
+  required BuildContext context,
+  required GoRouterState state,
+  required Widget child,
+}) {
+  final extra = state.extra;
+  int? fromIndex;
+  int? toIndex;
+  if (extra is Map<String, dynamic>) {
+    fromIndex = extra['fromIndex'] as int?;
+    toIndex = extra['toIndex'] as int?;
+  }
+
+  if (fromIndex != null && toIndex != null) {
+    if (fromIndex < toIndex) {
+      return AppTransitions.slideRight(state, child);
+    } else if (fromIndex > toIndex) {
+      return AppTransitions.slideLeft(state, child);
+    }
+  }
+  return AppTransitions.fade(state, child);
 }
