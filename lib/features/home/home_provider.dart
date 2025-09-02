@@ -9,6 +9,9 @@ import 'package:finow/features/home/home_repository.dart';
 final premiumSortOptionProvider = StateProvider<PremiumSortOption>((ref) => PremiumSortOption.symbol);
 final premiumSortDirectionProvider = StateProvider<SortDirection>((ref) => SortDirection.asc);
 
+// Add this provider
+final premiumSearchQueryProvider = StateProvider<String>((ref) => '');
+
 final homeProvider = StateNotifierProvider.autoDispose<HomeNotifier, AsyncValue<List<CryptoPremium>>>((ref) {
   return HomeNotifier(ref);
 });
@@ -32,8 +35,9 @@ class HomeNotifier extends StateNotifier<AsyncValue<List<CryptoPremium>>> {
     try {
       final sortOption = _ref.read(premiumSortOptionProvider);
       final sortDirection = _ref.read(premiumSortDirectionProvider);
+      final searchQuery = _ref.read(premiumSearchQueryProvider);
       final repository = _ref.read(homeRepositoryProvider);
-      final tickers = await repository.getPremiumTickers(sortOption, sortDirection);
+      final tickers = await repository.getPremiumTickers(sortOption, sortDirection, searchQuery);
       state = AsyncValue.data(tickers);
     } catch (e, s) {
       state = AsyncValue.error(e, s);

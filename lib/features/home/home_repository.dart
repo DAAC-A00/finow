@@ -27,6 +27,7 @@ class HomeRepository {
   Future<List<CryptoPremium>> getPremiumTickers(
     PremiumSortOption sortOption,
     SortDirection sortDirection,
+    String searchQuery,
   ) async {
     debugPrint('[HomeRepository] Getting premium tickers...');
 
@@ -101,8 +102,16 @@ class HomeRepository {
       }
     }
 
+    // Filter by search query
+    final filteredPremiumTickers = premiumTickers.where((premium) {
+      final query = searchQuery.toLowerCase();
+      return premium.symbol.toLowerCase().contains(query) ||
+             premium.name.toLowerCase().contains(query) ||
+             (premium.koreanName?.toLowerCase().contains(query) ?? false);
+    }).toList();
+
     // 5. Sort the premium tickers
-    premiumTickers.sort((a, b) {
+    filteredPremiumTickers.sort((a, b) {
       int compare = 0;
       switch (sortOption) {
         case PremiumSortOption.symbol:
@@ -121,8 +130,8 @@ class HomeRepository {
       return sortDirection == SortDirection.asc ? compare : -compare;
     });
 
-    debugPrint('[HomeRepository] Calculated ${premiumTickers.length} premium tickers.');
-    return premiumTickers;
+    debugPrint('[HomeRepository] Calculated ${filteredPremiumTickers.length} premium tickers.');
+    return filteredPremiumTickers;
   }
 
   Instrument? _findInstrument(List<Instrument> instruments, String exchange, String baseCode, String quoteCode) {

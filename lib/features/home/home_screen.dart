@@ -4,12 +4,36 @@ import 'package:finow/features/home/home_provider.dart';
 import 'package:finow/features/home/home_model.dart';
 import 'package:intl/intl.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  late final TextEditingController _searchController;
+
+  @override
+  void initState() {
+    super.initState();
+    _searchController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final homeState = ref.watch(homeProvider);
+    final searchQuery = ref.watch(premiumSearchQueryProvider);
+
+    if (_searchController.text != searchQuery) {
+      _searchController.text = searchQuery;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -17,6 +41,28 @@ class HomeScreen extends ConsumerWidget {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              onChanged: (value) {
+                ref.read(premiumSearchQueryProvider.notifier).state = value;
+              },
+              decoration: InputDecoration(
+                hintText: 'Search by symbol or name...',
+                border: const OutlineInputBorder(),
+                suffixIcon: searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () {
+                          ref.read(premiumSearchQueryProvider.notifier).state = '';
+                          _searchController.clear();
+                        },
+                      )
+                    : null,
+              ),
+            ),
+          ),
           _buildSortChips(ref),
           Expanded(
             child: homeState.when(
@@ -199,4 +245,5 @@ class HomeScreen extends ConsumerWidget {
     }
   }
 }
+
 
