@@ -132,6 +132,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        // Emojis Column
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: const [
+                            Text(
+                              '🇰🇷',
+                              style: TextStyle(fontSize: 16),
+                            ),
+                            SizedBox(height: 4.0),
+                            Text(
+                              '🌎',
+                              style: TextStyle(fontSize: 14),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 4.0), // Spacing between emojis and prices
+                        // Prices Column
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -144,7 +161,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                             const SizedBox(height: 4.0),
                             Text(
-                              '${_formatPrice(premium.bybitPrice)} USD',
+                              '${_formatPrice(premium.bybitPrice)} ${premium.bybitQuoteCode ?? 'USDT'}',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: colorScheme.onSurface.withAlpha(153),
@@ -152,7 +169,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ),
                           ],
                         ),
-                        const SizedBox(width: 8.0),
+                        const SizedBox(width: 8.0), // Spacing between prices and premium %
                         Text(
                           '${premiumValue.toStringAsFixed(2)}%',
                           style: TextStyle(
@@ -178,7 +195,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (price >= 1000) {
       return NumberFormat('#,##0').format(price);
     }
-    return price.toStringAsFixed(2);
+    return price.toString();
   }
 
   Widget _buildSortChips(WidgetRef ref) {

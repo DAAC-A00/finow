@@ -7,6 +7,7 @@ class CryptoPremium {
     required this.name,
     this.koreanName,
     this.bybitPrice,
+    this.bybitQuoteCode,
     this.bithumbPrice,
     this.bithumbPriceKRW,
     this.premium,
@@ -16,6 +17,7 @@ class CryptoPremium {
   final String name;
   final String? koreanName;
   final double? bybitPrice;
+  final String? bybitQuoteCode;
   final double? bithumbPrice;
   final double? bithumbPriceKRW;
   final double? premium;

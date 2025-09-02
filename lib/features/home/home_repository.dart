@@ -91,6 +91,7 @@ class HomeRepository {
                   name: bithumbInstrument.koreanName ?? baseCode,
                   koreanName: bithumbInstrument.koreanName,
                   bybitPrice: bybitPrice,
+                  bybitQuoteCode: bybitInstrument.quoteCode,
                   bithumbPrice: bithumbPriceUSD,
                   bithumbPriceKRW: bithumbPriceKRW,
                   premium: premium,
