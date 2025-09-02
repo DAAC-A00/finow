@@ -16,3 +16,15 @@ class CryptoPremium {
   final double? bithumbPrice;
   final double? premium;
 }
+
+enum PremiumSortOption {
+  symbol,
+  bybitPrice,
+  bithumbPrice,
+  premium,
+}
+
+enum SortDirection {
+  asc,
+  desc,
+}

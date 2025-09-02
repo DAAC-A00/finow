@@ -5,6 +5,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:finow/features/home/home_model.dart';
 import 'package:finow/features/home/home_repository.dart';
 
+// Add these two providers
+final premiumSortOptionProvider = StateProvider<PremiumSortOption>((ref) => PremiumSortOption.symbol);
+final premiumSortDirectionProvider = StateProvider<SortDirection>((ref) => SortDirection.asc);
+
 final homeProvider = StateNotifierProvider.autoDispose<HomeNotifier, AsyncValue<List<CryptoPremium>>>((ref) {
   return HomeNotifier(ref);
 });
@@ -26,8 +30,10 @@ class HomeNotifier extends StateNotifier<AsyncValue<List<CryptoPremium>>> {
 
   Future<void> _fetchData() async {
     try {
+      final sortOption = _ref.read(premiumSortOptionProvider);
+      final sortDirection = _ref.read(premiumSortDirectionProvider);
       final repository = _ref.read(homeRepositoryProvider);
-      final tickers = await repository.getPremiumTickers();
+      final tickers = await repository.getPremiumTickers(sortOption, sortDirection);
       state = AsyncValue.data(tickers);
     } catch (e, s) {
       state = AsyncValue.error(e, s);

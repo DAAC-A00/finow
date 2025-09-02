@@ -14,10 +14,17 @@ class HomeScreen extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Crypto Premium'),
       ),
-      body: homeState.when(
-        data: (premiums) => _buildPremiumList(premiums, context, ref),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, stackTrace) => Center(child: Text('Error: $error')),
+      body: Column(
+        children: [
+          _buildSortChips(ref),
+          Expanded(
+            child: homeState.when(
+              data: (premiums) => _buildPremiumList(premiums, context, ref),
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (error, stackTrace) => Center(child: Text('Error: $error')),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -96,6 +103,70 @@ class HomeScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildSortChips(WidgetRef ref) {
+    final sortOption = ref.watch(premiumSortOptionProvider);
+    final sortDirection = ref.watch(premiumSortDirectionProvider);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          children: PremiumSortOption.values.map((option) {
+            final isSelected = sortOption == option;
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 4.0),
+              child: FilterChip(
+                label: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(_getSortOptionName(option)),
+                    if (isSelected)
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4.0),
+                        child: Icon(
+                          sortDirection == SortDirection.asc
+                              ? Icons.arrow_upward
+                              : Icons.arrow_downward,
+                          size: 16,
+                        ),
+                      ),
+                  ],
+                ),
+                selected: isSelected,
+                onSelected: (selected) {
+                  if (isSelected) {
+                    ref.read(premiumSortDirectionProvider.notifier).state =
+                        sortDirection == SortDirection.asc
+                            ? SortDirection.desc
+                            : SortDirection.asc;
+                  } else {
+                    ref.read(premiumSortOptionProvider.notifier).state = option;
+                    ref.read(premiumSortDirectionProvider.notifier).state =
+                        SortDirection.asc;
+                  }
+                },
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  String _getSortOptionName(PremiumSortOption option) {
+    switch (option) {
+      case PremiumSortOption.symbol:
+        return 'Symbol';
+      case PremiumSortOption.bybitPrice:
+        return 'Bybit Price';
+      case PremiumSortOption.bithumbPrice:
+        return 'Bithumb Price';
+      case PremiumSortOption.premium:
+        return 'Premium %';
+    }
+  }
+
   Widget _buildPriceInfo(String exchange, double? price, String currency, ColorScheme colorScheme) {
     Widget leadingWidget;
 
@@ -103,11 +174,13 @@ class HomeScreen extends ConsumerWidget {
       case 'bybit':
         leadingWidget = const Text(
           '🌎',
+          style: TextStyle(fontSize: 16), // Adjust size as needed
         );
         break;
       case 'bithumb':
         leadingWidget = const Text(
           '🇰🇷',
+          style: TextStyle(fontSize: 16), // Adjust size as needed
         );
         break;
       default:
@@ -116,6 +189,10 @@ class HomeScreen extends ConsumerWidget {
         // but kept for robustness.
         leadingWidget = Text(
           exchange,
+          style: TextStyle(
+            fontSize: 14,
+            color: colorScheme.onSurface.withAlpha(153),
+          ),
         );
         break;
     }

@@ -24,7 +24,10 @@ class HomeRepository {
   late final TickerApiService _tickerApiService;
   late final InstrumentsLocalStorageService _localStorageService;
 
-  Future<List<CryptoPremium>> getPremiumTickers() async {
+  Future<List<CryptoPremium>> getPremiumTickers(
+    PremiumSortOption sortOption,
+    SortDirection sortDirection,
+  ) async {
     debugPrint('[HomeRepository] Getting premium tickers...');
 
     // 1. Load instruments from local storage
@@ -95,6 +98,26 @@ class HomeRepository {
         }
       }
     }
+
+    // 5. Sort the premium tickers
+    premiumTickers.sort((a, b) {
+      int compare = 0;
+      switch (sortOption) {
+        case PremiumSortOption.symbol:
+          compare = a.symbol.compareTo(b.symbol);
+          break;
+        case PremiumSortOption.bybitPrice:
+          compare = (a.bybitPrice ?? 0).compareTo(b.bybitPrice ?? 0);
+          break;
+        case PremiumSortOption.bithumbPrice:
+          compare = (a.bithumbPrice ?? 0).compareTo(b.bithumbPrice ?? 0);
+          break;
+        case PremiumSortOption.premium:
+          compare = (a.premium ?? 0).compareTo(b.premium ?? 0);
+          break;
+      }
+      return sortDirection == SortDirection.asc ? compare : -compare;
+    });
 
     debugPrint('[HomeRepository] Calculated ${premiumTickers.length} premium tickers.');
     return premiumTickers;
