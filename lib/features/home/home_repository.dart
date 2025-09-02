@@ -29,19 +29,14 @@ class HomeRepository {
     SortDirection sortDirection,
     String searchQuery,
   ) async {
-    debugPrint('[HomeRepository] Getting premium tickers...');
 
     // 1. Load instruments from local storage
     final allInstruments = await _localStorageService.loadInstruments();
-    debugPrint('[HomeRepository] Loaded ${allInstruments.length} instruments from local storage.');
     final bithumbInstruments = allInstruments.where((i) => i.exchange == 'bithumb').toList();
-    debugPrint('[HomeRepository] Found ${bithumbInstruments.length} Bithumb instruments.');
 
     // 2. Fetch tickers from Bybit and Bithumb
     final bybitTickers = await _tickerApiService.getSpotTickers();
-    debugPrint('[HomeRepository] Fetched ${bybitTickers.length} Bybit tickers.');
     final bithumbTickers = await _tickerApiService.fetchBithumbTickers();
-    debugPrint('[HomeRepository] Fetched ${bithumbTickers.length} Bithumb tickers.');
 
     // 3. Fetch USD/KRW exchange rate
     final exchangeRateState = _ref.read(exchangeRateProvider);
@@ -54,7 +49,6 @@ class HomeRepository {
         }
       }
     }
-    debugPrint('[HomeRepository] USD/KRW exchange rate: $usdToKrwRate');
 
     if (usdToKrwRate == null) {
       throw Exception('Could not get USD/KRW exchange rate');
@@ -131,7 +125,6 @@ class HomeRepository {
       return sortDirection == SortDirection.asc ? compare : -compare;
     });
 
-    debugPrint('[HomeRepository] Calculated ${filteredPremiumTickers.length} premium tickers.');
     return filteredPremiumTickers;
   }
 

@@ -254,9 +254,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       case PremiumSortOption.symbol:
         return 'Symbol';
       case PremiumSortOption.bybitPrice:
-        return 'Bybit Price';
+        return 'Global Price';
       case PremiumSortOption.bithumbPrice:
-        return 'Bithumb Price';
+        return 'Korean Price';
       case PremiumSortOption.premium:
         return 'Premium %';
     }
