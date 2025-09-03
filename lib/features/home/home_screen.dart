@@ -111,18 +111,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     children: [
                       Text(
                         premium.symbol,
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
                       ),
                       if (premium.koreanName != null)
                         Text(
                           premium.koreanName!,
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: colorScheme.onSurface.withAlpha(153),
-                          ),
                         ),
                     ],
                   ),
@@ -138,44 +130,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           children: const [
                             Text(
                               '🇰🇷',
-                              style: TextStyle(fontSize: 16),
                             ),
                             SizedBox(height: 4.0),
                             Text(
                               '🌎',
-                              style: TextStyle(fontSize: 14),
                             ),
                           ],
                         ),
                         const SizedBox(width: 4.0), // Spacing between emojis and prices
                         // Prices Column
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '${_formatPrice(premium.bithumbPriceKRW)} KRW',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w600,
+                        SizedBox(
+                          width: 120,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                '${_formatPrice(premium.bithumbPriceKRW)} KRW',
                               ),
-                            ),
-                            const SizedBox(height: 4.0),
-                            Text(
-                              '${_formatPrice(premium.bybitPrice)} ${premium.bybitQuoteCode ?? 'USDT'}',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: colorScheme.onSurface.withAlpha(153),
+                              const SizedBox(height: 4.0),
+                              Text(
+                                '${_formatPrice(premium.bybitPrice)} ${premium.bybitQuoteCode ?? 'USDT'}',
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                         const SizedBox(width: 8.0), // Spacing between prices and premium %
-                        Text(
-                          '${premiumValue.toStringAsFixed(2)}%',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: premiumColor,
+                        SizedBox(
+                          width: 80,
+                          child: Text(
+                            '${premiumValue.toStringAsFixed(2)}%',
+                            textAlign: TextAlign.end,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: premiumColor,
+                            ),
                           ),
                         ),
                       ],
