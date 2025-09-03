@@ -61,7 +61,7 @@ class HomeRepository {
       final baseCode = bithumbInstrument.baseCode;
 
       // Find corresponding Bybit instrument
-      final bybitInstrument = _findInstrument(allInstruments, 'bybit', baseCode, 'USDT');
+      final bybitInstrument = _findInstrument(allInstruments, 'bybit', baseCode, 'USDT', 'spot');
 
       if (bybitInstrument != null) {
         final bybitTicker = _findTicker(bybitTickers, bybitInstrument.symbol);
@@ -128,9 +128,9 @@ class HomeRepository {
     return filteredPremiumTickers;
   }
 
-  Instrument? _findInstrument(List<Instrument> instruments, String exchange, String baseCode, String quoteCode) {
+  Instrument? _findInstrument(List<Instrument> instruments, String exchange, String baseCode, String quoteCode, String category) {
     for (final instrument in instruments) {
-      if (instrument.exchange == exchange && instrument.baseCode == baseCode && instrument.quoteCode == quoteCode) {
+      if (instrument.exchange == exchange && instrument.baseCode == baseCode && instrument.quoteCode == quoteCode && instrument.category == category) {
         return instrument;
       }
     }
