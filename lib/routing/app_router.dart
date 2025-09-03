@@ -1,6 +1,8 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_detail_screen.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_screen.dart';
+import 'package:finow/features/home/crypto_premium_detail_screen.dart';
+import 'package:finow/features/home/home_model.dart';
 import 'package:finow/features/instruments/models/instrument.dart';
 import 'package:finow/features/instruments/screens/instrument_details_screen.dart';
 import 'package:finow/features/instruments/screens/instruments_screen.dart';
@@ -54,6 +56,15 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         routes: [
           ...shellRoutes,
         ],
+      ),
+      GoRoute(
+        path: '/home/details',
+        pageBuilder: (context, state) {
+          final premium = state.extra as CryptoPremium;
+          return NoTransitionPage(
+            child: CryptoPremiumDetailScreen(premium: premium),
+          );
+        },
       ),
       GoRoute(
         path: '/exchange/:quoteCode',

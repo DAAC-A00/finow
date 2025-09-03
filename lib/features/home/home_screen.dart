@@ -1,7 +1,8 @@
+import 'package:finow/features/home/home_model.dart';
+import 'package:finow/features/home/home_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:finow/features/home/home_provider.dart';
-import 'package:finow/features/home/home_model.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -100,77 +101,82 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           return Card(
             margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
             elevation: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Left side - Symbols
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        premium.symbol,
-                      ),
-                      if (premium.koreanName != null)
-                        Text(
-                          premium.koreanName!,
-                        ),
-                    ],
-                  ),
-                  // Right side - Prices and Premium
-                  Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.center,
+            child: InkWell(
+              onTap: () {
+                context.go('/home/details', extra: premium);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Left side - Symbols
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Emojis Column
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: const [
-                            Text(
-                              '🇰🇷',
-                            ),
-                            SizedBox(height: 4.0),
-                            Text(
-                              '🌎',
-                            ),
-                          ],
+                        Text(
+                          premium.symbol,
                         ),
-                        const SizedBox(width: 4.0), // Spacing between emojis and prices
-                        // Prices Column
-                        SizedBox(
-                          width: 120,
-                          child: Column(
+                        if (premium.koreanName != null)
+                          Text(
+                            premium.koreanName!,
+                          ),
+                      ],
+                    ),
+                    // Right side - Prices and Premium
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Emojis Column
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
+                            children: const [
                               Text(
-                                '${_formatPrice(premium.bithumbPriceKRW)} KRW',
+                                '🇰🇷',
                               ),
-                              const SizedBox(height: 4.0),
+                              SizedBox(height: 4.0),
                               Text(
-                                '${_formatPrice(premium.bybitPrice)} ${premium.bybitQuoteCode ?? 'USDT'}',
+                                '🌎',
                               ),
                             ],
                           ),
-                        ),
-                        const SizedBox(width: 8.0), // Spacing between prices and premium %
-                        SizedBox(
-                          width: 80,
-                          child: Text(
-                            '${premiumValue.toStringAsFixed(2)}%',
-                            textAlign: TextAlign.end,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: premiumColor,
+                          const SizedBox(width: 4.0), // Spacing between emojis and prices
+                          // Prices Column
+                          SizedBox(
+                            width: 120,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  '${_formatPrice(premium.bithumbPriceKRW)} KRW',
+                                ),
+                                const SizedBox(height: 4.0),
+                                Text(
+                                  '${_formatPrice(premium.bybitPrice)} ${premium.bybitQuoteCode ?? 'USDT'}',
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 8.0), // Spacing between prices and premium %
+                          SizedBox(
+                            width: 80,
+                            child: Text(
+                              '${premiumValue.toStringAsFixed(2)}%',
+                              textAlign: TextAlign.end,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: premiumColor,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           );
