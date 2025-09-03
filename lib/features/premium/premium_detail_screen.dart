@@ -1,19 +1,19 @@
-import 'package:finow/features/home/home_model.dart';
-import 'package:finow/features/home/instrument_detail_provider.dart';
+import 'package:finow/features/premium/premium_model.dart';
+import 'package:finow/features/premium/premium_detail_provider.dart';
 import 'package:finow/features/instruments/models/instrument.dart';
 import 'package:finow/features/ticker/models/ticker_price_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class CryptoPremiumDetailScreen extends ConsumerWidget {
-  const CryptoPremiumDetailScreen({super.key, required this.premium});
+class PremiumDetailScreen extends ConsumerWidget {
+  const PremiumDetailScreen({super.key, required this.premium});
 
-  final CryptoPremium premium;
+  final Premium premium;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final instrumentDetailAsync = ref.watch(instrumentDetailProvider(premium.symbol));
+    final instrumentDetailAsync = ref.watch(premiumDetailProvider(premium.symbol));
 
     return Scaffold(
       appBar: AppBar(
@@ -56,7 +56,7 @@ class CryptoPremiumDetailScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildPremiumSummary(CryptoPremium premium) {
+  Widget _buildPremiumSummary(Premium premium) {
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),

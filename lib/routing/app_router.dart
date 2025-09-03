@@ -1,8 +1,9 @@
 import 'package:finow/features/exchange_rate/exchange_rate.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_detail_screen.dart';
 import 'package:finow/features/exchange_rate/exchange_rate_screen.dart';
-import 'package:finow/features/home/crypto_premium_detail_screen.dart';
-import 'package:finow/features/home/home_model.dart';
+import 'package:finow/features/premium/premium_detail_screen.dart';
+import 'package:finow/features/premium/premium_model.dart';
+import 'package:finow/features/premium/premium_screen.dart';
 import 'package:finow/features/instruments/models/instrument.dart';
 import 'package:finow/features/instruments/screens/instrument_details_screen.dart';
 import 'package:finow/features/instruments/screens/instruments_screen.dart';
@@ -58,12 +59,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         ],
       ),
       GoRoute(
-        path: '/home/details',
-        pageBuilder: (context, state) {
-          final premium = state.extra as CryptoPremium;
-          return NoTransitionPage(
-            child: CryptoPremiumDetailScreen(premium: premium),
-          );
+        path: '/premium/details',
+        builder: (context, state) {
+          final premium = state.extra as Premium;
+          return PremiumDetailScreen(premium: premium);
         },
       ),
       GoRoute(
@@ -107,8 +106,11 @@ GoRoute _buildRoute(Menu menu, {required bool isTopLevel}) {
     pageBuilder: (context, state) {
       Widget screen;
       switch (menu.path) {
-        case '/home': // Added '/home' case
+        case '/home':
           screen = const HomeScreen();
+          break;
+        case '/premium':
+          screen = const PremiumScreen();
           break;
         case '/menu':
           screen = const MenuScreen();
