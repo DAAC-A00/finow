@@ -3,6 +3,7 @@ import 'package:finow/features/premium/premium_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:intl/intl.dart';
 
 class PremiumScreen extends ConsumerStatefulWidget {
@@ -149,12 +150,16 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text(
+                                AutoSizeText(
                                   '${_formatPrice(premium.bithumbPriceKRW)} KRW',
+                                  maxLines: 1,
+                                  textAlign: TextAlign.end,
                                 ),
                                 const SizedBox(height: 4.0),
-                                Text(
+                                AutoSizeText(
                                   '${_formatPrice(premium.bybitPrice)} ${premium.bybitQuoteCode ?? 'USDT'}',
+                                  maxLines: 1,
+                                  textAlign: TextAlign.end,
                                 ),
                               ],
                             ),

@@ -43,6 +43,7 @@ dependencies:
   json_annotation: ^4.9.0
   intl: ^0.20.2
   lottie: ^3.1.2
+  auto_size_text: ^3.0.0
 
 dev_dependencies:
   build_runner: ^2.4.11
