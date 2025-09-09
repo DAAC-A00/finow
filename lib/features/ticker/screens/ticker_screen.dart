@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -339,8 +340,9 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                       _buildCategoryBadge(ticker.category, colorScheme),
                       if (priceData != null) ...[
                         const SizedBox(height: 4.0),
-                        Text(
+                        AutoSizeText(
                           _formatNumberWithCommas(priceData.lastPrice),
+                          maxLines: 1,
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
@@ -390,8 +392,9 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                       ),
                     if (priceData.highPrice24h != null &&
                         priceData.lowPrice24h != null)
-                      Text(
+                      AutoSizeText(
                         'H: ${_formatNumberWithCommas(priceData.highPrice24h)} L: ${_formatNumberWithCommas(priceData.lowPrice24h)}',
+                        maxLines: 1,
                         style: TextStyle(
                           fontSize: 12,
                           color: colorScheme.onSurface.withAlpha(153),

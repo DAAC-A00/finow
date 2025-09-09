@@ -150,11 +150,17 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                AutoSizeText(
-                                  '${_formatPrice(premium.bithumbPriceKRW)} KRW',
-                                  maxLines: 1,
-                                  textAlign: TextAlign.end,
-                                ),
+                                (premium.bithumbQuoteCode == 'KRW' && premium.bithumbPriceKRW != null)
+                                    ? AutoSizeText(
+                                        '${_formatPrice(premium.bithumbPriceKRW)} KRW',
+                                        maxLines: 1,
+                                        textAlign: TextAlign.end,
+                                      )
+                                    : AutoSizeText(
+                                        '${_formatPrice(premium.bithumbPrice)} ${premium.bithumbQuoteCode ?? ''}',
+                                        maxLines: 1,
+                                        textAlign: TextAlign.end,
+                                      ),
                                 const SizedBox(height: 4.0),
                                 AutoSizeText(
                                   '${_formatPrice(premium.bybitPrice)} ${premium.bybitQuoteCode ?? 'USDT'}',

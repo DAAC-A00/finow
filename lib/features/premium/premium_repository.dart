@@ -28,10 +28,10 @@ class PremiumRepository {
     SortDirection sortDirection,
     String searchQuery,
   ) async {
-
     // 1. Load instruments from local storage
     final allInstruments = await _localStorageService.loadInstruments();
     final bithumbInstruments = allInstruments.where((i) => i.exchange == 'bithumb').toList();
+    final bybitInstruments = allInstruments.where((i) => i.exchange == 'bybit' && i.category == 'spot').toList();
 
     // 2. Fetch tickers from Bybit and Bithumb
     final bybitTickers = await _tickerApiService.getSpotTickers();
@@ -57,41 +57,37 @@ class PremiumRepository {
     final List<Premium> premiumTickers = [];
 
     for (final bithumbInstrument in bithumbInstruments) {
-      final baseCode = bithumbInstrument.baseCode;
+      Instrument? bybitInstrument;
 
-      // Find corresponding Bybit instrument
-      final bybitInstrument = _findInstrument(allInstruments, 'bybit', baseCode, 'USDT', 'spot');
-
-      if (bybitInstrument != null) {
-        final bybitTicker = _findTicker(bybitTickers, bybitInstrument.symbol);
-        final bithumbTicker = _findBithumbTicker(bithumbTickers, bithumbInstrument.symbol);
-
-        if (bybitTicker != null && bithumbTicker != null) {
-          final bybitPriceString = bybitTicker.lastPrice;
-          final bithumbPriceString = bithumbTicker.closingPrice;
-
-          if (bybitPriceString != null && bithumbPriceString != null) {
-            final bybitPrice = double.tryParse(bybitPriceString);
-            final bithumbPriceKRW = double.tryParse(bithumbPriceString);
-
-            if (bybitPrice != null && bybitPrice > 0 && bithumbPriceKRW != null && bithumbPriceKRW > 0) {
-              final bithumbPriceUSD = bithumbPriceKRW / usdToKrwRate;
-              final premium = ((bithumbPriceUSD - bybitPrice) / bybitPrice) * 100;
-
-              premiumTickers.add(
-                Premium(
-                  symbol: baseCode,
-                  name: bithumbInstrument.koreanName ?? baseCode,
-                  koreanName: bithumbInstrument.koreanName,
-                  bybitPrice: bybitPrice,
-                  bybitQuoteCode: bybitInstrument.quoteCode,
-                  bithumbPrice: bithumbPriceUSD,
-                  bithumbPriceKRW: bithumbPriceKRW,
-                  premium: premium,
-                ),
-              );
-            }
-          }
+      // Case 1: KRW vs USDT
+      if (bithumbInstrument.quoteCode == 'KRW') {
+        bybitInstrument = _findInstrument(bybitInstruments, 'bybit', bithumbInstrument.baseCode, 'USDT', 'spot');
+        if (bybitInstrument != null) {
+          // Found a KRW/USDT pair, process it
+          _processPremiumCalculation(
+            premiumTickers: premiumTickers,
+            bithumbInstrument: bithumbInstrument,
+            bybitInstrument: bybitInstrument,
+            bithumbTickers: bithumbTickers,
+            bybitTickers: bybitTickers,
+            usdToKrwRate: usdToKrwRate,
+            isUsdKrwPair: true,
+          );
+        }
+      } else {
+        // Case 2: Exact match (e.g., BTC/ETH vs BTC/ETH)
+        bybitInstrument = _findInstrument(bybitInstruments, 'bybit', bithumbInstrument.baseCode, bithumbInstrument.quoteCode, 'spot');
+        if (bybitInstrument != null) {
+          // Found an identical quote currency pair, process it
+          _processPremiumCalculation(
+            premiumTickers: premiumTickers,
+            bithumbInstrument: bithumbInstrument,
+            bybitInstrument: bybitInstrument,
+            bithumbTickers: bithumbTickers,
+            bybitTickers: bybitTickers,
+            usdToKrwRate: usdToKrwRate,
+            isUsdKrwPair: false,
+          );
         }
       }
     }
@@ -125,6 +121,64 @@ class PremiumRepository {
     });
 
     return filteredPremiumTickers;
+  }
+
+  void _processPremiumCalculation({
+    required List<Premium> premiumTickers,
+    required Instrument bithumbInstrument,
+    required Instrument bybitInstrument,
+    required List<BithumbTicker> bithumbTickers,
+    required List<TickerPriceData> bybitTickers,
+    required double usdToKrwRate,
+    required bool isUsdKrwPair,
+  }) {
+    final bybitTicker = _findTicker(bybitTickers, bybitInstrument.symbol);
+    final bithumbTicker = _findBithumbTicker(bithumbTickers, bithumbInstrument.symbol);
+
+    if (bybitTicker == null || bithumbTicker == null) return;
+
+    final bybitPriceString = bybitTicker.lastPrice;
+    final bithumbPriceString = bithumbTicker.closingPrice;
+
+    if (bybitPriceString == null || bithumbPriceString == null) return;
+
+    final bybitPrice = double.tryParse(bybitPriceString);
+    final bithumbPriceRaw = double.tryParse(bithumbPriceString);
+
+    if (bybitPrice == null || bybitPrice <= 0 || bithumbPriceRaw == null || bithumbPriceRaw <= 0) return;
+
+    double premium;
+    double bithumbPriceInTargetCurrency;
+    double? bithumbPriceKRW;
+
+    if (isUsdKrwPair) {
+      // KRW -> USD for comparison
+      bithumbPriceInTargetCurrency = bithumbPriceRaw / usdToKrwRate;
+      bithumbPriceKRW = bithumbPriceRaw;
+      premium = ((bithumbPriceInTargetCurrency - bybitPrice) / bybitPrice) * 100;
+    } else {
+      // Direct comparison
+      bithumbPriceInTargetCurrency = bithumbPriceRaw;
+      // If the common currency is KRW, we can still show it.
+      if (bithumbInstrument.quoteCode == 'KRW') {
+        bithumbPriceKRW = bithumbPriceRaw;
+      }
+      premium = ((bithumbPriceInTargetCurrency - bybitPrice) / bybitPrice) * 100;
+    }
+
+    premiumTickers.add(
+      Premium(
+        symbol: bithumbInstrument.baseCode,
+        name: bithumbInstrument.koreanName ?? bithumbInstrument.baseCode,
+        koreanName: bithumbInstrument.koreanName,
+        bybitPrice: bybitPrice,
+        bybitQuoteCode: bybitInstrument.quoteCode,
+        bithumbPrice: bithumbPriceInTargetCurrency,
+        bithumbPriceKRW: bithumbPriceKRW,
+        bithumbQuoteCode: bithumbInstrument.quoteCode,
+        premium: premium,
+      ),
+    );
   }
 
   Instrument? _findInstrument(List<Instrument> instruments, String exchange, String baseCode, String quoteCode, String category) {

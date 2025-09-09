@@ -10,6 +10,7 @@ class Premium {
     this.bybitQuoteCode,
     this.bithumbPrice,
     this.bithumbPriceKRW,
+    this.bithumbQuoteCode,
     this.premium,
   });
 
@@ -20,6 +21,7 @@ class Premium {
   final String? bybitQuoteCode;
   final double? bithumbPrice;
   final double? bithumbPriceKRW;
+  final String? bithumbQuoteCode;
   final double? premium;
 }
 
