@@ -6,7 +6,7 @@ import 'package:finow/features/premium/premium_model.dart';
 import 'package:finow/features/premium/premium_repository.dart';
 
 // Add these two providers
-final premiumSortOptionProvider = StateProvider<PremiumSortOption>((ref) => PremiumSortOption.symbol);
+final premiumSortOptionProvider = StateProvider<PremiumSortOption>((ref) => PremiumSortOption.turnover);
 final premiumSortDirectionProvider = StateProvider<SortDirection>((ref) => SortDirection.asc);
 
 // Add this provider

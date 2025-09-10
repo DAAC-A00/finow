@@ -30,12 +30,12 @@ class Premium {
 }
 
 enum PremiumSortOption {
-  symbol,
-  bybitPrice,
-  bithumbPrice,
-  premium,
-  turnover,
   volume,
+  turnover,
+  premium,
+  symbol,
+  bithumbPrice,
+  bybitPrice,
 }
 
 enum SortDirection {
