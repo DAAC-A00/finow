@@ -116,6 +116,12 @@ class PremiumRepository {
         case PremiumSortOption.premium:
           compare = (a.premium ?? 0).compareTo(b.premium ?? 0);
           break;
+        case PremiumSortOption.turnover:
+          compare = (a.turnover24h ?? 0).compareTo(b.turnover24h ?? 0);
+          break;
+        case PremiumSortOption.volume:
+          compare = (a.volume24h ?? 0).compareTo(b.volume24h ?? 0);
+          break;
       }
       return sortDirection == SortDirection.asc ? compare : -compare;
     });
@@ -166,6 +172,17 @@ class PremiumRepository {
       premium = ((bithumbPriceInTargetCurrency - bybitPrice) / bybitPrice) * 100;
     }
 
+    // Calculate turnover and volume
+    final bybitTurnover = double.tryParse(bybitTicker.turnover24h ?? '0') ?? 0;
+    final bithumbTurnoverKRW = double.tryParse(bithumbTicker.accTradeValue24H ?? '0') ?? 0;
+    final bithumbTurnoverUSD = bithumbTurnoverKRW / usdToKrwRate;
+    final totalTurnover = bybitTurnover + bithumbTurnoverUSD;
+
+    final bybitVolume = double.tryParse(bybitTicker.volume24h ?? '0') ?? 0;
+    final bithumbVolume = double.tryParse(bithumbTicker.unitsTraded24H ?? '0') ?? 0;
+    final totalVolume = bybitVolume + bithumbVolume;
+    final totalVolumeUSD = totalVolume * bybitPrice; // Using bybit price as the reference for USD conversion
+
     premiumTickers.add(
       Premium(
         symbol: bithumbInstrument.baseCode,
@@ -177,6 +194,8 @@ class PremiumRepository {
         bithumbPriceKRW: bithumbPriceKRW,
         bithumbQuoteCode: bithumbInstrument.quoteCode,
         premium: premium,
+        turnover24h: totalTurnover,
+        volume24h: totalVolumeUSD,
       ),
     );
   }

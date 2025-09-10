@@ -12,6 +12,8 @@ class Premium {
     this.bithumbPriceKRW,
     this.bithumbQuoteCode,
     this.premium,
+    this.turnover24h,
+    this.volume24h,
   });
 
   final String symbol;
@@ -23,6 +25,8 @@ class Premium {
   final double? bithumbPriceKRW;
   final String? bithumbQuoteCode;
   final double? premium;
+  final double? turnover24h;
+  final double? volume24h;
 }
 
 enum PremiumSortOption {
@@ -30,6 +34,8 @@ enum PremiumSortOption {
   bybitPrice,
   bithumbPrice,
   premium,
+  turnover,
+  volume,
 }
 
 enum SortDirection {

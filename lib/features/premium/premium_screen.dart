@@ -264,7 +264,11 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
       case PremiumSortOption.bithumbPrice:
         return 'Korean Price';
       case PremiumSortOption.premium:
-        return 'Premium %';
+        return 'Premium';
+      case PremiumSortOption.turnover:
+        return 'Turnover';
+      case PremiumSortOption.volume:
+        return 'Volume';
     }
   }
 }
