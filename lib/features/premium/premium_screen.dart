@@ -104,7 +104,7 @@ class _PremiumScreenState extends ConsumerState<PremiumScreen> {
             elevation: 2,
             child: InkWell(
               onTap: () {
-                context.go('/premium/details', extra: premium);
+                context.push('/premium/details', extra: premium);
               },
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
