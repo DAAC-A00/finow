@@ -284,7 +284,8 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
     final priceData = ticker.priceData;
     final priceDirection = ticker.priceDirection;
 
-    return Card(
+    return Card
+      (
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       elevation: 2,
       child: InkWell(
@@ -292,54 +293,72 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
           context.push('/ticker/details', extra: ticker);
         },
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 12.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Header
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
+                  Image.asset(
+                    'images/exchange${ticker.exchange}.png',
+                    width: 22,
+                    height: 22,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'images/exchange${ticker.exchange}.jpeg',
+                        width: 22,
+                        height: 22,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Icon(Icons.business, size: 20);
+                        },
+                      );
+                    },
+                  ),
+                  const SizedBox(width: 8),
                   Expanded(
-                    child: Row(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Image.asset(
-                          'images/exchange${ticker.exchange}.png',
-                          width: 24,
-                          height: 24,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              'images/exchange${ticker.exchange}.jpeg',
-                              width: 24,
-                              height: 24,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Icon(Icons.business, size: 24);
-                              },
-                            );
-                          },
-                        ),
-                        const SizedBox(width: 8),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        Row(
                           children: [
-                            Text(
-                              ticker.integratedSymbol,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme.onSurface,
+                            Expanded(
+                              child: Text(
+                                ticker.integratedSymbol,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                  color: colorScheme.onSurface,
+                                ),
                               ),
                             ),
+                            const SizedBox(width: 8),
+                            _buildCategoryBadge(ticker.category, colorScheme),
+                            const SizedBox(width: 6),
+                            _buildStatusPill(ticker.status),
                           ],
+                        ),
+                        const SizedBox(height: 4),
+                        // Secondary line: symbol code
+                        Text(
+                          ticker.symbol,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: colorScheme.onSurface.withAlpha(153),
+                          ),
                         ),
                       ],
                     ),
                   ),
+                  const SizedBox(width: 8),
+                  // Price block
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      _buildCategoryBadge(ticker.category, colorScheme),
                       if (priceData != null) ...[
-                        const SizedBox(height: 4.0),
                         AutoSizeText(
                           _formatNumberWithCommas(priceData.lastPrice),
                           maxLines: 1,
@@ -349,64 +368,111 @@ class _TickerScreenState extends ConsumerState<TickerScreen>
                             color: _getPriceColor(priceDirection, colorScheme),
                           ),
                         ),
-                        if (priceData.price24hPcnt != null) ...[
-                          Text(
-                            '${priceData.price24hPcnt}%',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: _getPriceColor(priceDirection, colorScheme),
+                        if (priceData.price24hPcnt != null)
+                          Container(
+                            margin: const EdgeInsets.only(top: 2),
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: _getPriceColor(priceDirection, colorScheme).withAlpha(25),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              '${priceData.price24hPcnt}%',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color: _getPriceColor(priceDirection, colorScheme),
+                              ),
                             ),
                           ),
-                        ],
-                      ],
+                      ] else ...[
+                        Text(
+                          '-',
+                          style: TextStyle(color: colorScheme.onSurfaceVariant),
+                        )
+                      ]
                     ],
                   ),
                 ],
               ),
-              const SizedBox(height: 12.0),
-              Wrap(
-                spacing: 8.0,
-                runSpacing: 4.0,
-                children: [
-                  _buildInfoChip(
-                    ticker.symbol,
-                    colorScheme,
-                  ),
-                  _buildStatusChip(ticker.status, colorScheme),
+              const SizedBox(height: 10),
+              // Compact metadata row
+              if (priceData != null || ticker.endDate != null)
+                _dotSeparated([
+                  if (priceData?.volume24h != null)
+                    _metaItem(Icons.inventory_2_outlined, _formatVolume(priceData!.volume24h!)),
+                  if (priceData?.highPrice24h != null && priceData?.lowPrice24h != null)
+                    _metaItem(
+                      Icons.stacked_line_chart,
+                      'H ${_formatNumberWithCommas(priceData!.highPrice24h)} · L ${_formatNumberWithCommas(priceData!.lowPrice24h)}',
+                    ),
                   if (ticker.endDate != null)
-                    _buildEndDateChip(ticker.endDate!, colorScheme),
-                ],
-              ),
-              if (priceData != null) ...[
-                const SizedBox(height: 8.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    if (priceData.volume24h != null)
-                      Text(
-                        '24h Vol: ${_formatVolume(priceData.volume24h!)}',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colorScheme.onSurface.withAlpha(153),
-                        ),
-                      ),
-                    if (priceData.highPrice24h != null &&
-                        priceData.lowPrice24h != null)
-                      AutoSizeText(
-                        'H: ${_formatNumberWithCommas(priceData.highPrice24h)} L: ${_formatNumberWithCommas(priceData.lowPrice24h)}',
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: colorScheme.onSurface.withAlpha(153),
-                        ),
-                      ),
-                  ],
-                ),
-              ],
+                    _metaItem(Icons.event_outlined, ticker.endDate!),
+                ], colorScheme),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  // Small pill for status to save space compared to the older chip
+  Widget _buildStatusPill(String status) {
+    final isTrading = status == 'Trading';
+    final color = isTrading ? Colors.green : Colors.orange;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withAlpha(25),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withAlpha(76)),
+      ),
+      child: Text(
+        status,
+        style: TextStyle(
+          fontSize: 11,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
+    );
+  }
+
+  // Dot-separated inline items (e.g., Vol • H/L • EndDate)
+  Widget _dotSeparated(List<Widget> items, ColorScheme colorScheme) {
+    final widgets = <Widget>[];
+    for (var i = 0; i < items.length; i++) {
+      widgets.add(items[i]);
+      if (i != items.length - 1) {
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6.0),
+            child: Text(
+              '•',
+              style: TextStyle(
+                fontSize: 12,
+                color: colorScheme.onSurface.withAlpha(102),
+              ),
+            ),
+          ),
+        );
+      }
+    }
+    return Row(children: widgets);
+  }
+
+  // Metadata item with a small icon and label
+  Widget _metaItem(IconData icon, String label) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, size: 14),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12),
+        ),
+      ],
     );
   }
 
